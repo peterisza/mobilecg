@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:holter-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -10,7 +11,6 @@ LIBS:cmos4000
 LIBS:adc-dac
 LIBS:memory
 LIBS:xilinx
-LIBS:special
 LIBS:microcontrollers
 LIBS:dsp
 LIBS:microchip
@@ -50,6 +50,7 @@ LIBS:hdmi
 LIBS:usbulc6-2m6
 LIBS:rgbled
 LIBS:lis2dh12
+LIBS:holter-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -98,7 +99,7 @@ F 3 "" H 1100 2600 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Csmall C50
+L C_Small C50
 U 1 1 5410A5CE
 P 1250 2700
 F 0 "C50" H 1275 2750 30  0000 L CNN
@@ -109,7 +110,7 @@ F 3 "" H 1250 2700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C55
+L C_Small C55
 U 1 1 5410A5D5
 P 1450 2700
 F 0 "C55" H 1475 2750 30  0000 L CNN
@@ -186,7 +187,7 @@ F 3 "" H 3450 2700 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Csmall C93
+L C_Small C93
 U 1 1 5410A608
 P 4000 2650
 F 0 "C93" H 4025 2700 30  0000 L CNN
@@ -197,7 +198,7 @@ F 3 "" H 4000 2650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C95
+L C_Small C95
 U 1 1 5410A60F
 P 4250 2650
 F 0 "C95" H 4275 2700 30  0000 L CNN
@@ -263,7 +264,7 @@ F 3 "" H 1100 1600 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Csmall C49
+L C_Small C49
 U 1 1 5410A637
 P 1250 1700
 F 0 "C49" H 1275 1750 30  0000 L CNN
@@ -274,7 +275,7 @@ F 3 "" H 1250 1700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C54
+L C_Small C54
 U 1 1 5410A63E
 P 1450 1700
 F 0 "C54" H 1475 1750 30  0000 L CNN
@@ -351,7 +352,7 @@ F 3 "" H 3450 1700 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Csmall C92
+L C_Small C92
 U 1 1 5410A66B
 P 4000 1650
 F 0 "C92" H 4025 1700 30  0000 L CNN
@@ -362,7 +363,7 @@ F 3 "" H 4000 1650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C94
+L C_Small C94
 U 1 1 5410A672
 P 4250 1650
 F 0 "C94" H 4275 1700 30  0000 L CNN
@@ -430,7 +431,7 @@ F 3 "" H 5350 2400 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Csmall C111
+L C_Small C111
 U 1 1 5410A6DC
 P 5500 2500
 F 0 "C111" H 5525 2550 30  0000 L CNN
@@ -441,7 +442,7 @@ F 3 "" H 5500 2500 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C113
+L C_Small C113
 U 1 1 5410A6E3
 P 5700 2500
 F 0 "C113" H 5725 2550 30  0000 L CNN
@@ -518,7 +519,7 @@ F 3 "" H 7700 2500 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Csmall C128
+L C_Small C128
 U 1 1 5410A710
 P 8250 2450
 F 0 "C128" H 8275 2500 30  0000 L CNN
@@ -529,7 +530,7 @@ F 3 "" H 8250 2450 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C131
+L C_Small C131
 U 1 1 5410A717
 P 8500 2450
 F 0 "C131" H 8525 2500 30  0000 L CNN
@@ -586,7 +587,7 @@ F 3 "" H 7800 1450 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C129
+L C_Small C129
 U 1 1 5410A75D
 P 8250 1550
 F 0 "C129" H 8275 1600 30  0000 L CNN
@@ -641,7 +642,7 @@ F 3 "" H 6500 1550 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Csmall C130
+L C_Small C130
 U 1 1 5410A78A
 P 8450 1550
 F 0 "C130" H 8475 1600 30  0000 L CNN
@@ -663,7 +664,7 @@ F 3 "" H 8450 1650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C119
+L C_Small C119
 U 1 1 5410A797
 P 6000 1550
 F 0 "C119" H 6025 1600 30  0000 L CNN
@@ -674,7 +675,7 @@ F 3 "" H 6000 1550 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C121
+L C_Small C121
 U 1 1 5410A79E
 P 6200 1550
 F 0 "C121" H 6225 1600 30  0000 L CNN
@@ -707,7 +708,7 @@ F 3 "" H 6200 1650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C45
+L C_Small C45
 U 1 1 5410C4ED
 P 800 7350
 F 0 "C45" H 825 7400 30  0000 L CNN
@@ -718,7 +719,7 @@ F 3 "" H 800 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C48
+L C_Small C48
 U 1 1 5410C4F4
 P 1000 7350
 F 0 "C48" H 1025 7400 30  0000 L CNN
@@ -740,7 +741,7 @@ F 3 "" H 900 7500 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C53
+L C_Small C53
 U 1 1 5410C505
 P 1300 7350
 F 0 "C53" H 1325 7400 30  0000 L CNN
@@ -751,7 +752,7 @@ F 3 "" H 1300 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C58
+L C_Small C58
 U 1 1 5410C50C
 P 1500 7350
 F 0 "C58" H 1525 7400 30  0000 L CNN
@@ -762,7 +763,7 @@ F 3 "" H 1500 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C61
+L C_Small C61
 U 1 1 5410C513
 P 1800 7350
 F 0 "C61" H 1825 7400 30  0000 L CNN
@@ -773,7 +774,7 @@ F 3 "" H 1800 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C65
+L C_Small C65
 U 1 1 5410C51A
 P 2000 7350
 F 0 "C65" H 2025 7400 30  0000 L CNN
@@ -784,7 +785,7 @@ F 3 "" H 2000 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C68
+L C_Small C68
 U 1 1 5410C521
 P 2300 7350
 F 0 "C68" H 2325 7400 30  0000 L CNN
@@ -795,7 +796,7 @@ F 3 "" H 2300 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C72
+L C_Small C72
 U 1 1 5410C528
 P 2500 7350
 F 0 "C72" H 2525 7400 30  0000 L CNN
@@ -806,7 +807,7 @@ F 3 "" H 2500 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C76
+L C_Small C76
 U 1 1 5410C52F
 P 2800 7350
 F 0 "C76" H 2825 7400 30  0000 L CNN
@@ -817,7 +818,7 @@ F 3 "" H 2800 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C79
+L C_Small C79
 U 1 1 5410C536
 P 3000 7350
 F 0 "C79" H 3025 7400 30  0000 L CNN
@@ -828,7 +829,7 @@ F 3 "" H 3000 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C81
+L C_Small C81
 U 1 1 5410C53D
 P 3300 7350
 F 0 "C81" H 3325 7400 30  0000 L CNN
@@ -839,7 +840,7 @@ F 3 "" H 3300 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C84
+L C_Small C84
 U 1 1 5410C544
 P 3500 7350
 F 0 "C84" H 3525 7400 30  0000 L CNN
@@ -850,7 +851,7 @@ F 3 "" H 3500 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C88
+L C_Small C88
 U 1 1 5410C54B
 P 3800 7350
 F 0 "C88" H 3825 7400 30  0000 L CNN
@@ -861,7 +862,7 @@ F 3 "" H 3800 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C91
+L C_Small C91
 U 1 1 5410C552
 P 4000 7350
 F 0 "C91" H 4025 7400 30  0000 L CNN
@@ -940,7 +941,7 @@ $EndComp
 Text Notes 900  7200 0    39   ~ 0
 ECG VAA
 $Comp
-L Csmall C44
+L C_Small C44
 U 1 1 5410C5B6
 P 800 6800
 F 0 "C44" H 825 6850 30  0000 L CNN
@@ -951,7 +952,7 @@ F 3 "" H 800 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C47
+L C_Small C47
 U 1 1 5410C5BD
 P 1000 6800
 F 0 "C47" H 1025 6850 30  0000 L CNN
@@ -973,7 +974,7 @@ F 3 "" H 900 6950 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C52
+L C_Small C52
 U 1 1 5410C5CE
 P 1300 6800
 F 0 "C52" H 1325 6850 30  0000 L CNN
@@ -984,7 +985,7 @@ F 3 "" H 1300 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C57
+L C_Small C57
 U 1 1 5410C5D5
 P 1500 6800
 F 0 "C57" H 1525 6850 30  0000 L CNN
@@ -995,7 +996,7 @@ F 3 "" H 1500 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C60
+L C_Small C60
 U 1 1 5410C5DC
 P 1800 6800
 F 0 "C60" H 1825 6850 30  0000 L CNN
@@ -1006,7 +1007,7 @@ F 3 "" H 1800 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C64
+L C_Small C64
 U 1 1 5410C5E3
 P 2000 6800
 F 0 "C64" H 2025 6850 30  0000 L CNN
@@ -1017,7 +1018,7 @@ F 3 "" H 2000 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C67
+L C_Small C67
 U 1 1 5410C5EA
 P 2300 6800
 F 0 "C67" H 2325 6850 30  0000 L CNN
@@ -1028,7 +1029,7 @@ F 3 "" H 2300 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C71
+L C_Small C71
 U 1 1 5410C5F1
 P 2500 6800
 F 0 "C71" H 2525 6850 30  0000 L CNN
@@ -1039,7 +1040,7 @@ F 3 "" H 2500 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C75
+L C_Small C75
 U 1 1 5410C5F8
 P 2800 6800
 F 0 "C75" H 2825 6850 30  0000 L CNN
@@ -1050,7 +1051,7 @@ F 3 "" H 2800 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C78
+L C_Small C78
 U 1 1 5410C5FF
 P 3000 6800
 F 0 "C78" H 3025 6850 30  0000 L CNN
@@ -1107,7 +1108,7 @@ $EndComp
 Text Notes 900  6650 0    39   ~ 0
 CPU
 $Comp
-L Csmall C82
+L C_Small C82
 U 1 1 5410C647
 P 3350 6800
 F 0 "C82" H 3375 6850 30  0000 L CNN
@@ -1118,7 +1119,7 @@ F 3 "" H 3350 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C85
+L C_Small C85
 U 1 1 5410C64E
 P 3550 6800
 F 0 "C85" H 3575 6850 30  0000 L CNN
@@ -1142,7 +1143,7 @@ $EndComp
 Text Notes 3450 6650 0    39   ~ 0
 BT
 $Comp
-L Csmall C87
+L C_Small C87
 U 1 1 5410C668
 P 3800 6800
 F 0 "C87" H 3825 6850 30  0000 L CNN
@@ -1153,7 +1154,7 @@ F 3 "" H 3800 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C90
+L C_Small C90
 U 1 1 5410C66F
 P 4000 6800
 F 0 "C90" H 4025 6850 30  0000 L CNN
@@ -1177,7 +1178,7 @@ $EndComp
 Text Notes 3900 6650 0    39   ~ 0
 BT
 $Comp
-L Csmall C106
+L C_Small C106
 U 1 1 5410D0E5
 P 5250 6800
 F 0 "C106" H 5275 6850 30  0000 L CNN
@@ -1188,7 +1189,7 @@ F 3 "" H 5250 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C109
+L C_Small C109
 U 1 1 5410D0EC
 P 5450 6800
 F 0 "C109" H 5475 6850 30  0000 L CNN
@@ -1199,7 +1200,7 @@ F 3 "" H 5450 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C114
+L C_Small C114
 U 1 1 5410D0F3
 P 5750 6800
 F 0 "C114" H 5775 6850 30  0000 L CNN
@@ -1210,7 +1211,7 @@ F 3 "" H 5750 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C117
+L C_Small C117
 U 1 1 5410D0FA
 P 5950 6800
 F 0 "C117" H 5975 6850 30  0000 L CNN
@@ -1221,7 +1222,7 @@ F 3 "" H 5950 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C122
+L C_Small C122
 U 1 1 5410D101
 P 6250 6800
 F 0 "C122" H 6275 6850 30  0000 L CNN
@@ -1232,7 +1233,7 @@ F 3 "" H 6250 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C124
+L C_Small C124
 U 1 1 5410D108
 P 6450 6800
 F 0 "C124" H 6475 6850 30  0000 L CNN
@@ -1278,7 +1279,7 @@ $EndComp
 Text Notes 5350 6650 0    39   ~ 0
 Other VAA
 $Comp
-L Csmall C97
+L C_Small C97
 U 1 1 5410D139
 P 4300 6800
 F 0 "C97" H 4325 6850 30  0000 L CNN
@@ -1289,7 +1290,7 @@ F 3 "" H 4300 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C100
+L C_Small C100
 U 1 1 5410D140
 P 4500 6800
 F 0 "C100" H 4525 6850 30  0000 L CNN
@@ -1300,7 +1301,7 @@ F 3 "" H 4500 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C102
+L C_Small C102
 U 1 1 5410D147
 P 4800 6800
 F 0 "C102" H 4825 6850 30  0000 L CNN
@@ -1311,7 +1312,7 @@ F 3 "" H 4800 6800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C104
+L C_Small C104
 U 1 1 5410D14E
 P 5000 6800
 F 0 "C104" H 5025 6850 30  0000 L CNN
@@ -1346,7 +1347,7 @@ $EndComp
 Text Notes 4400 6650 0    39   ~ 0
 ECG VDD
 $Comp
-L Csmall C98
+L C_Small C98
 U 1 1 5410D17B
 P 4300 7350
 F 0 "C98" H 4325 7400 30  0000 L CNN
@@ -1357,7 +1358,7 @@ F 3 "" H 4300 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C101
+L C_Small C101
 U 1 1 5410D182
 P 4500 7350
 F 0 "C101" H 4525 7400 30  0000 L CNN
@@ -1471,7 +1472,7 @@ F 3 "" H 4300 7250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C103
+L C_Small C103
 U 1 1 54129E52
 P 4800 7350
 F 0 "C103" H 4825 7400 30  0000 L CNN
@@ -1482,7 +1483,7 @@ F 3 "" H 4800 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C105
+L C_Small C105
 U 1 1 54129E58
 P 5000 7350
 F 0 "C105" H 5025 7400 30  0000 L CNN
@@ -1493,7 +1494,7 @@ F 3 "" H 5000 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C107
+L C_Small C107
 U 1 1 54129F2C
 P 5250 7350
 F 0 "C107" H 5275 7400 30  0000 L CNN
@@ -1504,7 +1505,7 @@ F 3 "" H 5250 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C110
+L C_Small C110
 U 1 1 54129F32
 P 5450 7350
 F 0 "C110" H 5475 7400 30  0000 L CNN
@@ -1559,15 +1560,15 @@ F 3 "" H 7100 3650 60  0000 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L DIODESCH D7
+L D_Schottky D7
 U 1 1 541082A6
 P 7500 3750
 F 0 "D7" H 7500 3850 40  0000 C CNN
-F 1 "DIODESCH" H 7500 3650 40  0000 C CNN
+F 1 "D_Schottky" H 7500 3650 40  0000 C CNN
 F 2 "" H 7500 3750 60  0000 C CNN
 F 3 "" H 7500 3750 60  0000 C CNN
 	1    7500 3750
-	0    -1   -1   0   
+	0    1    1    0   
 $EndComp
 $Comp
 L INDUCTOR_SMALL L4
@@ -1702,15 +1703,15 @@ F 3 "" H 6200 3550 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L DIODESCH D8
+L D_Schottky D8
 U 1 1 5410A1B4
 P 9050 3550
 F 0 "D8" H 9050 3650 40  0000 C CNN
-F 1 "DIODESCH" H 9050 3450 40  0000 C CNN
+F 1 "D_Schottky" H 9050 3450 40  0000 C CNN
 F 2 "" H 9050 3550 60  0000 C CNN
 F 3 "" H 9050 3550 60  0000 C CNN
 	1    9050 3550
-	1    0    0    -1  
+	-1   0    0    1   
 $EndComp
 $Comp
 L +5V #PWR229
@@ -2007,11 +2008,11 @@ F 3 "" H 4400 3600 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L DIODESCH D4
+L D_Schottky D4
 U 1 1 5412A9CE
 P 3350 3600
 F 0 "D4" H 3350 3700 40  0000 C CNN
-F 1 "DIODESCH" H 3350 3500 40  0000 C CNN
+F 1 "D_Schottky" H 3350 3500 40  0000 C CNN
 F 2 "" H 3350 3600 60  0000 C CNN
 F 3 "" H 3350 3600 60  0000 C CNN
 	1    3350 3600
@@ -2051,7 +2052,7 @@ F 3 "" H 3750 4000 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C69
+L C_Small C69
 U 1 1 5412B48A
 P 4200 3800
 F 0 "C69" H 4225 3850 30  0000 L CNN
@@ -2062,7 +2063,7 @@ F 3 "" H 4200 3800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C73
+L C_Small C73
 U 1 1 5412B65C
 P 4400 3800
 F 0 "C73" H 4425 3850 30  0000 L CNN
@@ -2086,7 +2087,7 @@ Connection ~ 1600 2600
 Wire Wire Line
 	3450 2400 4700 2400
 Wire Wire Line
-	3700 2900 3800 2900
+	3600 2900 3800 2900
 Wire Wire Line
 	3450 2550 3650 2550
 Wire Wire Line
@@ -2123,7 +2124,7 @@ Connection ~ 1600 1600
 Wire Wire Line
 	3450 1400 4700 1400
 Wire Wire Line
-	3700 1900 3800 1900
+	3600 1900 3800 1900
 Wire Wire Line
 	3450 1550 3650 1550
 Wire Wire Line
@@ -2162,7 +2163,7 @@ Connection ~ 5850 2400
 Wire Wire Line
 	7700 2200 8950 2200
 Wire Wire Line
-	7950 2700 8050 2700
+	7850 2700 8050 2700
 Wire Wire Line
 	7700 2350 7900 2350
 Wire Wire Line
@@ -2371,11 +2372,11 @@ Wire Wire Line
 	7300 3550 7750 3550
 Connection ~ 7500 3550
 Wire Wire Line
-	8250 3550 8850 3550
+	8250 3550 8900 3550
 Connection ~ 8450 3550
 Connection ~ 8700 3550
 Wire Wire Line
-	5350 4850 5350 4950
+	5350 4750 5350 4950
 Wire Wire Line
 	5600 4650 5600 4900
 Wire Wire Line
@@ -2385,13 +2386,13 @@ Wire Wire Line
 	5300 4350 5450 4350
 Connection ~ 5350 4350
 Wire Wire Line
-	5850 4350 5900 4350
+	5850 4350 6000 4350
 Wire Wire Line
-	6400 4350 7050 4350
+	6300 4350 7050 4350
 Wire Wire Line
 	5900 4600 6400 4600
 Wire Wire Line
-	6400 4600 6400 4350
+	6400 4350 6400 4700
 Connection ~ 6150 4600
 Connection ~ 6400 4350
 Wire Wire Line
@@ -2399,19 +2400,19 @@ Wire Wire Line
 Wire Wire Line
 	7050 4650 6700 4650
 Wire Wire Line
-	6700 4650 6700 4750
+	6700 4650 6700 4850
 Wire Wire Line
-	9250 3550 9350 3550
+	9200 3550 9350 3550
 Wire Wire Line
 	9350 3550 9350 4250
 Connection ~ 9350 4250
 Connection ~ 9550 4250
 Wire Wire Line
-	8300 4250 8750 4250
+	8300 4250 8850 4250
 Wire Wire Line
-	9250 4250 9850 4250
+	9150 4250 9850 4250
 Wire Wire Line
-	9850 4500 9250 4500
+	9150 4500 9850 4500
 Wire Wire Line
 	8300 4450 8750 4450
 Wire Wire Line
@@ -2423,13 +2424,13 @@ Wire Wire Line
 Connection ~ 9250 4500
 Connection ~ 8750 4500
 Wire Wire Line
-	8250 4100 8600 4100
+	8150 4100 8600 4100
 Wire Wire Line
 	8600 4100 8600 4250
 Connection ~ 8600 4250
 Connection ~ 6400 4600
 Wire Wire Line
-	6400 5100 6400 5350
+	6400 5000 6400 5350
 Wire Wire Line
 	6400 5350 8450 5350
 Wire Wire Line
@@ -2452,16 +2453,16 @@ Wire Notes Line
 Wire Notes Line
 	10250 4100 9800 4100
 Wire Wire Line
-	3250 5300 3250 5200
+	3250 5100 3250 5300
 Wire Wire Line
 	3250 5200 3550 5200
 Wire Wire Line
 	3550 5200 3550 5000
 Connection ~ 3250 4700
 Wire Wire Line
-	3550 3600 4400 3600
+	3500 3600 4400 3600
 Wire Wire Line
-	3100 3600 3150 3600
+	3100 3600 3200 3600
 Connection ~ 3550 3600
 Connection ~ 3750 3600
 $Comp
@@ -2497,7 +2498,7 @@ Wire Wire Line
 	4400 3600 4400 3700
 Connection ~ 4400 3600
 $Comp
-L Csmall C115
+L C_Small C115
 U 1 1 5413AECB
 P 5800 7350
 F 0 "C115" H 5825 7400 30  0000 L CNN
@@ -2508,7 +2509,7 @@ F 3 "" H 5800 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C118
+L C_Small C118
 U 1 1 5413AED1
 P 6000 7350
 F 0 "C118" H 6025 7400 30  0000 L CNN
@@ -2519,7 +2520,7 @@ F 3 "" H 6000 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C123
+L C_Small C123
 U 1 1 5413AED7
 P 6300 7350
 F 0 "C123" H 6325 7400 30  0000 L CNN
@@ -2530,7 +2531,7 @@ F 3 "" H 6300 7350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C125
+L C_Small C125
 U 1 1 5413AEDD
 P 6500 7350
 F 0 "C125" H 6525 7400 30  0000 L CNN
@@ -2591,7 +2592,7 @@ $EndComp
 Wire Wire Line
 	5800 7250 6500 7250
 $Comp
-L Csmall C43
+L C_Small C43
 U 1 1 5413CCC3
 P 800 6250
 F 0 "C43" H 825 6300 30  0000 L CNN
@@ -2602,7 +2603,7 @@ F 3 "" H 800 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C46
+L C_Small C46
 U 1 1 5413CCC9
 P 1000 6250
 F 0 "C46" H 1025 6300 30  0000 L CNN
@@ -2634,7 +2635,7 @@ Connection ~ 800  6150
 Text Notes 850  6100 0    39   ~ 0
 EEPROM
 $Comp
-L Csmall C51
+L C_Small C51
 U 1 1 5413DAEA
 P 1300 6250
 F 0 "C51" H 1325 6300 30  0000 L CNN
@@ -2645,7 +2646,7 @@ F 3 "" H 1300 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C56
+L C_Small C56
 U 1 1 5413DAF0
 P 1500 6250
 F 0 "C56" H 1525 6300 30  0000 L CNN
@@ -2667,7 +2668,7 @@ F 3 "" H 1400 6400 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C59
+L C_Small C59
 U 1 1 5413DAFC
 P 1800 6250
 F 0 "C59" H 1825 6300 30  0000 L CNN
@@ -2678,7 +2679,7 @@ F 3 "" H 1800 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C63
+L C_Small C63
 U 1 1 5413DB02
 P 2000 6250
 F 0 "C63" H 2025 6300 30  0000 L CNN
@@ -2689,7 +2690,7 @@ F 3 "" H 2000 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C66
+L C_Small C66
 U 1 1 5413DB08
 P 2300 6250
 F 0 "C66" H 2325 6300 30  0000 L CNN
@@ -2700,7 +2701,7 @@ F 3 "" H 2300 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C70
+L C_Small C70
 U 1 1 5413DB0E
 P 2500 6250
 F 0 "C70" H 2525 6300 30  0000 L CNN
@@ -2711,7 +2712,7 @@ F 3 "" H 2500 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C74
+L C_Small C74
 U 1 1 5413DB14
 P 2800 6250
 F 0 "C74" H 2825 6300 30  0000 L CNN
@@ -2722,7 +2723,7 @@ F 3 "" H 2800 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C77
+L C_Small C77
 U 1 1 5413DB1A
 P 3000 6250
 F 0 "C77" H 3025 6300 30  0000 L CNN
@@ -2733,7 +2734,7 @@ F 3 "" H 3000 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C80
+L C_Small C80
 U 1 1 5413DB20
 P 3300 6250
 F 0 "C80" H 3325 6300 30  0000 L CNN
@@ -2744,7 +2745,7 @@ F 3 "" H 3300 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C83
+L C_Small C83
 U 1 1 5413DB26
 P 3500 6250
 F 0 "C83" H 3525 6300 30  0000 L CNN
@@ -2755,7 +2756,7 @@ F 3 "" H 3500 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C86
+L C_Small C86
 U 1 1 5413DB2C
 P 3800 6250
 F 0 "C86" H 3825 6300 30  0000 L CNN
@@ -2766,7 +2767,7 @@ F 3 "" H 3800 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C89
+L C_Small C89
 U 1 1 5413DB32
 P 4000 6250
 F 0 "C89" H 4025 6300 30  0000 L CNN
@@ -2777,7 +2778,7 @@ F 3 "" H 4000 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C96
+L C_Small C96
 U 1 1 5413DB38
 P 4300 6250
 F 0 "C96" H 4325 6300 30  0000 L CNN
@@ -2788,7 +2789,7 @@ F 3 "" H 4300 6250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Csmall C99
+L C_Small C99
 U 1 1 5413DB3E
 P 4500 6250
 F 0 "C99" H 4525 6300 30  0000 L CNN
@@ -3020,26 +3021,26 @@ Text Notes 3750 3550 0    39   ~ 0
 SUPERCAP\nRTC for 2 hours\nwithout battery
 Connection ~ 3800 4700
 $Comp
-L DIODESCH D5
+L D_Schottky D5
 U 1 1 541462CE
 P 2200 4050
 F 0 "D5" H 2200 4150 40  0000 C CNN
-F 1 "DIODESCH" H 2200 3950 40  0000 C CNN
+F 1 "D_Schottky" H 2200 3950 40  0000 C CNN
 F 2 "" H 2200 4050 60  0000 C CNN
 F 3 "" H 2200 4050 60  0000 C CNN
 	1    2200 4050
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
-L DIODESCH D3
+L D_Schottky D3
 U 1 1 541462EE
 P 2200 3750
 F 0 "D3" H 2200 3850 40  0000 C CNN
-F 1 "DIODESCH" H 2200 3650 40  0000 C CNN
+F 1 "D_Schottky" H 2200 3650 40  0000 C CNN
 F 2 "" H 2200 3750 60  0000 C CNN
 F 3 "" H 2200 3750 60  0000 C CNN
 	1    2200 3750
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	2400 3750 2400 4050
@@ -3110,32 +3111,32 @@ Wire Wire Line
 Wire Wire Line
 	1800 3700 1800 4050
 Wire Wire Line
-	1750 4050 2000 4050
+	1650 4050 2050 4050
 Connection ~ 1800 4050
 Wire Wire Line
 	2000 3750 2000 3400
 Connection ~ 2000 3400
 $Comp
-L DIODESCH D2
+L D_Schottky D2
 U 1 1 54152FCC
 P 2250 5350
 F 0 "D2" H 2250 5450 40  0000 C CNN
-F 1 "DIODESCH" H 2250 5250 40  0000 C CNN
+F 1 "D_Schottky" H 2250 5250 40  0000 C CNN
 F 2 "" H 2250 5350 60  0000 C CNN
 F 3 "" H 2250 5350 60  0000 C CNN
 	1    2250 5350
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
-L DIODESCH D1
+L D_Schottky D1
 U 1 1 54152FD2
 P 2250 5050
 F 0 "D1" H 2250 5150 40  0000 C CNN
-F 1 "DIODESCH" H 2250 4950 40  0000 C CNN
+F 1 "D_Schottky" H 2250 4950 40  0000 C CNN
 F 2 "" H 2250 5050 60  0000 C CNN
 F 3 "" H 2250 5050 60  0000 C CNN
 	1    2250 5050
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	2450 5050 2450 5350
@@ -3171,7 +3172,7 @@ Wire Wire Line
 Wire Wire Line
 	1850 5000 1850 5350
 Wire Wire Line
-	1800 5350 2050 5350
+	1700 5350 2100 5350
 Connection ~ 1850 5350
 Wire Wire Line
 	2050 5050 2050 4700
@@ -3320,4 +3321,87 @@ F 3 "" H 2450 3900 60  0000 C CNN
 	1    2450 3900
 	0    1    1    0   
 $EndComp
+Wire Wire Line
+	2400 3750 2350 3750
+Wire Wire Line
+	2050 3750 2000 3750
+Wire Wire Line
+	2400 4050 2350 4050
+Wire Wire Line
+	1400 5350 1300 5350
+Wire Wire Line
+	2100 5050 2050 5050
+Wire Wire Line
+	2450 5050 2400 5050
+Wire Wire Line
+	2450 5350 2400 5350
+Connection ~ 3250 5200
+Wire Wire Line
+	3250 4700 3250 4800
+Wire Wire Line
+	3300 2900 3200 2900
+Wire Wire Line
+	3800 2900 3800 2800
+Wire Wire Line
+	3800 2500 3800 2400
+Wire Wire Line
+	3800 1900 3800 1800
+Wire Wire Line
+	3800 1500 3800 1400
+Wire Wire Line
+	3300 1900 3200 1900
+Wire Wire Line
+	3750 3650 3750 3600
+Wire Wire Line
+	3750 3950 3750 4000
+Wire Wire Line
+	5350 4450 5350 4350
+Wire Wire Line
+	5900 4350 5900 4650
+Connection ~ 5900 4350
+Connection ~ 5900 4600
+Wire Wire Line
+	5900 4950 5900 5000
+Wire Wire Line
+	6150 5000 6150 4950
+Wire Wire Line
+	6150 4650 6150 4600
+Wire Wire Line
+	6950 4750 6950 4850
+Wire Wire Line
+	6950 5150 6950 5250
+Wire Wire Line
+	6700 5150 6700 5250
+Wire Wire Line
+	6400 3600 6400 3550
+Wire Wire Line
+	6650 3600 6650 3550
+Wire Wire Line
+	6400 3900 6400 3950
+Wire Wire Line
+	6650 3950 6650 3900
+Wire Wire Line
+	7500 3900 7500 3950
+Wire Wire Line
+	7500 3600 7500 3550
+Wire Wire Line
+	8450 3600 8450 3550
+Wire Wire Line
+	8700 3600 8700 3550
+Wire Wire Line
+	8450 3900 8450 3950
+Wire Wire Line
+	7850 4100 7750 4100
+Wire Wire Line
+	8850 4500 8750 4500
+Wire Wire Line
+	8700 3900 8700 3950
+Wire Wire Line
+	7550 2700 7450 2700
+Wire Wire Line
+	8050 2700 8050 2600
+Wire Wire Line
+	8050 2300 8050 2200
+Wire Wire Line
+	1350 4050 1250 4050
 $EndSCHEMATC
