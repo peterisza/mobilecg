@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:holter-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -50,7 +49,6 @@ LIBS:hdmi
 LIBS:usbulc6-2m6
 LIBS:rgbled
 LIBS:lis2dh12
-LIBS:holter-cache
 EELAYER 25 0
 EELAYER END
 $Descr A3 16535 11693
@@ -3835,8 +3833,6 @@ Wire Wire Line
 	13150 1950 13900 1950
 Wire Wire Line
 	13150 1350 13900 1350
-Entry Wire Line
-	14950 -1400 15050 -1300
 $Comp
 L FILTER FB9
 U 1 1 54158927
