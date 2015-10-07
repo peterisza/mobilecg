@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:holter-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -3897,7 +3896,7 @@ U 1 1 5415B9DB
 P 10300 10650
 F 0 "FB1" H 10300 10800 60  0000 C CNN
 F 1 "MPZ1608D101B (100Ohm @ 100MHz, 1A, 0603)" H 10300 10550 20  0000 C CNN
-F 2 "" H 10300 10650 60  0001 C CNN
+F 2 "Capacitors_SMD:C_0603" H 10300 10650 60  0001 C CNN
 F 3 "" H 10300 10650 60  0000 C CNN
 	1    10300 10650
 	1    0    0    1   
