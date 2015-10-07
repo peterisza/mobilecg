@@ -3058,35 +3058,12 @@ F 3 "" H 6550 7200 60  0000 C CNN
 	1    6550 7200
 	1    0    0    -1  
 $EndComp
-$Comp
-L GND #PWR0104
-U 1 1 54109C5D
-P 6750 8250
-F 0 "#PWR0104" H 6750 8250 30  0001 C CNN
-F 1 "GND" H 6750 8180 30  0001 C CNN
-F 2 "" H 6750 8250 60  0000 C CNN
-F 3 "" H 6750 8250 60  0000 C CNN
-	1    6750 8250
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	6950 7950 6700 7950
-Wire Wire Line
-	6950 6850 6950 7950
 Wire Wire Line
 	6950 6850 7600 6850
 Wire Wire Line
 	6950 6700 7000 6700
 Wire Wire Line
-	7000 6700 7000 8050
-Wire Wire Line
-	7000 8050 6700 8050
-Wire Wire Line
 	7600 7050 7050 7050
-Wire Wire Line
-	7050 7050 7050 8150
-Wire Wire Line
-	7050 8150 6700 8150
 $Comp
 L R R30
 U 1 1 5410B778
@@ -3101,12 +3078,9 @@ $EndComp
 Connection ~ 6950 6850
 Wire Wire Line
 	6750 7350 7050 7350
-Connection ~ 7050 7350
 Wire Wire Line
 	7600 6750 7000 6750
 Connection ~ 7000 6750
-Wire Wire Line
-	6700 8250 6750 8250
 $Comp
 L R R31
 U 1 1 54110D41
@@ -3131,10 +3105,8 @@ F 3 "" H 6600 7650 30  0000 C CNN
 $EndComp
 Wire Wire Line
 	6750 7500 7000 7500
-Connection ~ 7000 7500
 Wire Wire Line
 	6750 7650 6950 7650
-Connection ~ 6950 7650
 Connection ~ 8350 5300
 Text GLabel 7600 6100 0    39   BiDi ~ 0
 MCU_USB_DP
@@ -4592,17 +4564,6 @@ F 3 "" H 6700 1400 60  0000 C CNN
 	1    6700 1400
 	1    0    0    -1  
 $EndComp
-$Comp
-L CONN_01X04 P1
-U 1 1 54E7C69D
-P 6500 8100
-F 0 "P1" H 6500 8350 50  0000 C CNN
-F 1 "EE_PROG" V 6600 8100 50  0000 C CNN
-F 2 "" H 6500 8100 60  0001 C CNN
-F 3 "" H 6500 8100 60  0000 C CNN
-	1    6500 8100
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
 	13750 1400 13750 1350
 Wire Wire Line
@@ -4848,4 +4809,10 @@ F 3 "" H 6950 9300 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	6300 9150 6950 9150
+Wire Wire Line
+	7000 7500 7000 6700
+Wire Wire Line
+	7050 7350 7050 7050
+Wire Wire Line
+	6950 7650 6950 6850
 $EndSCHEMATC
