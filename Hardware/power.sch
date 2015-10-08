@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:holter-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -49,6 +50,7 @@ LIBS:hdmi
 LIBS:usbulc6-2m6
 LIBS:rgbled
 LIBS:lis2dh12
+LIBS:holter-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -3133,6 +3135,17 @@ F 1 "10uF" H 9425 2350 30  0000 L CNN
 F 2 "Capacitors_SMD:C_0603" H 9400 2400 60  0001 C CNN
 F 3 "" H 9400 2400 60  0000 C CNN
 	1    9400 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L PWR_FLAG #FLG0274
+U 1 1 56189D0A
+P 9400 2200
+F 0 "#FLG0274" H 9400 2295 30  0001 C CNN
+F 1 "PWR_FLAG" H 9400 2380 30  0000 C CNN
+F 2 "" H 9400 2200 60  0000 C CNN
+F 3 "" H 9400 2200 60  0000 C CNN
+	1    9400 2200
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
