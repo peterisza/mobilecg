@@ -2296,17 +2296,6 @@ F 3 "" H 5800 6700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_01X01 P3
-U 1 1 54E8133C
-P 10050 4250
-F 0 "P3" H 10050 4350 50  0000 C CNN
-F 1 "BAT+" V 10150 4250 50  0000 C CNN
-F 2 "" H 10050 4250 60  0001 C CNN
-F 3 "" H 10050 4250 60  0000 C CNN
-	1    10050 4250
-	1    0    0    -1  
-$EndComp
-$Comp
 L CONN_01X01 P4
 U 1 1 54E815FD
 P 10050 4500
@@ -2828,8 +2817,6 @@ Connection ~ 6650 3550
 Wire Wire Line
 	7300 3550 7750 3550
 Connection ~ 7500 3550
-Wire Wire Line
-	8250 3550 9350 3550
 Connection ~ 8450 3550
 Connection ~ 8700 3550
 Wire Wire Line
@@ -2865,7 +2852,7 @@ Connection ~ 9550 4250
 Wire Wire Line
 	8300 4250 8850 4250
 Wire Wire Line
-	9150 4250 9850 4250
+	9150 4250 10150 4250
 Wire Wire Line
 	9150 4500 9850 4500
 Wire Wire Line
@@ -2993,7 +2980,7 @@ Wire Wire Line
 Wire Wire Line
 	8450 3600 8450 3550
 Wire Wire Line
-	8700 3600 8700 3550
+	8700 3550 8700 3600
 Wire Wire Line
 	8450 3900 8450 3950
 Wire Wire Line
@@ -3135,4 +3122,21 @@ F 3 "" H 9400 2200 60  0000 C CNN
 	1    9400 2200
 	1    0    0    -1  
 $EndComp
+$Comp
+L D_Schottky D2
+U 1 1 561FEE35
+P 9050 3550
+F 0 "D2" H 9050 3650 40  0000 C CNN
+F 1 "D_Schottky" H 9050 3450 40  0000 C CNN
+F 2 "Diodes_SMD:SOD-123" H 9050 3550 60  0001 C CNN
+F 3 "" H 9050 3550 60  0000 C CNN
+	1    9050 3550
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	8250 3550 8900 3550
+Wire Wire Line
+	9200 3550 9350 3550
+Text Label 10150 4250 2    60   ~ 0
+BAT+
 $EndSCHEMATC
