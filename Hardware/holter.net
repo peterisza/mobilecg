@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/isza/Desktop/MobilECG/mobilecg-ii/Hardware/holter.sch)
-    (date "2015 October 16, Friday 01:19:05")
+    (date "2015 October 16, Friday 04:04:16")
     (tool "Eeschema (2015-07-12 BZR 5928)-product")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -652,7 +652,7 @@
       (tstamp 5411FD86))
     (comp (ref CONN1)
       (value HDMI)
-      (footprint Footprints:HDMI10029449)
+      (footprint Footprints:MC34931)
       (libsource (lib hdmi) (part HDMI))
       (sheetpath (names /) (tstamps /))
       (tstamp 5410EC2D))
