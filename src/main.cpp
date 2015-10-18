@@ -47,6 +47,7 @@
 
 #include <scmRTOS.h>
 #include "pin.h"
+#include "spi.h"
 
 //---------------------------------------------------------------------------
 //
@@ -103,11 +104,8 @@ namespace OS
     template<> 
     OS_PROCESS void TProc2::exec()
     {
-        for(;;)
-        {
-            TimerEvent.wait();
-           // LED1.Off();
-        }
+        sleep(300);
+		TSpiMaster spi(5120000, TSpiMaster::CLK_IDDLE_HIGH, TSpiMaster::TOGGLE_ON_START, TSpiMaster::MSB_FIRST, TSpiMaster::WRITE_ONLY, true);
     }
 
     template<> 
