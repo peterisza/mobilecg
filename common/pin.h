@@ -113,40 +113,46 @@ struct Pin
 	enum { setmask = 1UL << (pin_no + 16) };
 	enum { readmask = 1UL << pin_no };
 
-	void On()
+	void on()
 	{
 		activestate == 'L' ? GPxCLR = setmask : GPxSET = setmask;
 	}
-	void Off()
+	void off()
 	{
 		activestate == 'L' ? GPxSET = setmask : GPxCLR = setmask;
 	}
-	void Cpl(){ GPxDAT ^= setmask; }
-	void Mode(direction dir)
+	void set(bool state){
+		if (state)
+			on();
+		else
+			off();
+	}
+	void cpl(){ GPxDAT ^= setmask; }
+	void mode(direction dir)
 	{
 		dir == OUTPUT ? GPxDAT |= cfgmask : GPxDAT &= ~cfgmask;
 	}
-	void Direct(direction dir)
+	void direct(direction dir)
 	{
 		dir == OUTPUT ? GPxDAT |= cfgmask : GPxDAT &= ~cfgmask;
 	}
-	void PullUp(on_off on)
+	void pullUp(on_off enabled)
 	{
-		on ? GPxPAR |= readmask : GPxPAR &= ~readmask;
+		enabled ? GPxPAR |= readmask : GPxPAR &= ~readmask;
 	}
 
-	void Alternate(on_off on)
+	void alternate(on_off enabled)
 	{
-		on ? GPxCON |= altmask : GPxPAR &= ~altmask;
+		enabled ? GPxCON |= altmask : GPxPAR &= ~altmask;
 	}
 
-	int Latched()
+	int latched()
 	{
 		int ret = GPxDAT & setmask;
 		return activestate == 'L' ? !ret : ret;
 	}
 
-	int Signalled()
+	int signalled()
 	{
 		int ret = GPxDAT & readmask;
 		return activestate == 'L' ? !ret : ret;

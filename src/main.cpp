@@ -47,8 +47,9 @@
 
 #include <scmRTOS.h>
 #include "pin.h"
-#include "spi.h"
-
+#include "display.hpp"
+#include <cstring>
+#include "logo.h"
 //---------------------------------------------------------------------------
 //
 //      Process types
@@ -79,7 +80,7 @@ int main()
 {
     // configure IO pins
 	//LED0.Alternate(OFF);
-	LED0.Direct(OUTPUT);
+	LED0.direct(OUTPUT);
 //	LED0.On();
 //	LED1.Direct(OUTPUT);
 //	LED1.Off();
@@ -88,6 +89,10 @@ int main()
     // run OS
     OS::run();
 }
+
+
+TDisplay<0,3,0,1,0,2,0,0> display;
+char fb[128*64/8];
 
 namespace OS 
 {
@@ -104,19 +109,46 @@ namespace OS
     template<> 
     OS_PROCESS void TProc2::exec()
     {
-        sleep(300);
-		TSpiMaster spi(5120000, TSpiMaster::CLK_IDDLE_HIGH, TSpiMaster::TOGGLE_ON_START, TSpiMaster::MSB_FIRST, TSpiMaster::WRITE_ONLY, true);
-    }
+		sleep(10);
+		display.init();
+		memset(fb,0,sizeof(fb));
+		//memset(fb,0xFF,sizeof(fb)/2);
+		#define SET_PIXEL(x, y, val) (fb[x + (y/8)*128] |= val << (y & 7));
+		
+		for (int r=0; r<64; r++){
+			for (int c=0; c<128; c++){
+				SET_PIXEL(c, r, logo[c+r*128]);
+			}
+		}
+		/*
+		for (int r=0; r<64; r++){
+			SET_PIXEL(r,r,1);
+		}*/
+		
+		
+		display.sendFramebuffer(fb);
+		
+		bool inv=false;
+		for(;;){
+			sleep(500);
+			inv = !inv;
+			display.invert(inv);
+		}
+		
+	}
 
     template<> 
     OS_PROCESS void TProc3::exec()
     {
+
         for(;;)
         {
+			sleep(30);
+			LED0.off();
+			
             sleep(30);
-            LED0.On();
-            sleep(30);
-            LED0.Off();
+            LED0.on();
+   
             //ef.signal();
         }
     }
