@@ -91,7 +91,7 @@ int main()
 }
 
 
-TDisplay<0,3,0,1,0,2,0,0> display;
+TDisplay<0,2,0,0> display;
 char fb[128*64/8];
 
 namespace OS 
@@ -125,8 +125,14 @@ namespace OS
 			SET_PIXEL(r,r,1);
 		}*/
 		
+		bool ledOn=true;
+		for (;;){
+			LED0.set(ledOn);
+			ledOn=!ledOn;
 		
-		display.sendFramebuffer(fb);
+			for (int a=0; a<100; a++)
+				display.sendFramebuffer(fb);
+		}
 		
 		bool inv=false;
 		for(;;){
@@ -144,10 +150,10 @@ namespace OS
         for(;;)
         {
 			sleep(30);
-			LED0.off();
+			//LED0.off();
 			
             sleep(30);
-            LED0.on();
+            //LED0.on();
    
             //ef.signal();
         }

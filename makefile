@@ -117,7 +117,8 @@
 	CXXFLAGS	+= -Winline
 	CXXFLAGS	+= -Wcast-align -Wpointer-arith
 	CXXFLAGS	+= -Wshadow -Wcast-qual -Wcast-align -pedantic
-
+	CXXFLAGS    += -fno-use-cxa-atexit
+	
 	LD_FLAGS	= -mcpu=$(MCU)
 	LD_FLAGS	+= -nostartfiles 
 	LD_FLAGS	+= -Wl,-Map="$(MAP)",--cref

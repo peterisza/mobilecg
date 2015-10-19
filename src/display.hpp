@@ -4,55 +4,59 @@
 #include <scmRTOS.h>
 #include "pin.h"
 #include "displayRegs.h"
+#include "spi.h"
 
-template <int portMosi, int pinMosi, int portSck, int pinSck, int portReset, int pinReset, int portCS, int pinCS> class TDisplay{
+template <int portReset, int pinReset, int portCS, int pinCS> class TDisplay{
 	public:
 		TDisplay(){
-			mosi.direct(OUTPUT);
-			sck.direct(OUTPUT);
-			reset.direct(OUTPUT);
-			cs.direct(OUTPUT);
-			
-			reset.on();
-			cs.on();
-			sck.on();
+			ioInit();
+			spi.init(5120000, TSpiMaster::CLK_IDDLE_HIGH, TSpiMaster::TOGGLE_ON_START, TSpiMaster::MSB_FIRST, TSpiMaster::WRITE_ONLY, false);
 		}
 	private:
 		static const int WIDTH = 128;
 		static const int HEIGHT = 64;
 		enum TTransferType {DATA, COMMAND};
 		
-		
-		Pin<portMosi, pinMosi> mosi;
-		Pin<portSck, pinSck> sck;
+		TSpiMaster spi;
+			
 		Pin<portReset, pinReset> reset;
 		Pin<portCS, pinCS> cs;
 		
-		void transfer(uint8_t byte, TTransferType type){
-			sck.off();
-			mosi.set(type == DATA);
-			sck.on();
+		void ioInit(){
+			reset.direct(OUTPUT);
+			cs.direct(OUTPUT);
 			
-			for (int bit=7; bit>=0; bit--){
-				sck.off();
-				mosi.set(((byte >> bit) & 1) != 0);
-				sck.on();
-			}
+			reset.on();
+			cs.on();
 		}
-		
+
 		void command(uint8_t byte){
-			transfer(byte, COMMAND);
-		}
-		
-		void data(uint8_t byte){
-			transfer(byte, DATA);
-		}
-		
-		void start(){
 			cs.off();
+			spi.send(byte>>1);
+			spi.send(byte<<7);
+			spi.waitTx();
+			cs.on();
 		}
+	
 		
-		void end(){
+		void burstFramebuffer(char *data){
+			cs.off();
+			const int size=WIDTH*HEIGHT>>3;
+			
+				
+			for (int i = 0; i < size; i+=8){
+				spi.send((data[i]>>1) | 0x80);
+				spi.send((data[i]<<7) | 0x40 | (data[i+1]>>2));
+				spi.send((data[i+1]<<6) | 0x20 | (data[i+2]>>3));
+				spi.send((data[i+2]<<5) | 0x10 | (data[i+3]>>4));
+				spi.send((data[i+3]<<4) | 0x08 | (data[i+4]>>5));
+				spi.send((data[i+4]<<3) | 0x04 | (data[i+5]>>6));
+				spi.send((data[i+5]<<2) | 0x02 | (data[i+6]>>7));
+				spi.send((data[i+6]<<1) | 0x01);
+				spi.send(data[i+7]);
+			}
+			spi.waitTx();
+			
 			cs.on();
 		}
 		
@@ -64,7 +68,6 @@ template <int portMosi, int pinMosi, int portSck, int pinSck, int portReset, int
 			reset.on();
 			OS::sleep(2);
 			
-			start();
 			command(SSD1306_SETDISPLAYCLOCKDIV);
 			command(0x80);
 			command(SSD1306_SETMULTIPLEX); 
@@ -91,23 +94,18 @@ template <int portMosi, int pinMosi, int portSck, int pinSck, int portReset, int
 		    command(SSD1306_NORMALDISPLAY);
 			
 			command(SSD1306_DISPLAYON);
-			
-			
-			end();
-		
 		}
 		
-		void invert(bool invert){
-			start();
-			if (invert)
+		void invert(bool enabled){
+			if (enabled)
 				command(SSD1306_INVERTDISPLAY);
 			else
 				command(SSD1306_NORMALDISPLAY);
-			end();
 		}
 		
-		void sendFramebuffer(char *fb){
-			start();
+		
+		
+		void sendFramebuffer(char *data){
 			command(SSD1306_COLUMNADDR);
 			command(0);
 			command(WIDTH-1);
@@ -115,11 +113,7 @@ template <int portMosi, int pinMosi, int portSck, int pinSck, int portReset, int
 			command(0);
 			command(7);
 			
-			const int cnt=((WIDTH*HEIGHT) >> 3);
-			for (int a=0; a <cnt; a++){
-				data(fb[a]);
-			}
-			end();
+			burstFramebuffer(data);
 		}
 };
 

@@ -46,8 +46,6 @@
 
 #include "device.h"
 
-#if defined(ADUC7060) || defined(ADUC7061)
-
 #define INT_OSC         32768UL
 #define PLL_CLK         (10240000UL)
 #define SLCLK           INT_OSC
@@ -68,31 +66,3 @@ extern "C" void __low_level_init(void)
 
 	IRQEN = TIMER0_BIT;
 }
-
-#else // defined(ADUC7060) || defined(ADUC7061)
-
-#define INT_OSC         32768UL
-#define PLL_CLK         (INT_OSC * 1376)
-#define SLCLK           (INT_OSC)
-#define ECLK            (PLL_CLK)
-
-#define RTOS_TICK_RATE  1000        // Hz
-#define TEST_TIMER_RATE 3500        // Hz
-
-extern "C" void __low_level_init(void)
-{
-    // Start PLL
-    PLLKEY1 = 0xAA;
-    PLLCON = PLL_INTERNAL_CLK | CLK_INT_PLL;
-    PLLKEY2 = 0x55;
-
-    POWKEY1 = 0x01;
-    POWCON = MODE_ACTIVE | CLK_DIV_1;
-    POWKEY2 = 0xF4;
-
-    T0LD = ECLK / RTOS_TICK_RATE - 1;
-    T0CON = T0_ENABLED | T0_PERIODIC | T0_DIV_1;
-    IRQEN = RTOS_TIMER_BIT;
-}
-
-#endif // defined(ADUC7060) || defined(ADUC7061)
