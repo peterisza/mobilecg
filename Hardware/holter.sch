@@ -3136,7 +3136,7 @@ U 1 1 5410EC2D
 P 8350 10200
 F 0 "CONN1" H 8500 11300 39  0000 C CNN
 F 1 "HDMI" H 8500 11350 39  0000 C CNN
-F 2 "Footprints:MC34931" H 8350 10200 39  0001 C CNN
+F 2 "Footprints:2013978" H 8350 10200 39  0001 C CNN
 F 3 "" H 8350 10200 39  0000 C CNN
 	1    8350 10200
 	1    0    0    -1  
@@ -3526,8 +3526,6 @@ Text GLabel 3200 1450 1    39   Output ~ 0
 R_PWM
 Text GLabel 3100 1450 1    39   Output ~ 0
 G_PWM
-Text GLabel 2900 1450 1    39   Output ~ 0
-B_PWM
 $Comp
 L +2.8VD #PWR0129
 U 1 1 54120635
@@ -4480,10 +4478,6 @@ F 3 "" H 6200 9100 60  0000 C CNN
 	1    6200 9100
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6700 9700 7000 9700
-Text Label 6700 9700 0    60   ~ 0
-BAT+
 $Comp
 L Crystal_4PAD Y1
 U 1 1 56202E0A
@@ -4646,4 +4640,9 @@ F 3 "" H 7000 10200 60  0000 C CNN
 	1    7000 10200
 	0    1    1    0   
 $EndComp
+Wire Wire Line
+	7000 9700 6700 9700
+NoConn ~ 2900 1450
+Text GLabel 6700 9700 0    60   Input ~ 0
+BAT+
 $EndSCHEMATC
