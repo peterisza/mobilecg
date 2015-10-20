@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/isza/Desktop/MobilECG/mobilecg-ii/Hardware/holter.sch)
-    (date "2015 October 19, Monday 21:32:51")
+    (date "2015 October 20, Tuesday 02:45:38")
     (tool "Eeschema (2015-07-12 BZR 5928)-product")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -1392,7 +1392,7 @@
       (tstamp 54113814))
     (comp (ref TH1)
       (value "NTC, 10k")
-      (footprint Resistors_ThroughHole:Resistor_Horizontal_RM10mm)
+      (footprint Capacitors_ThroughHole:C_Disc_D3_P2.5)
       (libsource (lib device) (part THERMISTOR))
       (sheetpath (names /Power/) (tstamps /541008E4/))
       (tstamp 54114B13))
