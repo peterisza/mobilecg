@@ -4682,5 +4682,6 @@ Wire Wire Line
 Wire Wire Line
 	10100 4500 9600 4500
 Connection ~ 10100 3050
-NoConn ~ 2900 1450
+Text GLabel 2900 1450 1    39   Input ~ 0
+EN_3V3
 $EndSCHEMATC
