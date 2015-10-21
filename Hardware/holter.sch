@@ -50,12 +50,13 @@ LIBS:hdmi
 LIBS:usbulc6-2m6
 LIBS:rgbled
 LIBS:lis2dh12
+LIBS:usb_power_module
 LIBS:holter-cache
 EELAYER 25 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
-Sheet 1 2
+Sheet 1 3
 Title "MobilECG II"
 Date "sept 1, 2014"
 Rev "1.0"
@@ -1408,7 +1409,6 @@ $EndComp
 NoConn ~ 7150 2650
 NoConn ~ 7150 2750
 NoConn ~ 7150 2850
-NoConn ~ 7150 3050
 $Comp
 L C_Small C10
 U 1 1 5408EC39
@@ -4298,7 +4298,7 @@ F 1 "100k EXB2HV104JV" V 3300 6000 50  0000 C CNN
 F 2 "Footprints:EXB2HV" H 3850 6000 60  0001 C CNN
 F 3 "" H 3850 6000 60  0000 C CNN
 	1    3850 6000
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
 L R_PACK8 RP1
@@ -4684,4 +4684,27 @@ Wire Wire Line
 Connection ~ 10100 3050
 Text GLabel 2900 1450 1    39   Input ~ 0
 EN_3V3
+NoConn ~ 7150 3050
+$Comp
+L CONN_01X01 P3
+U 1 1 5627B2F6
+P 6400 5500
+F 0 "P3" H 6400 5600 50  0000 C CNN
+F 1 "SCREW" V 6500 5500 50  0000 C CNN
+F 2 "Footprints:M2_SCREW" H 6400 5500 60  0001 C CNN
+F 3 "" H 6400 5500 60  0000 C CNN
+	1    6400 5500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR0170
+U 1 1 5627B8D3
+P 6400 5700
+F 0 "#PWR0170" H 6400 5700 30  0001 C CNN
+F 1 "GND" H 6400 5630 30  0001 C CNN
+F 2 "" H 6400 5700 60  0000 C CNN
+F 3 "" H 6400 5700 60  0000 C CNN
+	1    6400 5700
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
