@@ -39,7 +39,7 @@ template <int portReset, int pinReset, int portCS, int pinCS> class TDisplay{
 		}
 	
 		
-		void burstFramebuffer(char *data){
+		void burstFramebuffer(const uint8_t *data){
 			cs.off();
 			const int size=WIDTH*HEIGHT>>3;
 			
@@ -105,7 +105,7 @@ template <int portReset, int pinReset, int portCS, int pinCS> class TDisplay{
 		
 		
 		
-		void sendFramebuffer(char *data){
+		void sendFramebuffer(const uint8_t *data){
 			command(SSD1306_COLUMNADDR);
 			command(0);
 			command(WIDTH-1);

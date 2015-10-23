@@ -50,6 +50,8 @@
 #include "display.hpp"
 #include <cstring>
 #include "logo.h"
+#include "framebuffer.hpp"
+#include "TextRenderer.hpp"
 //---------------------------------------------------------------------------
 //
 //      Process types
@@ -92,7 +94,7 @@ int main()
 
 
 TDisplay<0,2,0,0> display;
-char fb[128*64/8];
+Framebuffer fb;
 
 namespace OS 
 {
@@ -111,15 +113,24 @@ namespace OS
     {
 		sleep(10);
 		display.init();
-		memset(fb,0,sizeof(fb));
+		//memset(fb0,0,sizeof(fb0));
+		//memset(fb1,0,sizeof(fb1));
 		//memset(fb,0xFF,sizeof(fb)/2);
-		#define SET_PIXEL(x, y, val) (fb[x + (y/8)*128] |= val << (y & 7));
+		//#define SET_PIXEL(fb, x, y, val) (fb[x + ((y & 0xF8)<<4)] |= val << (y & 7));
+		
 		
 		for (int r=0; r<64; r++){
 			for (int c=0; c<128; c++){
-				SET_PIXEL(c, r, logo[c+r*128]);
+				fb.setPixel(c,r, logo[c+r*128]);
+				//SET_PIXEL(fb0, c, r, logo[c+r*128]);
 			}
 		}
+		
+		TextRenderer tr(fb);
+		tr.render(10,10,"Pina");
+		
+		
+	//	memset(fb0+128, 0xFF, 1);
 		/*
 		for (int r=0; r<64; r++){
 			SET_PIXEL(r,r,1);
@@ -131,7 +142,7 @@ namespace OS
 			ledOn=!ledOn;
 		
 			for (int a=0; a<100; a++)
-				display.sendFramebuffer(fb);
+				display.sendFramebuffer(fb.getImage());
 		}
 		
 		bool inv=false;
