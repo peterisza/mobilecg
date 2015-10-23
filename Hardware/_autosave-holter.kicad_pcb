@@ -1712,7 +1712,7 @@
   )
 
   (module Capacitors_SMD:C_0603 (layer F.Cu) (tedit 5415D631) (tstamp 561CA9CD)
-    (at 77.5 76.8 90)
+    (at 65.5 89.375 90)
     (descr "Capacitor SMD 0603, reflow soldering, AVX (see smccp.pdf)")
     (tags "capacitor 0603")
     (path /541008E4/561711E9)
@@ -3075,7 +3075,7 @@
   )
 
   (module Capacitors_SMD:C_0603 (layer F.Cu) (tedit 5415D631) (tstamp 561CAC01)
-    (at 88.9 75.9)
+    (at 85.8 74.525)
     (descr "Capacitor SMD 0603, reflow soldering, AVX (see smccp.pdf)")
     (tags "capacitor 0603")
     (path /541008E4/5410D17B)
@@ -8327,7 +8327,7 @@
   )
 
   (module Footprints:RGY16 (layer F.Cu) (tedit 56202EF3) (tstamp 56204733)
-    (at 84.8 72.625)
+    (at 78.425 68.625)
     (path /540F3BE0)
     (fp_text reference U1 (at 0 3.52) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
