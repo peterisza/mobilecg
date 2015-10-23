@@ -138,7 +138,7 @@ namespace OS
    		 	//tr.render(10,10,"Pina "+std::to_string(n)+"   ");
 			n++;
 			
-			tr.printf(10,10,"Pina %d", n);
+			tr.printf(10,10,"Pina %d\nhaha", n);
 			display.sendFramebuffer(fb.getImage());
             //ef.signal();
         }

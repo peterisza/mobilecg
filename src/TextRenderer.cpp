@@ -17,14 +17,22 @@ void TextRenderer::setFont(const Font *_font){
 	charImage=Image(NULL, font->w, font->h, font->bitOrder, font->xdir, font->ydir);
 }
 
-void TextRenderer::setSpacing(uint32_t _hSpacing){
+void TextRenderer::setSpacing(uint32_t _hSpacing, uint32_t _vSpacing){
 	this->hSpacing = _hSpacing;
+	this->vSpacing = _vSpacing;
 }
 
 
 void TextRenderer::render(uint32_t x, uint32_t y, const char *str){
+	uint32_t startX=x;
 	
 	for (int c = 0; str[c]; c++){
+		if (str[c]=='\n'){
+			y += font->h + vSpacing;
+			x = startX;
+			continue;
+		}
+		
 		charImage.data = &font->data[font->bytesPerChar * str[c]];
 		fb -> drawImage(x, y, charImage);
 		
