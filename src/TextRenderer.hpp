@@ -16,8 +16,8 @@ class TextRenderer{
 		void setFont(Font *_font);
 		void setSpacing(uint32_t _hSpacing);
 		
-		void render(uint32_t x, uint32_t y, const std::string &str);
 		void render(uint32_t x, uint32_t y, const char *str);
+		void printf(uint32_t x, uint32_t y, const char *format, ...);
 };
 
 #endif

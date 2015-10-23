@@ -1,6 +1,8 @@
 #include "TextRenderer.hpp"
 #include "font5x8.hpp"
 #include <cstring>
+#include <stdarg.h>
+#include "printf.hpp"
 #include "image.hpp"
 
 TextRenderer::TextRenderer(Framebuffer &_fb){
@@ -19,9 +21,6 @@ void TextRenderer::setSpacing(uint32_t _hSpacing){
 	this->hSpacing = _hSpacing;
 }
 
-void TextRenderer::render(uint32_t x, uint32_t y, const std::string &str){
-	render(x,y,str.c_str());
-}
 
 void TextRenderer::render(uint32_t x, uint32_t y, const char *str){
 	
@@ -31,4 +30,15 @@ void TextRenderer::render(uint32_t x, uint32_t y, const char *str){
 		
 		x += font->w+hSpacing;
 	}
+}
+
+void TextRenderer::printf(uint32_t x, uint32_t y, const char *format, ...){
+	char buffer[64];
+	
+	va_list vl;
+	va_start(vl, format);
+	vsnprintf(buffer, sizeof(buffer), format, vl);
+	va_end(vl);
+	
+	render(x,y,buffer);
 }

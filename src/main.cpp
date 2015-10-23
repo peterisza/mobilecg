@@ -52,7 +52,7 @@
 #include "logo.h"
 #include "framebuffer.hpp"
 #include "TextRenderer.hpp"
-#include "UART.hpp"
+#include "printf.hpp"
 #include <string>
 
 //---------------------------------------------------------------------------
@@ -60,7 +60,7 @@
 //      Process types
 //
 typedef OS::process<OS::pr0, 200> TProc1;
-typedef OS::process<OS::pr1, 200> TProc2;
+typedef OS::process<OS::pr1, 512> TProc2;
 typedef OS::process<OS::pr2, 200> TProc3;
 //---------------------------------------------------------------------------
 //
@@ -131,23 +131,24 @@ namespace OS
 		
 		TextRenderer tr(fb);
 		display.sendFramebuffer(fb.getImage());
-		
-		UART u1(115200);
+
 		
 		int n=0;
         for(;;)
         {
 			sleep(30);
 			//LED0.off();
-			u1.send("Pina\r\n");
+			printf("Pina %.3d\r\n", n);
+			//			u1.send("Pina\r\n");
             sleep(30);
-			u1.send("Punci\r\n");
+			printf("Punci %.3X\r\n", n);
+//			u1.send("Punci\r\n");
             //LED0.on();
    
    		 	//tr.render(10,10,"Pina "+std::to_string(n)+"   ");
 			n++;
 			
-			tr.render(10,10,"Pina");
+			tr.printf(10,10,"Pina %d", n);
 			display.sendFramebuffer(fb.getImage());
             //ef.signal();
         }

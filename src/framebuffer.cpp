@@ -11,9 +11,9 @@ uint8_t *Framebuffer::getImage(){
 
 void Framebuffer::setPixel(uint32_t x, uint32_t y, bool set){
 	if (set)
-		framebuffer[x + ((y & 0xF8)<<4)] |= set << (y & 7);
+		framebuffer[x + ((y & 0xF8)<<4)] |= 1 << (y & 7);
 	else
-		framebuffer[x + ((y & 0xF8)<<4)] &= ~(set << (y & 7));
+		framebuffer[x + ((y & 0xF8)<<4)] &= ~(1 << (y & 7));
 }
 
 void Framebuffer::setPixel(uint32_t x, uint32_t y){
@@ -44,3 +44,4 @@ void Framebuffer::drawImage(uint32_t x, uint32_t y, const Image &image){
 		}
 	}
 }
+
