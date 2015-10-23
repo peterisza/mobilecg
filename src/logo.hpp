@@ -3,6 +3,6 @@
 
 #include "image.hpp"
 
-extern Image logo;
+extern const Image logo;
 
 #endif

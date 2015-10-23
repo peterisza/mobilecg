@@ -36,5 +36,5 @@ int main(){
 	}
 	
 	printf("\n};\n\n");
-	printf("Image imgObject(image, %d, %d);\n\n", width, height);
+	printf("const Image imgObject(image, %d, %d);\n\n", width, height);
 }
