@@ -259,4 +259,4 @@ static const uint8_t fontdata_5x8[] = {
   0x0, 0x98, 0xB8, 0xE8, 0x48, 
   0x0, 0x3C, 0x3C, 0x3C, 0x3C,};
 
-Font font5x8(fontdata_5x8, 8, 5, 5, Image::COL_CONTINOUS, Image::X_NORMAL, Image::Y_INVERT);
+const Font font5x8(fontdata_5x8, 8, 5, 5, Image::COL_CONTINOUS, Image::X_NORMAL, Image::Y_INVERT);

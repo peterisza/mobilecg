@@ -3,6 +3,6 @@
 
 #include "font.hpp"
 
-extern Font font5x8;
+extern const Font font5x8;
 
 #endif

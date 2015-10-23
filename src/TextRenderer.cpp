@@ -11,7 +11,7 @@ TextRenderer::TextRenderer(Framebuffer &_fb){
 	setSpacing(1);
 }
 
-void TextRenderer::setFont(Font *_font){
+void TextRenderer::setFont(const Font *_font){
 	this->font = _font;
 
 	charImage=Image(NULL, font->w, font->h, font->bitOrder, font->xdir, font->ydir);
