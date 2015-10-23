@@ -9,7 +9,7 @@ class Image{
 		enum XDirection {X_NORMAL, X_INVERT};
 		enum YDirection {Y_NORMAL, Y_INVERT};
 		Image();
-		Image(uint8_t *_data, uint32_t _width, uint32_t _height, Order _bitOrder=ROW_CONTINOUS, XDirection _xdir=X_NORMAL, YDirection _ydir=Y_NORMAL, uint32_t _stride=0);
+		Image(const uint8_t *_data, uint32_t _width, uint32_t _height, Order _bitOrder=ROW_CONTINOUS, XDirection _xdir=X_NORMAL, YDirection _ydir=Y_NORMAL, uint32_t _stride=0);
 		uint32_t height;
 		uint32_t width;
 		uint32_t stride;

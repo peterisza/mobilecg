@@ -4,7 +4,7 @@ Image::Image(){
 	
 }
 
-Image::Image(uint8_t *_data, uint32_t _width, uint32_t _height, Order _bitOrder, XDirection _xdir, YDirection _ydir, uint32_t _stride){
+Image::Image(const uint8_t *_data, uint32_t _width, uint32_t _height, Order _bitOrder, XDirection _xdir, YDirection _ydir, uint32_t _stride){
 	this->data=_data;
 	this->width=_width;
 	this->height=_height;

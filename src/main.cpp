@@ -49,7 +49,7 @@
 #include "pin.h"
 #include "display.hpp"
 #include <cstring>
-#include "logo.h"
+#include "logo.hpp"
 #include "framebuffer.hpp"
 #include "TextRenderer.hpp"
 #include "printf.hpp"
@@ -116,18 +116,8 @@ namespace OS
     {
 		sleep(10);
 		display.init();
-		//memset(fb0,0,sizeof(fb0));
-		//memset(fb1,0,sizeof(fb1));
-		//memset(fb,0xFF,sizeof(fb)/2);
-		//#define SET_PIXEL(fb, x, y, val) (fb[x + ((y & 0xF8)<<4)] |= val << (y & 7));
-		
-		
-		for (int r=0; r<64; r++){
-			for (int c=0; c<128; c++){
-				fb.setPixel(c,r, logo[c+r*128]);
-				//SET_PIXEL(fb0, c, r, logo[c+r*128]);
-			}
-		}
+
+		fb.drawImage(0,0,logo);
 		
 		TextRenderer tr(fb);
 		display.sendFramebuffer(fb.getImage());
