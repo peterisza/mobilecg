@@ -52,6 +52,9 @@
 #include "logo.h"
 #include "framebuffer.hpp"
 #include "TextRenderer.hpp"
+#include "UART.hpp"
+#include <string>
+
 //---------------------------------------------------------------------------
 //
 //      Process types
@@ -70,7 +73,7 @@ TProc3 Proc3;
 //
 //      IO Pins
 //
-Pin<1, 1> LED0;
+//Pin<1, 1> LED0;
 Pin<0, 4> LED1;
 
 
@@ -82,7 +85,7 @@ int main()
 {
     // configure IO pins
 	//LED0.Alternate(OFF);
-	LED0.direct(OUTPUT);
+	//LED0.direct(OUTPUT);
 //	LED0.On();
 //	LED1.Direct(OUTPUT);
 //	LED1.Off();
@@ -127,8 +130,27 @@ namespace OS
 		}
 		
 		TextRenderer tr(fb);
-		tr.render(10,10,"Pina");
+		display.sendFramebuffer(fb.getImage());
 		
+		UART u1(115200);
+		
+		int n=0;
+        for(;;)
+        {
+			sleep(30);
+			//LED0.off();
+			u1.send("Pina\r\n");
+            sleep(30);
+			u1.send("Punci\r\n");
+            //LED0.on();
+   
+   		 	//tr.render(10,10,"Pina "+std::to_string(n)+"   ");
+			n++;
+			
+			tr.render(10,10,"Pina");
+			display.sendFramebuffer(fb.getImage());
+            //ef.signal();
+        }
 		
 	//	memset(fb0+128, 0xFF, 1);
 		/*
@@ -136,35 +158,17 @@ namespace OS
 			SET_PIXEL(r,r,1);
 		}*/
 		
-		bool ledOn=true;
-		for (;;){
-			LED0.set(ledOn);
-			ledOn=!ledOn;
-		
-			for (int a=0; a<100; a++)
-				display.sendFramebuffer(fb.getImage());
-		}
-		
-		bool inv=false;
-		for(;;){
-			sleep(500);
-			inv = !inv;
-			display.invert(inv);
-		}
+
 		
 	}
 
     template<> 
     OS_PROCESS void TProc3::exec()
     {
-
-        for(;;)
+		for(;;)
         {
 			sleep(30);
-			//LED0.off();
-			
-            sleep(30);
-            //LED0.on();
+		    //LED0.on();
    
             //ef.signal();
         }
