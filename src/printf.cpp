@@ -14,7 +14,7 @@ static char toChar(int val){
 static int toString(char *dest, int maxlen, int value, int radix, int minLen, bool spacePad){
 	if (maxlen==0)
 		return 0;
-
+	
 	bool negative=false;
 	if (value<0){
 		value=-value;

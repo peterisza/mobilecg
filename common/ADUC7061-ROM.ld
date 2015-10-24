@@ -4,7 +4,7 @@
 ************************************************/ 
 ENTRY(_start)
 
-IRQ_STACK_SIZE = 0x400;
+IRQ_STACK_SIZE = 0x100;
 SYS_STACK_SIZE = 0x0;
 FIQ_STACK_SIZE = 0x0;
 UND_STACK_SIZE = 0x0;

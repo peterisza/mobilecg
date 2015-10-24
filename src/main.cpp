@@ -60,7 +60,7 @@
 //      Process types
 //
 typedef OS::process<OS::pr0, 200> TProc1;
-typedef OS::process<OS::pr1, 512> TProc2;
+typedef OS::process<OS::pr1, 256> TProc2;
 typedef OS::process<OS::pr2, 200> TProc3;
 //---------------------------------------------------------------------------
 //
@@ -98,6 +98,8 @@ int main()
 
 TDisplay<0,2,0,0> display;
 Framebuffer fb;
+TextRenderer tr(fb);
+
 
 namespace OS 
 {
@@ -119,9 +121,9 @@ namespace OS
 
 		fb.drawImage(0,0,logo);
 		
-		TextRenderer tr(fb);
+		
 		display.sendFramebuffer(fb.getImage());
-
+		
 		
 		int n=0;
         for(;;)
