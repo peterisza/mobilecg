@@ -18,6 +18,7 @@ class Framebuffer{
 		void setPixel(uint32_t x, uint32_t y);
 		void clearPixel(uint32_t x, uint32_t y);
 		void drawImage(uint32_t x, uint32_t y, const Image &image);
+		void clear();
 };
 
 #endif

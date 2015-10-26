@@ -2,7 +2,7 @@
 #include <cstring>
 
 Framebuffer::Framebuffer(){
-	memset(framebuffer, 0, sizeof(framebuffer));
+	clear();
 }
 
 uint8_t *Framebuffer::getImage(){
@@ -43,5 +43,9 @@ void Framebuffer::drawImage(uint32_t x, uint32_t y, const Image &image){
 			setPixel(x+d_x, y+d_y, image.getPixel(d_x, d_y));
 		}
 	}
+}
+
+void Framebuffer::clear(){
+	memset(framebuffer, 0, sizeof(framebuffer));
 }
 

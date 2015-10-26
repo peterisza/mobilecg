@@ -54,13 +54,17 @@
 #include "TextRenderer.hpp"
 #include "printf.hpp"
 #include <string>
-
+#include "ADC.hpp"
+#include "DAC.hpp"
+#include "globals.hpp"
+#include "IIRFilter.hpp"
+#include <stdlib.h>
 //---------------------------------------------------------------------------
 //
 //      Process types
 //
 typedef OS::process<OS::pr0, 200> TProc1;
-typedef OS::process<OS::pr1, 256> TProc2;
+typedef OS::process<OS::pr1, 400> TProc2;
 typedef OS::process<OS::pr2, 200> TProc3;
 //---------------------------------------------------------------------------
 //
@@ -99,7 +103,18 @@ int main()
 TDisplay<0,2,0,0> display;
 Framebuffer fb;
 TextRenderer tr(fb);
+ADC ad;
+DAC da;
 
+float num[]={0.965080986344734,-1.930161972689468,0.965080986344734};
+
+float den[]={-1.9289422632520337,0.9313816821269029};
+
+IIRFilter <float, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filter(num, den);
+IIRFilter <float, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filterBack(num, den);
+
+int32_t ecgData[128];
+int buffPos=0;
 
 namespace OS 
 {
@@ -119,28 +134,109 @@ namespace OS
 		sleep(10);
 		display.init();
 
+		printf("BOOT\r\n");
 		fb.drawImage(0,0,logo);
 		
 		
 		display.sendFramebuffer(fb.getImage());
 		
+		memset(ecgData,0,sizeof(ecgData));
+		
+		
+		sleep(100);
+		
+		da.set(0xFFF);
+		
+		ad.setRate(50);
+		ad.setGain(4);
+		ad.start();		
 		
 		int n=0;
+		
+		int32_t oldval=0;
         for(;;)
         {
-			sleep(30);
+			int32_t newval=-ad.get();
+			
+			if (abs(oldval-newval)>400*64*2){
+				filter.reset(newval,true);
+			}
+			
+			oldval = newval;
+			
+			fb.clear();
+			ecgData[buffPos] = filter.filter(newval);
+			
+			buffPos++;
+			if (buffPos==128){
+				buffPos=0;
+				printf("%d\r\n",ecgData[127]);
+			}
+			/*sleep(30);
 			//LED0.off();
 			printf("Pina %.3d\r\n", n);
-			//			u1.send("Pina\r\n");
+			//u1.send("Pina\r\n");
             sleep(30);
 			printf("Punci %.3X\r\n", n);
-//			u1.send("Punci\r\n");
+		//	u1.send("Punci\r\n");
             //LED0.on();
    
    		 	//tr.render(10,10,"Pina "+std::to_string(n)+"   ");
 			n++;
 			
-			tr.printf(10,10,"Pina %d\nhaha", n);
+			int32_t sample=
+			//uint32_t sample=0xB0C1Fa52;
+			printf("AD: %d\r\n", sample);*/
+			
+			
+			
+			
+			int32_t average=0;
+			for (int a=0; a<128; a++)
+				average+=ecgData[a];
+			
+			average >>= 7;
+			
+			tr.printf(10,10,"%d", average);
+			
+			int32_t prewdata;
+			for (int a=0; a<128; a++){
+				int32_t data=(ecgData[a] ) /400;
+				
+				if (data>31)
+					data=31;
+				
+				if (data<-31)
+					data=-31;
+				
+				if (a>0){
+					int32_t avg=(data+prewdata)>>1;
+					if (data>prewdata){
+						for (int32_t val=prewdata+1; val<=avg; val++){
+							fb.setPixel(a, 31+val);
+						}
+						
+						for (int32_t val=avg; val<=data; val++){
+							fb.setPixel(a, 31+val);
+						}
+					} else {
+						for (int32_t val=prewdata-1; val>=avg; val--){
+							fb.setPixel(a, 31+val);
+						}
+						
+						for (int32_t val=avg; val>=data; val--){
+							fb.setPixel(a, 31+val);
+						}
+					}
+				}
+				
+				//fb.setPixel(a, 31+data);
+				
+				prewdata=data;
+			}
+			
+			
+			
 			display.sendFramebuffer(fb.getImage());
             //ef.signal();
         }
@@ -188,4 +284,10 @@ extern "C" void IRQ_Switch()
     {
 		   OS::system_timer_isr();
     }
+	
+	//	printf("ISR\r\n");
+	
+	//Globals::instance().uart.send("P");
+	
+	HANDLE_ADCINT(irq);
 }

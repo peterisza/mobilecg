@@ -22,8 +22,8 @@ static int toString(char *dest, int maxlen, int value, int radix, int minLen, bo
 	}
 	
 	int len=1;
-	int startDiv=1;
-	for (int lenCnt=value/radix; lenCnt; lenCnt/=radix){
+	uint32_t startDiv=1;
+	for (uint32_t lenCnt=value/radix; lenCnt; lenCnt/=radix){
 		len++;
 		startDiv*=radix;
 	}
