@@ -79,16 +79,24 @@ TextRenderer tr(fb);
 ADC ad;
 DAC da;
 
-float num[]={0.965080986344734,-1.930161972689468,0.965080986344734};
+//float num[]={0.965080986344734,-1.930161972689468,0.965080986344734};
 
-float den[]={-1.9289422632520337,0.9313816821269029};
+//float den[]={-1.9289422632520337,0.9313816821269029};
 
-IIRFilter <float, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filter(num, den);
+//1st order, 1Hz
+//float num[]={0.9408092961815946,-0.9408092961815946};
+//float den[]={-0.8816185923631891};
 
-#undef BACK_FILTER
+//1st order, 0.5Hz
+float num[]={0.9695312529087462,-0.9695312529087462};
+float den[]={-0.9390625058174924};
+
+IIRFilter <0x1000000, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filter(num, den);
+
+#define BACK_FILTER
 
 #ifdef BACK_FILTER
-IIRFilter <float, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filterBack(num, den);
+IIRFilter <0x1000000, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filterBack(num, den);
 #endif
 
 
@@ -136,7 +144,6 @@ int8_t getEcgdata(uint32_t index){
 	#endif
 }
 
-volatile float f=23;
 namespace OS 
 {
  
@@ -149,13 +156,12 @@ namespace OS
 		printf("BOOT\r\n");
 		fb.drawImage(0,0,logo);
 		
-		
 		display.sendFramebuffer(fb.getImage());
 		
 		memset(ecgData,0,sizeof(ecgData));
 		
 		
-		//sleep(100);
+		sleep(100);
 		
 		da.set(0xFFF);
 		
@@ -172,10 +178,6 @@ namespace OS
 		time_t resetTimer=0;
 		
 
-		for (int a=0; a<100000; a++){
-			f*=0.9123;
-		}
-		time_t testMS=msSince(timer);
 		
 		
 		
@@ -190,6 +192,9 @@ namespace OS
 			if (resetTimer && msPassed(resetTimer, 20)){
 				resetTimer=0;
 				filter.reset(newval,true);
+				#ifdef BACK_FILTER
+				filterBack.reset(newval, true);
+				#endif
 			}
 			
 			oldval = newval;
@@ -212,13 +217,12 @@ namespace OS
 				fpsTmp=0;
 			}
 			
-			if (f>0.0)
-			tr.printf(0,0,"%d fps %d", fps, testMS);
+			tr.printf(0,0,"%d fps", fps);
 			
 			
 			int32_t prewdata=getEcgdata(ECGBUF_LEN-1);
 			#ifdef BACK_FILTER
-				filterBack.reset(prewdata, true);
+			//	filterBack.reset(prewdata, true);
 			#endif
 			for (int a=ECGBUF_LEN-1; a>0; a--){
 				int32_t data=getEcgdata(a);
@@ -227,6 +231,7 @@ namespace OS
 					int32_t avg=(data+prewdata)>>1;
 					fb.vLine(a+1, prewdata, avg);
 					fb.vLine(a, avg, data);
+					//fb.setPixel(a,data);
 				}
 				
 				prewdata=data;

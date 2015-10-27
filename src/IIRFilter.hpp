@@ -1,32 +1,34 @@
 #ifndef _IIR_FILTER_HPP_
 #define _IIR_FILTER_HPP_
 
-template <typename T, int numlen, int denlen> class IIRFilter{
+template <int scale, int numlen, int denlen> class IIRFilter{
 	private:
-		T *num;
-		T *den;
+		int32_t num[numlen];
+		int32_t den[denlen];
 		
-		T inHistory[numlen];
-		T outHistory[denlen];
+		int32_t inHistory[numlen];
+		int32_t outHistory[denlen];
 		
 		int inHistoryPos;
 		int outHistoryPos;
 	public:
-		IIRFilter(T *_num, T *_den){
-			num = _num;
-			den = _den;
+		IIRFilter(float *_num, float *_den){
 			
 			outHistoryPos=0;
 			inHistoryPos=0;
 			
-			for (int a=0; a<denlen; a++)
+			for (int a=0; a<denlen; a++){
+				den[a]= - _den[a] * (float)scale;
 				outHistory[a] = 0;
+			}
 			
-			for (int a=0; a<numlen; a++)
+			for (int a=0; a<numlen; a++){
+				num[a]=_num[a] * (float)scale;
 				inHistory[a] = 0;
+			}
 		}
 		
-		void reset(T data, bool highpass){
+		void reset(int32_t data, bool highpass){
 			for (int a=0; a<numlen; a++)
 				inHistory[a]=data;
 			
@@ -34,40 +36,50 @@ template <typename T, int numlen, int denlen> class IIRFilter{
 				outHistory[a]=highpass ? 0 : data;
 		}
 		
-		T filter(T data){
+		int32_t filter(int32_t data){
 			int histPos;
 			
 			inHistory[inHistoryPos]=data;
+			
+			
+			int64_t accu=0;
+			int inCoeff=0;
 			histPos = inHistoryPos;
-			
-			T accu=0;
-			for (int inCoeff=0; inCoeff<numlen; inCoeff++){
-				accu += inHistory[histPos] * num[inCoeff];
-				histPos--;
-				if (histPos<0)
-					histPos=numlen-1;
+			for (; histPos>=0 && inCoeff<numlen; inCoeff++, histPos--){
+				accu += inHistory[histPos] * (int64_t)num[inCoeff];
 			}
 			
-			histPos = outHistoryPos;
-			for (int outCoeff=0; outCoeff<denlen; outCoeff++){
-				histPos--;
-				if (histPos<0)
-					histPos=denlen-1;
-				
-				accu -= outHistory[histPos] * den[outCoeff];
+			histPos=numlen-1;
+			for (; inCoeff<numlen; inCoeff++, histPos--){
+				accu += inHistory[histPos] * (int64_t)num[inCoeff];
 			}
+			
+			histPos = outHistoryPos-1;
+			int outCoeff=0;
+			for (; histPos>=0 && outCoeff<denlen; outCoeff++, histPos--){
+				accu += outHistory[histPos] * (int64_t)den[outCoeff];
+			}
+			
+			histPos=denlen-1;
+			for (; outCoeff<denlen; outCoeff++, histPos--){
+				accu += outHistory[histPos] * (int64_t)den[outCoeff];
+			}
+
+			accu /= scale;
+		
+			const int32_t a=accu;
 				
 			inHistoryPos++;
 			if (inHistoryPos >= numlen)
 				inHistoryPos = 0;
 			
 			
-			outHistory[outHistoryPos] = accu;
+			outHistory[outHistoryPos] = a;
 			outHistoryPos++;
 			if (outHistoryPos >= denlen)
 				outHistoryPos = 0;
 			
-			return accu;
+			return a;
 		}
 };
 

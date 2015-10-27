@@ -46,14 +46,38 @@ void Framebuffer::drawImage(uint32_t x, uint32_t y, const Image &image){
 }
 
 void Framebuffer::clear(){
-	memset(framebuffer, 0, sizeof(framebuffer));
+	//memset(framebuffer, 0, sizeof(framebuffer));
+	uint64_t *fb=(uint64_t*)framebuffer;
+	for (int a=0; a<128; a++)
+		fb[a]=0;
 }
 
 void Framebuffer::vLine(uint32_t x, uint32_t startY, uint32_t stopY){
-	int32_t dir = startY < stopY ? 1 : -1;
-	
-	for (uint32_t y=startY; y!=stopY; y+=dir){
-		setPixel(x,y);
+	if (startY > stopY){
+		uint32_t tmp=stopY;
+		stopY=startY;
+		startY=tmp;
 	}
-	setPixel(x,stopY);
+	
+	uint8_t d = stopY - startY + 1;
+	uint32_t addr=x + ((startY & 0xF8)<<4);
+	const uint8_t o = startY & 7;
+	
+	if (d > (8-o)){
+		framebuffer[addr] |= 0xFF << o;
+		addr+=width;
+		d -= 8-o;
+	} else {
+		framebuffer[addr] |= (0xFF << o) & (0xFF >> (8-o-d));
+		return;
+	}
+	
+	for (; d>8; d-=8){
+		framebuffer[addr] = 0xFF;
+		addr+=width;
+	}
+	
+	if (d){
+		framebuffer[addr] |= (0xFF >> (8-d));
+	}
 }
