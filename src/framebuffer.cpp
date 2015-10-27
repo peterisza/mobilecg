@@ -49,3 +49,11 @@ void Framebuffer::clear(){
 	memset(framebuffer, 0, sizeof(framebuffer));
 }
 
+void Framebuffer::vLine(uint32_t x, uint32_t startY, uint32_t stopY){
+	int32_t dir = startY < stopY ? 1 : -1;
+	
+	for (uint32_t y=startY; y!=stopY; y+=dir){
+		setPixel(x,y);
+	}
+	setPixel(x,stopY);
+}

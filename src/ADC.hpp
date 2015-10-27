@@ -13,6 +13,7 @@ class ADC{
 		
 		usr::ring_buffer<int32_t, 4> dataBuffer;
 		OS::TEventFlag sampleEvent;
+		int32_t divider;
 	public:
 		ADC();
 		~ADC();
@@ -24,6 +25,7 @@ class ADC{
 		void setRate50Hz();
 		void start();
 		void stop();
+		void setDivider(int32_t divider);
 		
 		static void interrupt();
 		

@@ -58,47 +58,20 @@
 #include "DAC.hpp"
 #include "globals.hpp"
 #include "IIRFilter.hpp"
+#include "Time.hpp"
 #include <stdlib.h>
-//---------------------------------------------------------------------------
-//
-//      Process types
-//
-typedef OS::process<OS::pr0, 200> TProc1;
-typedef OS::process<OS::pr1, 400> TProc2;
-typedef OS::process<OS::pr2, 200> TProc3;
-//---------------------------------------------------------------------------
-//
-//      Process objects
-//
+
+typedef OS::process<OS::pr0, 400> TProc1;
 TProc1 Proc1;
-TProc2 Proc2;
-TProc3 Proc3;
-//---------------------------------------------------------------------------
-//
-//      IO Pins
-//
-//Pin<1, 1> LED0;
-Pin<0, 4> LED1;
-
-
-OS::TEventFlag ef;
-OS::TEventFlag TimerEvent;
 
 volatile int pina;
 int main()
 {
-    // configure IO pins
-	//LED0.Alternate(OFF);
-	//LED0.direct(OUTPUT);
-//	LED0.On();
-//	LED1.Direct(OUTPUT);
-//	LED1.Off();
-
-	
     // run OS
     OS::run();
 }
 
+bool flow=true;
 
 TDisplay<0,2,0,0> display;
 Framebuffer fb;
@@ -111,25 +84,64 @@ float num[]={0.965080986344734,-1.930161972689468,0.965080986344734};
 float den[]={-1.9289422632520337,0.9313816821269029};
 
 IIRFilter <float, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filter(num, den);
+
+#undef BACK_FILTER
+
+#ifdef BACK_FILTER
 IIRFilter <float, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filterBack(num, den);
+#endif
 
-int32_t ecgData[128];
-int buffPos=0;
 
+#ifdef BACK_FILTER
+	#define BACK_BUF 64
+#else
+	#define BACK_BUF 0
+#endif
+
+#define ECGBUF_LEN (Framebuffer::width+BACK_BUF)
+int8_t ecgData[ECGBUF_LEN];
+volatile int buffPos=0;
+
+int8_t saturate8(int32_t data){
+	if (data>127)
+		return 127;
+	if (data<-128)
+		return -128;
+	
+	return data;
+}
+
+int8_t getY(int8_t data){
+	data+=40;
+	
+	if (data > 63)
+		data=63;
+	else if (data<0)
+		data=0;
+	
+	return data;
+}
+
+int8_t getEcgdata(uint32_t index){
+	if (flow){
+		index+=buffPos;
+		if (index>=ECGBUF_LEN)
+			index-=ECGBUF_LEN;
+	}
+	
+	#ifdef BACK_FILTER
+		return getY(filterBack.filter(ecgData[index]));
+	#else
+		return getY(ecgData[index]);
+	#endif
+}
+
+volatile float f=23;
 namespace OS 
 {
+ 
     template<> 
     OS_PROCESS void TProc1::exec()
-    {
-        for(;;)
-        {
-            ef.wait();
-            //LED0.Off();
-        }
-    }
-
-    template<> 
-    OS_PROCESS void TProc2::exec()
     {
 		sleep(10);
 		display.init();
@@ -143,94 +155,79 @@ namespace OS
 		memset(ecgData,0,sizeof(ecgData));
 		
 		
-		sleep(100);
+		//sleep(100);
 		
 		da.set(0xFFF);
 		
 		ad.setRate(50);
 		ad.setGain(4);
 		ad.start();		
-		
-		int n=0;
+		ad.setDivider(-300);
 		
 		int32_t oldval=0;
+		
+		uint32_t fpsTmp=0;
+		uint32_t fps=0;
+		time_t timer=startTimer();
+		time_t resetTimer=0;
+		
+
+		for (int a=0; a<100000; a++){
+			f*=0.9123;
+		}
+		time_t testMS=msSince(timer);
+		
+		
+		
         for(;;)
         {
-			int32_t newval=-ad.get();
+			int32_t newval=ad.get();
 			
-			if (abs(oldval-newval)>400*64*2){
+			if (abs(oldval-newval)>64*2){
+				resetTimer=startTimer();
+			}
+			
+			if (resetTimer && msPassed(resetTimer, 20)){
+				resetTimer=0;
 				filter.reset(newval,true);
 			}
 			
 			oldval = newval;
 			
 			fb.clear();
-			ecgData[buffPos] = filter.filter(newval);
+			ecgData[buffPos] = saturate8(filter.filter(newval));
 			
 			buffPos++;
-			if (buffPos==128){
+			if (buffPos==ECGBUF_LEN){
 				buffPos=0;
-				printf("%d\r\n",ecgData[127]);
 			}
-			/*sleep(30);
-			//LED0.off();
-			printf("Pina %.3d\r\n", n);
-			//u1.send("Pina\r\n");
-            sleep(30);
-			printf("Punci %.3X\r\n", n);
-		//	u1.send("Punci\r\n");
-            //LED0.on();
-   
-   		 	//tr.render(10,10,"Pina "+std::to_string(n)+"   ");
-			n++;
-			
-			int32_t sample=
-			//uint32_t sample=0xB0C1Fa52;
-			printf("AD: %d\r\n", sample);*/
 			
 			
+			fpsTmp++;
+			if (msPassed(timer,1000)){
+				timer=startTimer();
+				//-1: when this code runs, plus 1 frames must be rendered.
+				//Do not count the current frame.
+				fps=fpsTmp-1;
+				fpsTmp=0;
+			}
+			
+			if (f>0.0)
+			tr.printf(0,0,"%d fps %d", fps, testMS);
 			
 			
-			int32_t average=0;
-			for (int a=0; a<128; a++)
-				average+=ecgData[a];
-			
-			average >>= 7;
-			
-			tr.printf(10,10,"%d", average);
-			
-			int32_t prewdata;
-			for (int a=0; a<128; a++){
-				int32_t data=(ecgData[a] ) /400;
+			int32_t prewdata=getEcgdata(ECGBUF_LEN-1);
+			#ifdef BACK_FILTER
+				filterBack.reset(prewdata, true);
+			#endif
+			for (int a=ECGBUF_LEN-1; a>0; a--){
+				int32_t data=getEcgdata(a);
 				
-				if (data>31)
-					data=31;
-				
-				if (data<-31)
-					data=-31;
-				
-				if (a>0){
+				if (a<(fb.width-1)){
 					int32_t avg=(data+prewdata)>>1;
-					if (data>prewdata){
-						for (int32_t val=prewdata+1; val<=avg; val++){
-							fb.setPixel(a, 31+val);
-						}
-						
-						for (int32_t val=avg; val<=data; val++){
-							fb.setPixel(a, 31+val);
-						}
-					} else {
-						for (int32_t val=prewdata-1; val>=avg; val--){
-							fb.setPixel(a, 31+val);
-						}
-						
-						for (int32_t val=avg; val>=data; val--){
-							fb.setPixel(a, 31+val);
-						}
-					}
+					fb.vLine(a+1, prewdata, avg);
+					fb.vLine(a, avg, data);
 				}
-				
-				//fb.setPixel(a, 31+data);
 				
 				prewdata=data;
 			}
@@ -238,41 +235,19 @@ namespace OS
 			
 			
 			display.sendFramebuffer(fb.getImage());
-            //ef.signal();
+         	
+			
         }
-		
-	//	memset(fb0+128, 0xFF, 1);
-		/*
-		for (int r=0; r<64; r++){
-			SET_PIXEL(r,r,1);
-		}*/
-		
 
 		
 	}
 
-    template<> 
-    OS_PROCESS void TProc3::exec()
-    {
-		for(;;)
-        {
-			sleep(30);
-		    //LED0.on();
-   
-            //ef.signal();
-        }
-    }
+
 }   // namespace OS
 
 
 void OS::system_timer_user_hook()
 {
-	static int timer_event_counter = 5;
-	if (!--timer_event_counter)
-	{
-		timer_event_counter = 5;
-       // TimerEvent.signal_isr();
-	}
 }
 
 void OS::idle_process_user_hook() { }
@@ -283,6 +258,7 @@ extern "C" void IRQ_Switch()
     if(irq & SYSTEM_TIMER_INT)
     {
 		   OS::system_timer_isr();
+		   currTime++;
     }
 	
 	//	printf("ISR\r\n");
