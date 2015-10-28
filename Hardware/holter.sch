@@ -1669,13 +1669,13 @@ Text GLabel 1950 3200 0    39   Input ~ 0
 CTS
 Text GLabel 1950 3300 0    39   Output ~ 0
 RTS
-Text GLabel 3300 1450 1    39   Output ~ 0
+Text GLabel 4700 3050 2    39   Output ~ 0
 SPI_MOSI
-Text GLabel 3400 1450 1    39   Input ~ 0
+Text GLabel 4700 3150 2    39   Input ~ 0
 SPI_MISO
-Text GLabel 3500 1450 1    39   Output ~ 0
+Text GLabel 4700 3250 2    39   Output ~ 0
 SPI_SCK
-Text GLabel 4000 1450 1    39   Output ~ 0
+Text GLabel 4700 3350 2    39   Output ~ 0
 ~ECG_CS
 Text GLabel 5900 3350 0    39   Input ~ 0
 ~ECG_CS
@@ -1685,7 +1685,7 @@ Text GLabel 5900 3250 0    39   Input ~ 0
 SPI_SCK
 Text GLabel 5900 3150 0    39   Output ~ 0
 SPI_MISO
-Text GLabel 3000 3750 3    39   Output ~ 0
+Text GLabel 3800 3750 3    39   Output ~ 0
 ECG_START
 Text GLabel 2900 3750 3    39   Input ~ 0
 ~ECG_DRDY
@@ -1772,7 +1772,7 @@ F 3 "" H 14950 7950 30  0000 C CNN
 	1    14950 7950
 	0    -1   -1   0   
 $EndComp
-Text GLabel 1950 2800 0    39   Input ~ 0
+Text GLabel 3000 3750 3    39   Input ~ 0
 CABLE_DETECT
 $Comp
 L GND #PWR062
@@ -3286,7 +3286,7 @@ F 3 "" H 1400 2600 60  0000 C CNN
 	1    1400 2600
 	-1   0    0    -1  
 $EndComp
-Text GLabel 3800 3750 3    39   Output ~ 0
+Text GLabel 1950 2800 0    39   Output ~ 0
 ~CARD_DET
 $Comp
 L +5V #PWR0124
@@ -3790,28 +3790,6 @@ F 3 "" H 13100 9750 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C138
-U 1 1 5430A472
-P 12900 9750
-F 0 "C138" H 12925 9800 30  0000 L CNN
-F 1 "1uF" H 12925 9700 30  0000 L CNN
-F 2 "Capacitors_SMD:C_0402" H 12900 9750 60  0001 C CNN
-F 3 "" H 12900 9750 60  0000 C CNN
-	1    12900 9750
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR0136
-U 1 1 5430B022
-P 12900 9850
-F 0 "#PWR0136" H 12900 9850 30  0001 C CNN
-F 1 "GND" H 12900 9780 30  0001 C CNN
-F 2 "" H 12900 9850 60  0000 C CNN
-F 3 "" H 12900 9850 60  0000 C CNN
-	1    12900 9850
-	1    0    0    -1  
-$EndComp
-$Comp
 L GND #PWR0137
 U 1 1 5430B180
 P 13100 9850
@@ -3824,7 +3802,6 @@ F 3 "" H 13100 9850 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	12850 9650 13150 9650
-Connection ~ 12900 9650
 Connection ~ 13100 9650
 Wire Wire Line
 	13150 9550 13100 9550
@@ -3854,17 +3831,6 @@ F 3 "" H 14650 8900 30  0000 C CNN
 	1    14650 8900
 	0    1    1    0   
 $EndComp
-$Comp
-L GND #PWR0139
-U 1 1 54321503
-P 14400 8900
-F 0 "#PWR0139" H 14400 8900 30  0001 C CNN
-F 1 "GND" H 14400 8830 30  0001 C CNN
-F 2 "" H 14400 8900 60  0000 C CNN
-F 3 "" H 14400 8900 60  0000 C CNN
-	1    14400 8900
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	14900 8900 14900 9250
 Wire Wire Line
@@ -3884,13 +3850,13 @@ Wire Wire Line
 	15000 9450 14750 9450
 Wire Wire Line
 	15000 9350 14750 9350
-Text GLabel 4700 3350 2    39   Output ~ 0
+Text GLabel 4000 1450 1    39   Output ~ 0
 ACC_CS
-Text GLabel 4700 3250 2    39   Output ~ 0
+Text GLabel 3500 1450 1    39   Output ~ 0
 ACC_CLK
-Text GLabel 4700 3150 2    39   Input ~ 0
+Text GLabel 3400 1450 1    39   Input ~ 0
 ACC_MISO
-Text GLabel 4700 3050 2    39   Output ~ 0
+Text GLabel 3300 1450 1    39   Output ~ 0
 ACC_MOSI
 Text GLabel 4700 2950 2    39   Output ~ 0
 ACC_PWR
@@ -4716,4 +4682,6 @@ F 3 "" H 1400 3200 60  0000 C CNN
 	1    1400 3200
 	1    0    0    -1  
 $EndComp
+Text GLabel 14400 8900 0    39   Input ~ 0
+ACC_PWR
 $EndSCHEMATC
