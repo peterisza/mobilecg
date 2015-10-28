@@ -2535,7 +2535,7 @@ F 3 "" H 3000 6250 60  0000 C CNN
 	1    3000 6250
 	1    0    0    -1  
 $EndComp
-Text GLabel 3500 3750 3    39   Output ~ 0
+Text GLabel 1950 2600 0    39   Output ~ 0
 ~SD_EN
 $Comp
 L GND #PWR088
@@ -3260,7 +3260,7 @@ F 3 "" H 1950 1900 60  0000 C CNN
 	1    1950 1900
 	0    -1   -1   0   
 $EndComp
-Text GLabel 3400 4250 3    39   Output ~ 0
+Text GLabel 1600 3000 3    39   Output ~ 0
 EN_2V8
 $Comp
 L R R10
@@ -3273,7 +3273,7 @@ F 3 "" H 1400 2750 30  0000 C CNN
 	1    1400 2750
 	1    0    0    1   
 $EndComp
-Text GLabel 1950 2600 0    39   Output ~ 0
+Text GLabel 3500 3750 3    39   Output ~ 0
 ~CHRG_EN
 $Comp
 L VCC #PWR0123
@@ -3299,20 +3299,20 @@ F 3 "" H 4700 2450 60  0000 C CNN
 	1    4700 2450
 	0    1    1    0   
 $EndComp
-Text GLabel 1950 2700 0    39   Input ~ 0
+Text GLabel 3400 3750 3    39   Input ~ 0
 ~CHRG_STAT
 Text GLabel 8100 9650 0    39   Output ~ 0
 LL
 $Comp
 L R R11
 U 1 1 5414ACDE
-P 3400 4000
-F 0 "R11" V 3500 3850 40  0000 C CNN
-F 1 "100k" V 3407 4001 40  0000 C CNN
-F 2 "Resistors_SMD:R_0402" V 3330 4000 30  0001 C CNN
-F 3 "" H 3400 4000 30  0000 C CNN
-	1    3400 4000
-	1    0    0    -1  
+P 1800 2700
+F 0 "R11" V 1700 2550 40  0000 C CNN
+F 1 "100k" V 1807 2701 40  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 1730 2700 30  0001 C CNN
+F 3 "" H 1800 2700 30  0000 C CNN
+	1    1800 2700
+	0    1    1    0   
 $EndComp
 $Comp
 L R R78
@@ -4184,10 +4184,6 @@ Wire Wire Line
 Wire Wire Line
 	3700 5700 3700 5800
 Wire Wire Line
-	3400 3850 3400 3750
-Wire Wire Line
-	3400 4150 3400 4250
-Wire Wire Line
 	1400 2900 1950 2900
 Wire Wire Line
 	1200 1850 1200 1700
@@ -4684,4 +4680,8 @@ F 3 "" H 1400 3200 60  0000 C CNN
 $EndComp
 Text GLabel 14400 8900 0    39   Input ~ 0
 ACC_PWR
+Wire Wire Line
+	1600 3000 1600 2700
+Wire Wire Line
+	1600 2700 1650 2700
 $EndSCHEMATC
