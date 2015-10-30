@@ -1,4 +1,4 @@
-update=2015 October 21, Wednesday 13:33:58
+update=2015 October 30, Friday 18:45:02
 version=1
 last_client=kicad
 [cvpcb]
@@ -83,3 +83,4 @@ LibName49=usbulc6-2m6
 LibName50=rgbled
 LibName51=lis2dh12
 LibName52=usb_power_module
+LibName53=screw
