@@ -45,7 +45,7 @@ Title "Credit card toy ECG"
 Date "2015. nov 7."
 Rev "v1.1"
 Comp "MobilECG"
-Comment1 "Isza Peter, Robert Csordas"
+Comment1 "Peter Isza, Robert Csordas"
 Comment2 ""
 Comment3 ""
 Comment4 ""
@@ -330,7 +330,7 @@ L OPAMP1 U1
 U 1 1 56049857
 P 3200 3000
 F 0 "U1" H 3200 2500 60  0000 C CNN
-F 1 "OPAMP1" H 3150 3450 50  0000 C CNN
+F 1 "LMV341" H 3150 3450 50  0000 C CNN
 F 2 "Housings_SOT-23_SOT-143_TSOT-6:SOT-23-6" H 3350 3000 60  0001 C CNN
 F 3 "" H 3350 3000 60  0000 C CNN
 	1    3200 3000
