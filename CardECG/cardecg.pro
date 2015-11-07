@@ -1,4 +1,4 @@
-update=2015. November 07., Szombat 14:22:22
+update=2015. November 07., Szombat 15:06:20
 version=1
 last_client=kicad
 [cvpcb]
@@ -65,4 +65,4 @@ LibName31=creditcard
 LibName32=opamp1
 LibName33=ssd1306
 LibName34=tps717
-LibName35=pmos_sot
+LibName35=npmos_gsd
