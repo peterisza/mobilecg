@@ -1,4 +1,4 @@
-update=2015. November 07., Szombat 15:06:20
+update=2015. November 07., Szombat 15:56:37
 version=1
 last_client=kicad
 [cvpcb]
@@ -66,3 +66,4 @@ LibName32=opamp1
 LibName33=ssd1306
 LibName34=tps717
 LibName35=npmos_gsd
+LibName36=3tap
