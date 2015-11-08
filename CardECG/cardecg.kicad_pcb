@@ -3,7 +3,7 @@
   (general
     (links 145)
     (no_connects 0)
-    (area 0 0 0 0)
+    (area 25.772599 20.9226 111.227401 79.9274)
     (thickness 1.6)
     (drawings 12)
     (tracks 752)
@@ -88,7 +88,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory /Users/isza/Desktop/cardecg/gerber/))
+      (outputdirectory gerber/))
   )
 
   (net 0 "")
