@@ -42,7 +42,7 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "Credit card toy ECG"
+Title "Business card toy ECG"
 Date "2015. nov 7."
 Rev "v1.1"
 Comp "MobilECG"
