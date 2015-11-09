@@ -73,10 +73,7 @@ int32_t ADC::get(){
 	
 		if (cnt){
 			data = (data & 0x00800000) ? (0xFF000000 | data) : (data & 0x00FFFFFF);
-			if (divider==1)
-				return data;
-			else
-				return data/divider;
+			return data;
 		}
 		
 		//Wait for the ISR to signal the flag
@@ -141,8 +138,4 @@ bool ADC::setGain(int gain){
 	
 	ADC0CON=adcon;
 	return true;
-}
-
-void ADC::setDivider(int32_t _divider){
-	this->divider=_divider;
 }

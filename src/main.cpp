@@ -60,6 +60,7 @@
 #include "IIRFilter.hpp"
 #include "Time.hpp"
 #include <stdlib.h>
+#include "QRSDetector.hpp"
 
 typedef OS::process<OS::pr0, 400> TProc1;
 TProc1 Proc1;
@@ -84,14 +85,19 @@ DAC da;
 //float den[]={-1.9289422632520337,0.9313816821269029};
 
 //1st order, 1Hz
-//float num[]={0.9408092961815946,-0.9408092961815946};
-//float den[]={-0.8816185923631891};
+float num[]={0.9408092961815946,-0.9408092961815946};
+float den[]={-0.8816185923631891};
 
 //1st order, 0.5Hz
-float num[]={0.9695312529087462,-0.9695312529087462};
-float den[]={-0.9390625058174924};
+//float num[]={0.9695312529087462,-0.9695312529087462};
+//float den[]={-0.9390625058174924};
+
+
+
+QRSDetector detector;
 
 IIRFilter <0x1000000, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filter(num, den);
+
 
 #define BACK_FILTER
 
@@ -168,8 +174,7 @@ namespace OS
 		ad.setRate(50);
 		ad.setGain(4);
 		ad.start();		
-		ad.setDivider(-300);
-		
+
 		int32_t oldval=0;
 		
 		uint32_t fpsTmp=0;
@@ -179,28 +184,37 @@ namespace OS
 		
 
 		
-		
+		int32_t reset=0;
 		
         for(;;)
         {
 			int32_t newval=ad.get();
+			bool qrs=detector.process(newval);
+			newval /= -300;
+			
 			
 			if (abs(oldval-newval)>64*2){
 				resetTimer=startTimer();
 			}
 			
-			if (resetTimer && msPassed(resetTimer, 20)){
+			if (resetTimer && msPassed(resetTimer, 100)){
 				resetTimer=0;
 				filter.reset(newval,true);
+				detector.reset();
 				#ifdef BACK_FILTER
 				filterBack.reset(newval, true);
 				#endif
+
+				reset++;
 			}
 			
 			oldval = newval;
 			
 			fb.clear();
 			ecgData[buffPos] = saturate8(filter.filter(newval));
+
+			//saturate8(detector.getLastThreshold()/300);
+			//saturate8(filter.filter(newval));
 			
 			buffPos++;
 			if (buffPos==ECGBUF_LEN){
@@ -217,7 +231,7 @@ namespace OS
 				fpsTmp=0;
 			}
 			
-			tr.printf(0,0,"%d fps", fps);
+			tr.printf(0,0,"%d %d", fps, detector.getPulseRate());
 			
 			
 			int32_t prewdata=getEcgdata(ECGBUF_LEN-1);
