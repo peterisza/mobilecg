@@ -12,7 +12,7 @@ enclosure(
     pcbRail = 1,
     pcbThickness = 1.6,
     pcbFromBottom = 2,
-    backRailWidth = 12,
+    backRailWidth = 10,
     connectorPosition = 10
 );
 
@@ -109,9 +109,13 @@ module enclosure (
     outerHeight = innerHeight + wallThickness * 2;
     outerDepth = innerDepth + wallThickness * 2;
    
+    pcbX = - innerWidth/2 + innerHeight + separatorWidth;
+    
     color("lightgrey")
         difference() {
             outerWall(outerWidth, outerHeight, outerDepth, wallThickness);
+            translate([pcbX + connectorPosition, pcbFromBottom, 0])
+            hdmiHole();
         }
     
     
@@ -142,7 +146,7 @@ module enclosure (
                 pcbHolderBack(backRailWidth, backRailHeight, pcbRail);
         }
         translate([
-            pcbWidth - innerWidth/2 + innerHeight + separatorWidth,
+            pcbX + pcbWidth,
             -pcbThickness + innerHeight/2 - pcbFromBottom,
             innerDepth - pcbHeight + wallThickness]
         )
