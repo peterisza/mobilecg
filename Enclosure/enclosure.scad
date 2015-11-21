@@ -213,6 +213,13 @@ module lidBase() {
         linear_extrude(hookThickness*2)
             square([w, leftHookHeight], true); 
 
+    intersection() {
+        translate([innerWidth/2 - w/2, 0, wallThickness])
+            linear_extrude(hookThickness)
+                square([w, innerHeight], true);
+        translate([0, 0, wallThickness])
+            mainShape(innerWidth, innerHeight, wallThickness + hookThickness*2); 
+    }
     
     /*x = pcbX + separatorWidth + hookThickness;
     w = innerWidth/2-innerHeight/2 - x;
