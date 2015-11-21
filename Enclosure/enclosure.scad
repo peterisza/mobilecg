@@ -24,7 +24,7 @@ thinRailWidth = 1;
 thinRailDepth = 0.5;
 
 
-cylinderResolution = 20;
+cylinderResolution = 200;
 
 enclosure();
 
