@@ -24,10 +24,13 @@ thinRailWidth = 1;
 thinRailDepth = 0.5;
 
 
+cylinderResolution = 20;
+
 enclosure();
 
 
 pcbX = -innerWidth/2 + innerHeight + separatorWidth;
+pcbTop = wallThickness + pcbFromBottom + pcbThickness;
 outerWidth = innerWidth + wallThickness * 2;
 outerHeight = innerHeight + wallThickness * 2;
 outerDepth = innerDepth + wallThickness * 2;
@@ -56,24 +59,23 @@ module mainShape(width, height, depth) {
     linear_extrude(depth)
         square([iWidth, height], true);
     translate([-iWidth/2, 0, 0])
-        cylinder(r = radius, h = depth);
+        cylinder(r = radius, h = depth, $fn = cylinderResolution);
     translate([+iWidth/2, 0, 0])
-        cylinder(r = radius, h = depth);
+        cylinder(r = radius, h = depth, $fn = cylinderResolution);
 }
 
-module outerWall(width, height, depth) {
+module outerWall() {
     w2 = wallThickness * 2;
     difference() {
-        mainShape(width, height, depth);
+        mainShape(outerWidth, outerHeight, outerDepth);
         translate([0, 0, -eps])
-            mainShape(width-w2, height-w2, depth-w2);
+            mainShape(outerWidth-w2, outerHeight-w2, outerDepth-w2);
         /*translate([0,0,-1])
             linear_extrude(wallThickness+1+eps)
-                square([width+10, height+10], true);*/
+                square([outerWidth+10, outerHeight+10], true);*/
         translate([0,-50,-eps])
             linear_extrude(wallThickness+hookThickness*2+eps)
                 square([100,100], true);
-
     }
 }
 
@@ -85,26 +87,13 @@ module separator(width, height, depth) {
             linear_extrude(depth)
                 square([w, height], true);
             translate([-w/2, 0, -eps])
-                cylinder(r = r, h = depth+2*eps);
+                cylinder(r = r, h = depth+2*eps, $fn = cylinderResolution);
             translate([w/2-pcbRail/2, height/2-pcbThickness/2-pcbFromBottom, -eps])
                 linear_extrude(depth+eps*2)
                     square([pcbRail+eps, pcbThickness], true);
         }
 }
 
-module pcbHolderRight(width, height, depth) {
-    r = height/2.0;
-    w = r*2.0-width+1;
-    difference() {
-        cylinder(r = r, h = depth);
-        translate([-w/2.0+r/2.0, 0, -eps])
-            linear_extrude(depth+eps*2)
-                square([w, height], true);
-        translate([0, -(height+2)/2, -eps])
-            linear_extrude(depth+eps*2)
-                square([height+2, height+2], true);        
-    }
-}
 
 module hdmiHole() {
     w = 11.5;
@@ -129,7 +118,7 @@ module lidHole() {
 module sideHook(innerWidth, innerHeight, hookWidth) {
     r = innerHeight/2;
     intersection() {
-        cylinder(r = r, h = hookThickness+eps);
+        cylinder(r = r, h = hookThickness+eps, $fn = cylinderResolution);
         w = hookWidth;
         translate([innerHeight/2 - w/2, innerHeight/2 - hookThickness, 0])
             linear_extrude(hookThickness)
@@ -150,6 +139,20 @@ module hooks() {
         translate([innerWidth/2 - innerHeight/2, 0, wallThickness])
             sideHook(innerWidth, outerHeight, wallThickness);
     }    
+}
+
+module pcbHolderRight(width, height, depth) {
+    r = height/2.0;
+    w = r*2.0-width+1;
+    difference() {
+        cylinder(r = r, h = depth, $fn = cylinderResolution);
+        translate([-w/2.0+r/2.0, 0, -eps])
+            linear_extrude(depth+eps*2)
+                square([w, height], true);
+        translate([0, -(height+2)/2, -eps])
+            linear_extrude(depth+eps*2)
+                square([height+2, height+2], true);        
+    }
 }
 
 module pcbHolders() {
@@ -194,13 +197,43 @@ module logo() {
                     import (file = "logo2.dxf");    
 }
 
-module enclosure (
-)
-{
+module lidBase() {
+    difference() {
+        mainShape(outerWidth, outerHeight, wallThickness + hookThickness*2);
+        translate([0, 0, wallThickness])
+            mainShape(innerWidth, innerHeight, wallThickness + hookThickness*2);  
+    }
+
+    translate([-lidHoleWidth/2 + innerWidth/2 - lidHolePosition, -hookThickness/2 + innerHeight/2, wallThickness])
+        linear_extrude(hookThickness)
+            square([lidHoleWidth + hookThickness * 4, hookThickness], true);  
+
+    w = hookThickness * 2;
+    translate([pcbX + pcbRail + w/2, leftHookHeight/2 - innerHeight/2, wallThickness])
+        linear_extrude(hookThickness*2)
+            square([w, leftHookHeight], true); 
+
     
+    /*x = pcbX + separatorWidth + hookThickness;
+    w = innerWidth/2-innerHeight/2 - x;
+
+    translate([+w/2+x, 0, wallThickness])
+        linear_extrude(hookThickness)
+            square([w, innerHeight], true);*/
+}
+
+module lid() {
+    difference() {
+        lidBase();
+        enclosure();
+    }
+}
+
+module enclosure ()
+{
     color("lightgrey")
         difference() {
-            outerWall(outerWidth, outerHeight, outerDepth);
+            outerWall();
             hdmiHole();   
             logo();
             lidHole();
@@ -213,24 +246,22 @@ module enclosure (
             pcbHolders();
             hooks();
         }
-        
-        translate([
-            pcbX + pcbWidth,
-            -pcbThickness + innerHeight/2 - pcbFromBottom,
-            innerDepth - pcbHeight + wallThickness]
-        )
-            rotate([90, 0, 180])
-                pcb();
+        pcb();
     }
 
-    color("green")
-
-
-            pcb();
+    /*color("green")
+        pcb();*/
 }
 
+color("red")
+    translate([0, outerHeight/2/* - wallThickness - hookThickness*2*/, -10])
+    rotate([90, 0, 0])
+        lid();
 
 
+/*
+translate([0, -6, 0])
+    lid();*/
 
 
 
