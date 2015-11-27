@@ -62,12 +62,22 @@
 #include <stdlib.h>
 #include "QRSDetector.hpp"
 
+
+Pin <0,4> pullup_off;
+Pin <2,0> power_on;
+
 typedef OS::process<OS::pr0, 400> TProc1;
 TProc1 Proc1;
 
 volatile int pina;
 int main()
 {
+	power_on.direct(OUTPUT);
+	power_on.on();
+
+	pullup_off.direct(OUTPUT);
+	pullup_off.on();
+	
     // run OS
     OS::run();
 }
