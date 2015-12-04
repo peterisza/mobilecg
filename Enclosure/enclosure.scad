@@ -69,7 +69,7 @@ module outerWall() {
     difference() {
         mainShape(outerWidth, outerHeight, outerDepth);
         translate([0, 0, -eps])
-            mainShape(outerWidth-w2, outerHeight-w2, outerDepth-w2);
+            mainShape(outerWidth-w2, outerHeight-w2, outerDepth-wallThickness);
         /*translate([0,0,-1])
             linear_extrude(wallThickness+1+eps)
                 square([outerWidth+10, outerHeight+10], true);*/
@@ -79,7 +79,7 @@ module outerWall() {
     }
 }
 
-module separator(width, height, depth) {
+module separator(width, height, depth, skip) {
     r = height/2;
     w = width+r+pcbRail;
     translate([w/2, 0, 0])
@@ -91,7 +91,10 @@ module separator(width, height, depth) {
             translate([w/2-pcbRail/2, height/2-pcbThickness/2-pcbFromBottom, -eps])
                 linear_extrude(depth+eps*2)
                     square([pcbRail+eps, pcbThickness], true);
-        }
+            translate([-w+r, -r, -eps])
+                linear_extrude(skip)
+                    square([r, r], true);             
+        }  
 }
 
 
@@ -161,9 +164,8 @@ module pcbHolders() {
             separatorWidth,
             innerHeight,
             separatorDepth,
-            pcbThickness,
-            pcbFromBottom,
-            pcbRail);
+            wallThickness+hookThickness
+        );
     
     translate([
         -innerWidth/2 + innerHeight + separatorWidth + hookThickness/2,
