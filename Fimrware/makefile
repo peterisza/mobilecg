@@ -37,6 +37,7 @@
 	MCU			= cortex-m4
 	FPU			= -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 
+	STM32_LIB_WARNING_SUPRESS = -Wno-unused-parameter -Wno-cast-align -Wno-pointer-sign -Wno-redundant-decls -Wno-sign-compare
 ###########################################################
 #  common part for all my cortex-m3/m4 projects
 ###########################################################
@@ -94,7 +95,7 @@ endif
 	DIRS	:= $(SRCDIR)
 	DIRS	+= $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Include $(CUBEDIR)/Drivers/CMSIS/Include
 	DIRS	+= $(CUBEDIR)/Drivers/STM32F4xx_HAL_Driver/Src $(CUBEDIR)/Drivers/STM32F4xx_HAL_Driver/Inc 
-	DIRS	+= $(CUBEDIR)/Src
+	DIRS	+= $(CUBEDIR)/Src $(CUBEDIR)/Inc
 	DIRS    += $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src
 	DIRS	+= $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src
 	DIRS	+= $(SRCDIR)/OS/startup $(SRCDIR)/OS/config $(SRCDIR)/OS
@@ -140,6 +141,7 @@ endif
 	CFLAGS	+= -Wall -Wextra
 	CFLAGS	+= -Wimplicit -Wcast-align -Wpointer-arith -Wredundant-decls
 	CFLAGS	+= -Wshadow -Wcast-qual -Wnested-externs -pedantic
+	CFLAGS  += $(STM32_LIB_WARNING_SUPRESS)
 
 	CXXFLAGS	= $(FLAGS)
 	CXXFLAGS	+= $(OPTIMIZE)
@@ -224,6 +226,7 @@ all :
 
 patch:
 	patch -p0 < patches/renameMain.patch
+	patch -p0 < patches/cdcCaseFix.patch
 
 build:
 	$(MAKE) clean

@@ -110,6 +110,8 @@ void DCMI_IRQHandler              (void);
 void CRYP_IRQHandler              (void);
 void HASH_RNG_IRQHandler          (void);
 void FPU_IRQHandler               (void);
+void SPI4_IRQHandler              (void);
+void SPI5_IRQHandler              (void);
 
 /******************************************************************************
 * Vector table for a Cortex M4F.
@@ -219,7 +221,7 @@ void (* const g_pfnVectors[])(void) =
 	DCMI_IRQHandler,                   /* DCMI                         */
 	CRYP_IRQHandler,                   /* CRYP crypto                  */
 	HASH_RNG_IRQHandler,               /* Hash and Rng                 */
-	FPU_IRQHandler                     /* FPU                          */
+	FPU_IRQHandler,                    /* FPU                          */
 	0,
 	0,
 	SPI4_IRQHandler,
