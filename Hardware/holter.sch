@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:holter-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -4632,7 +4631,7 @@ Wire Wire Line
 Wire Wire Line
 	10100 4500 9600 4500
 Connection ~ 10100 3050
-Text GLabel 2900 1450 1    39   Input ~ 0
+Text GLabel 2900 1450 1    39   Output ~ 0
 EN_3V3
 NoConn ~ 7150 3050
 $Comp
