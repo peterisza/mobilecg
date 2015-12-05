@@ -222,6 +222,9 @@ all :
 	$(SIZE) $(ELF)
 	@echo "Errors: none"
 
+patch:
+	patch -p0 < patches/renameMain.patch
+
 build:
 	$(MAKE) clean
 	$(MAKE) all

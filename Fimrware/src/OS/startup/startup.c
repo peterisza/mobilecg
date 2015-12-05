@@ -220,6 +220,10 @@ void (* const g_pfnVectors[])(void) =
 	CRYP_IRQHandler,                   /* CRYP crypto                  */
 	HASH_RNG_IRQHandler,               /* Hash and Rng                 */
 	FPU_IRQHandler                     /* FPU                          */
+	0,
+	0,
+	SPI4_IRQHandler,
+	SPI5_IRQHandler
 };
 
 void Reset_Handler(void)
@@ -351,6 +355,8 @@ void __Init_Data(void)
 #pragma weak CRYP_IRQHandler                = Default_Handler
 #pragma weak HASH_RNG_IRQHandler            = Default_Handler
 #pragma weak FPU_IRQHandler                 = Default_Handler
+#pragma weak SPI4_IRQHandler                = Default_Handler
+#pragma weak SPI5_IRQHandler                = Default_Handler
 
 void Default_Handler(void)
 {
