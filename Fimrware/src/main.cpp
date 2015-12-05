@@ -48,6 +48,10 @@
 #include <scmRTOS.h>
 #include "hw.h"
 
+extern "C"{
+    uint32_t SystemCoreClock;
+}
+
 //---------------------------------------------------------------------------
 //
 //      Process types
