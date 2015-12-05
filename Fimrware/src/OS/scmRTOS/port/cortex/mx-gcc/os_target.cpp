@@ -274,7 +274,7 @@ enum
  * System timer stuff.
  */
 #if (SCMRTOS_USE_CUSTOM_TIMER == 0)
-OS_INTERRUPT void SysTick_Handler()
+OS_INTERRUPT void HAL_SYSTICK_Callback()
 {
     system_timer_isr();
 }

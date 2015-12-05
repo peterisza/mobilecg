@@ -59,9 +59,9 @@ else
 #	FLASHER		= st-flash
 endif
 	DOXYGEN		= doxygen
-	RM			= rm -f
+	RM			= rm -rf
 	CP			= cp
-	MD			= mkdir
+	MD			= mkdir -p
 
 
 # dirs
@@ -85,10 +85,10 @@ endif
 	LD_SCRIPT	= $(CHIP).ld
 
 # scmRTOS dir
-	SCMDIR		= src/OS/scmRTOS
+	SCMDIR		= $(SRCDIR)/OS/scmRTOS
 
 # STM32 CubeMX generated directory
-	CUBEDIR = src/STM32
+	CUBEDIR = $(SRCDIR)/STM32
  
 
 # source directories (all *.c, *.cpp and *.S files included)
@@ -227,6 +227,7 @@ all :
 patch:
 	patch -p0 < patches/renameMain.patch
 	patch -p0 < patches/cdcCaseFix.patch
+	mv $(CUBEDIR)/Src/main.c $(CUBEDIR)/Src/stm32_init.c
 
 build:
 	$(MAKE) clean
@@ -238,7 +239,7 @@ $(LSS): $(ELF) makefile
 	$(OBJDUMP) -dC $(ELF) > $(LSS)
 
 $(ELF):	$(OBJS) $(LIBS) makefile
-	@echo --- linking...
+	@echo --- linking... 
 	$(LD) $(OBJS) $(LD_FLAGS) -o "$(ELF)"
 
 $(HEX): $(ELF) makefile
@@ -311,14 +312,7 @@ $(LSTDIR):
 
 
 clean:
-	-@$(RM) $(OBJDIR)/*.d 2>/dev/null
-	-@$(RM) $(OBJDIR)/*.o 2>/dev/null
-	-@$(RM) $(LSTDIR)/*.lst 2>/dev/null
-	-@$(RM) $(ELF)
-	-@$(RM) $(HEX)
-	-@$(RM) $(BIN)
-	-@$(RM) $(LSS)
-	-@$(RM) $(MAP)
+	-@$(RM) $(TARGETDIR) 2>/dev/null
 
 
 #discovery target for Eclipse parser

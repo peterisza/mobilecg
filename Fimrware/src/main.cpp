@@ -132,13 +132,19 @@ namespace OS
     template <>
     OS_PROCESS void TProc2::exec()
     {
-		test_context(0x12345678);
+         for(;;)
+        {
+            sleep(1000);
+        }
     }
 
     template <>
     OS_PROCESS void TProc3::exec()
     {
-		test_context(0x87654321);
+         for(;;)
+        {
+            sleep(1000);
+        }
     }
 
     // Heartbeat
