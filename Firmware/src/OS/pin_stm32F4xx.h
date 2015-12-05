@@ -360,16 +360,19 @@ struct Pin
 	} GPIOxBbBits;
 
 
-	static struct
+	typedef struct
 	{
 		GPIOxTypeDef* operator-> () { return (GPIOxTypeDef*)GPIOx_BASE; }
-	}GPIOx;
+	} GPIOxType;
 
-	static struct
+	typedef struct
 	{
 		GPIOxBbBits* operator-> () { return (GPIOxBbBits*)GPIO_BB_ADDR; }
-	}BBBits;
-
+	} BBBitsType;
+	
+	static BBBitsType BBBits;
+	static GPIOxType GPIOx;
+	
 	INLINE static void On(bool set_on=true)
 	{
 		(activestate == 'H') == set_on ? GPIOx->BSRR = mask : GPIOx->BSRR = clearmask;
@@ -542,6 +545,12 @@ struct Pin
 	}
 
 };
+
+template<char port, int pin_no, char activestate, PinSpeed speed>
+typename Pin<port, pin_no, activestate, speed>::BBBitsType Pin<port, pin_no, activestate, speed>::BBBits;
+
+template<char port, int pin_no, char activestate, PinSpeed speed>
+typename Pin<port, pin_no, activestate, speed>::GPIOxType Pin<port, pin_no, activestate, speed>::GPIOx;
 
 
 #endif // STM32TPL_PIN_STM32F4XX_H_INCLUDED
