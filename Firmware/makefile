@@ -10,11 +10,13 @@
 #
 #----------------------------------------------------------------------------
 
+	TOOLCHAINDIR = 
+	-include makefile.local
 # program name
 	TARGET	= mobilecg
 
 # toolchain
-	TOOL	= arm-none-eabi-
+	TOOL	= $(TOOLCHAINDIR)arm-none-eabi-
 
 # program version
     VER_MAJOR   = 0
