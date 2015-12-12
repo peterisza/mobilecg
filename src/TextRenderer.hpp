@@ -19,6 +19,12 @@ class TextRenderer{
 		
 		void render(uint32_t x, uint32_t y, const char *str);
 		void printf(uint32_t x, uint32_t y, const char *format, ...);
+		
+		enum SpecialCoordinate {
+			ALIGN_CENTER = 0x1000,
+			ALIGN_RIGHT  = 0x2000,
+			ALIGN_LEFT   = 0
+		};
 };
 
 #endif

@@ -48,5 +48,14 @@ void TextRenderer::printf(uint32_t x, uint32_t y, const char *format, ...){
 	vsnprintf(buffer, sizeof(buffer), format, vl);
 	va_end(vl);
 	
+	if(x & ALIGN_CENTER)
+		x -= (font->w + hSpacing) * strlen(buffer) / 2; 
+
+	if(x & ALIGN_RIGHT)
+		x -= (font->w + hSpacing) * strlen(buffer); 
+		
+	x &= 0xFFF;
+		
 	render(x,y,buffer);
 }
+

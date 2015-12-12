@@ -54,7 +54,7 @@ int32_t ADC::get(){
 		
 	while (1){
 		//Read data from buffer if available.
-		//To do this in safe way we must disable interrupts
+		//To do this in a safe way we must disable interrupts
 		//to prevent writing the ring buffer in the middle of
 		//reading form it.
 		

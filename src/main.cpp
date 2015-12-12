@@ -50,6 +50,7 @@
 #include "display.hpp"
 #include <cstring>
 #include "logo.hpp"
+#include "waiting.hpp"
 #include "framebuffer.hpp"
 #include "TextRenderer.hpp"
 #include "printf.hpp"
@@ -61,7 +62,7 @@
 #include "Time.hpp"
 #include <stdlib.h>
 #include "QRSDetector.hpp"
-
+#include "SignalQuality.hpp"
 
 Pin <0,4> pullup_off;
 Pin <2,0> power_on;
@@ -105,6 +106,7 @@ float den[]={-0.8816185923631891};
 
 
 QRSDetector detector;
+SignalQuality signalQuality;
 
 IIRFilter <0x1000000, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filter(num, den);
 
@@ -125,6 +127,8 @@ IIRFilter <0x1000000, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filt
 #define ECGBUF_LEN (Framebuffer::width+BACK_BUF)
 int8_t ecgData[ECGBUF_LEN];
 volatile int buffPos=0;
+
+const int turnOffTimeLimit = 5*50;
 
 int8_t saturate8(int32_t data){
 	if (data>127)
@@ -195,6 +199,7 @@ namespace OS
 
 		
 		int32_t reset=0;
+		int turnOffCounter = 0;
 		
         for(;;)
         {
@@ -220,8 +225,9 @@ namespace OS
 			
 			oldval = newval;
 			
-			fb.clear();
 			ecgData[buffPos] = saturate8(filter.filter(newval));
+
+			signalQuality.processSample(newval, ecgData[buffPos]);
 
 			//saturate8(detector.getLastThreshold()/300);
 			//saturate8(filter.filter(newval));
@@ -241,27 +247,56 @@ namespace OS
 				fpsTmp=0;
 			}
 			
-			tr.printf(0,0,"%d %d", fps, detector.getPulseRate());
-			
-			
-			int32_t prewdata=getEcgdata(ECGBUF_LEN-1);
-			#ifdef BACK_FILTER
-			//	filterBack.reset(prewdata, true);
-			#endif
-			for (int a=ECGBUF_LEN-1; a>0; a--){
-				int32_t data=getEcgdata(a);
+			if(signalQuality.isSignalGood()) {
+				fb.clear();
+				//tr.printf(0,0,"%d %d", fps, detector.getPulseRate());
+				//tr.printf(127 | TextRenderer::ALIGN_RIGHT,0,"%d", signalQuality.getNoiseQuantity() );
+				tr.printf(127 | TextRenderer::ALIGN_RIGHT,0,"%d", detector.getPulseRate());
 				
-				if (a<(fb.width-1)){
-					int32_t avg=(data+prewdata)>>1;
-					fb.vLine(a+1, prewdata, avg);
-					fb.vLine(a, avg, data);
-					//fb.setPixel(a,data);
+				int32_t prevdata=getEcgdata(ECGBUF_LEN-1);
+				#ifdef BACK_FILTER
+				//	filterBack.reset(prevdata, true);
+				#endif
+				for (int a=ECGBUF_LEN-1; a>0; a--){
+					int32_t data=getEcgdata(a);
+					
+					if (a<(fb.width-1)){
+						int32_t avg=(data+prevdata)>>1;
+						fb.vLine(a+1, prevdata, avg);
+						fb.vLine(a, avg, data);
+						//fb.setPixel(a,data);
+					}
+					
+					prevdata=data;
+				}
+				turnOffCounter = 0;
+			} else {
+				if(turnOffCounter == 0) {
+					fb.drawImage(0,0,waiting);
+					pullup_off.off();
 				}
 				
-				prewdata=data;
+				if(turnOffCounter == 1) {
+					pullup_off.on();
+				}
+				
+				int sec = (turnOffTimeLimit + 10 - turnOffCounter) / 50;
+				
+				tr.printf(0,0,"%d", sec);			
+				
+				turnOffCounter++;
+				
+				if(turnOffCounter > turnOffTimeLimit) {
+					pullup_off.off();
+					power_on.off();
+				} 
+				
+				if(turnOffCounter > turnOffTimeLimit + 10) {
+					pullup_off.on();
+					power_on.on();
+					turnOffCounter = 1;
+				}
 			}
-			
-			
 			
 			display.sendFramebuffer(fb.getImage());
          	
