@@ -58,7 +58,7 @@
 //     3. In the interrupt handler of the custom timer, the user needs to call
 //        OS::system_timer_isr().
 //
-#define SCMRTOS_USE_CUSTOM_TIMER 0
+#define SCMRTOS_USE_CUSTOM_TIMER 1
 
 //------------------------------------------------------------------------------
 // Define SysTick clock frequency and its interrupt rate in Hz.

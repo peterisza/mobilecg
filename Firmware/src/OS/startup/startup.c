@@ -236,6 +236,7 @@ void Reset_Handler(void)
 }
 
 extern void init_HW(void);
+extern void SystemInit();
 
 void __Init_Data(void)
 {
@@ -250,6 +251,7 @@ void __Init_Data(void)
 		*(pulDest++) = 0;
 
 	/* Init hardware before calling constructors */
+//	SystemInit();
 	init_HW();
 
 	/* Call constructors */
@@ -364,3 +366,5 @@ void Default_Handler(void)
 {
 	for (;;);
 }
+
+

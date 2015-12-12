@@ -48,10 +48,6 @@
 #include <scmRTOS.h>
 #include "hw.h"
 
-extern "C"{
-    uint32_t SystemCoreClock;
-}
-
 //---------------------------------------------------------------------------
 //
 //      Process types
@@ -65,8 +61,8 @@ typedef OS::process<OS::pr3, 300> TProc4;
 //      Process objects
 //
 TProc1 Proc1;
-TProc2 Proc2;
 TProc3 Proc3;
+TProc2 Proc2;
 TProc4 Proc4;
 
 /**
@@ -104,12 +100,12 @@ OS_PROCESS void test_context(uint32_t param);
 int main()
 {
     // configure LEDs
-    RedLED::Direct(OUTPUT);
+   /* RedLED::Direct(OUTPUT);
     RedLED::Off();
     GreenLED::Direct(OUTPUT);
     GreenLED::Off();
     OrangeLED::Direct(OUTPUT);
-    OrangeLED::Off();
+    OrangeLED::Off();*/
 
     // run
     OS::run();
@@ -123,13 +119,15 @@ namespace OS
     	sleep(2);
 		for(;;)
 		{
-			PiCalculator piCalc(100000000);
+			/*PiCalculator piCalc(100000000);
 			while (!piCalc.done())
 			{
 				for(int i = 0; i < 100; i++)
 					piCalc.step();
 				sleep(1);
-			}
+			}*/
+
+			sleep(1000);
 		}
     }
 
@@ -159,10 +157,12 @@ namespace OS
         {
     		for(;;)
     		{
-    			GreenLED::On();
-    			sleep(50);
-    			GreenLED::Off();
-    			sleep(950);
+    			LED0::On();
+    			LED1::Off();
+    			sleep(500);
+    			LED1::On();
+    			LED0::Off();
+    			sleep(500);
     		}
         }
     }

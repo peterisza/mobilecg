@@ -1,0 +1,11 @@
+--- /Volumes/Data/Users/xdever/asd/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c	2015-11-27 15:24:25.000000000 +0100
++++ src/STM32/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c	2015-12-12 16:26:59.000000000 +0100
+@@ -203,6 +203,8 @@
+ #else
+   SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
+ #endif
++
++  NVIC_SetPriorityGrouping(5);
+ }
+ 
+ /**

@@ -103,6 +103,7 @@ endif
 	DIRS	+= $(SRCDIR)/OS/startup $(SRCDIR)/OS/config $(SRCDIR)/OS
 	DIRS	+= $(SCMDIR)/core $(SCMDIR)/port/cortex/mx-gcc
 	DIRS	+= $(SCMDIR)/ext/profiler
+#	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 
 # includes
 	INCS	:= $(patsubst %, -I "%", $(DIRS))
@@ -226,9 +227,10 @@ all :
 	$(SIZE) $(ELF)
 	@echo "Errors: none"
 
-patch:
+patch: clean
 	patch -p0 < patches/renameMain.patch
-	patch -p0 < patches/cdcCaseFix.patch
+	#patch -p0 < patches/cdcCaseFix.patch
+	patch -p0 < patches/priority.patch
 	mv $(CUBEDIR)/Src/main.c $(CUBEDIR)/Src/stm32_init.c
 
 build:

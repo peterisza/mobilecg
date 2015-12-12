@@ -10,7 +10,7 @@ ENTRY(Reset_Handler)
  * This constant is used to check that at least STACK_SIZE of RAM
  * is available for stack. If not, linker will issue an error.
  */
-STACK_SIZE = 0x100 ;
+STACK_SIZE = 0x400 ;
 
 /**
  * This constant is used to check that at least HEAP_SIZE of RAM

@@ -14,10 +14,8 @@
 //
 //      IO Pins (stm32f4discovery LEDs)
 //
-typedef Pin<'D', 15> BlueLED;
-typedef Pin<'D', 14> RedLED;
-typedef Pin<'D', 12> GreenLED;
-typedef Pin<'D', 13> OrangeLED;
+typedef Pin<'B', 6> LED0;
+typedef Pin<'B', 7> LED1;
 
 
 #endif /* HW_H_ */
