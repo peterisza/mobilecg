@@ -1,0 +1,11 @@
+--- /Volumes/Data/Users/xdever/cmsis_os.h	2015-11-27 15:24:30.000000000 +0100
++++ src/STM32/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h	2015-12-13 17:55:22.000000000 +0100
+@@ -309,7 +309,7 @@
+ /// Thread Definition structure contains startup information of a thread.
+ /// \note CAN BE CHANGED: \b os_thread_def is implementation specific in every CMSIS-RTOS.
+ typedef struct os_thread_def  {
+-  char                   *name;        ///< Thread name 
++  const char             *name;        ///< Thread name
+   os_pthread             pthread;      ///< start address of thread function
+   osPriority             tpriority;    ///< initial thread priority
+   uint32_t               instances;    ///< maximum number of instances of that thread function

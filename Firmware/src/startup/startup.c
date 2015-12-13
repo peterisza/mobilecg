@@ -252,6 +252,7 @@ void __Init_Data(void)
 
 	/* Init hardware before calling constructors */
 	SystemInit();
+	init_HW();
 
 	/* Call constructors */
 	unsigned long *ctors;

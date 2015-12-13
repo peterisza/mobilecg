@@ -103,6 +103,7 @@ endif
 	DIRS    += $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/
 	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 	DIRS	+= $(SRCDIR)/startup
+	DIRS    += $(SRCDIR)/wrappers
 
 #	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 
@@ -163,7 +164,7 @@ ifeq ($(USE_CPP11),YES)
 	CXXFLAGS	+= -Wall -Wextra
 	CXXFLAGS	+= -Winline
 	CXXFLAGS	+= -Wpointer-arith -Wredundant-decls
-	CXXFLAGS	+= -Wshadow -Wcast-qual -Wcast-align -pedantic
+	CXXFLAGS	+= -Wshadow -Wcast-qual -Wcast-align -pedantic -Wno-variadic-macros
 
 	LD_FLAGS	= -mcpu=$(MCU)
 	LD_FLAGS	+= -mthumb
@@ -230,6 +231,7 @@ all :
 
 patch: clean
 	patch -p0 < patches/main.patch
+	patch -p0 < patches/cmsis_os.patch
 	#patch -p0 < patches/cdcCaseFix.patch
 	mv src/STM32/Src/main.c src/STM32/Src/inithw.c
 
