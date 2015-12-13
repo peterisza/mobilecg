@@ -39,7 +39,7 @@
 	MCU			= cortex-m4
 	FPU			= -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 
-	STM32_LIB_WARNING_SUPRESS = -Wno-unused-parameter -Wno-cast-align -Wno-pointer-sign -Wno-redundant-decls -Wno-sign-compare
+	STM32_LIB_WARNING_SUPRESS = -Wno-unused-parameter -Wno-cast-align -Wno-pointer-sign -Wno-redundant-decls -Wno-sign-compare -Wno-cast-qual -Wno-missing-field-initializers
 ###########################################################
 #  common part for all my cortex-m3/m4 projects
 ###########################################################
@@ -73,7 +73,7 @@ endif
 	EXEDIR		= $(TARGETDIR)/exe
 	LSTDIR		= $(TARGETDIR)/lst
 	PRJDIR		= $(TARGETDIR)/prj
-	LD_SCRIPTS	= $(SRCDIR)/OS/linker
+	LD_SCRIPTS	= $(SRCDIR)/linker
 
 # files
 	HEX		= $(EXEDIR)/$(TARGET).hex
@@ -86,9 +86,6 @@ endif
 # linker script (chip dependent)
 	LD_SCRIPT	= $(CHIP).ld
 
-# scmRTOS dir
-	SCMDIR		= $(SRCDIR)/OS/scmRTOS
-
 # STM32 CubeMX generated directory
 	CUBEDIR = $(SRCDIR)/STM32
  
@@ -100,9 +97,13 @@ endif
 	DIRS	+= $(CUBEDIR)/Src $(CUBEDIR)/Inc
 	DIRS    += $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src
 	DIRS	+= $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc $(CUBEDIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src
-	DIRS	+= $(SRCDIR)/OS/startup $(SRCDIR)/OS/config $(SRCDIR)/OS
-	DIRS	+= $(SCMDIR)/core $(SCMDIR)/port/cortex/mx-gcc
-	DIRS	+= $(SCMDIR)/ext/profiler
+	DIRS    += $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/ $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/Include
+	DIRS    += $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang
+	DIRS    += $(CUBEDIR)/Third_Party/FreeRTOS/Source/CMSIS_RTOS $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/include/
+	DIRS    += $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/
+	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
+	DIRS	+= $(SRCDIR)/startup
+
 #	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 
 # includes
@@ -228,10 +229,9 @@ all :
 	@echo "Errors: none"
 
 patch: clean
-	patch -p0 < patches/renameMain.patch
+	patch -p0 < patches/main.patch
 	#patch -p0 < patches/cdcCaseFix.patch
-	patch -p0 < patches/priority.patch
-	mv $(CUBEDIR)/Src/main.c $(CUBEDIR)/Src/stm32_init.c
+	mv src/STM32/Src/main.c src/STM32/Src/inithw.c
 
 build:
 	$(MAKE) clean
