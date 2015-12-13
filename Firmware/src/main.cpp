@@ -4,7 +4,7 @@
 GPIO led1('B', 6);
 GPIO led2('B', 7);
 
-TASK(mainTask, [] (OS::Task &task) {
+void mainTaskCallback (OS::Task &task) {
 	UNUSED(task);
 
 	while(1){
@@ -18,7 +18,9 @@ TASK(mainTask, [] (OS::Task &task) {
 
 		OS::sleep(500);
 	}
-});
+}
+
+TASK(mainTask,mainTaskCallback);
 
 
 int main(){

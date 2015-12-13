@@ -1,0 +1,11 @@
+--- /Volumes/Data/Users/xdever/TI/Connectivity/CC256X BT/CC256x STM32 Bluetopia SDK/v4.0.2.2/FreeRTOS/Bluetopia/btpsvend/CC256XB.h	2015-07-01 18:44:48.000000000 +0200
++++ src/Bluetopia/btpsvend/CC256XB.h	2015-12-13 20:53:32.000000000 +0100
+@@ -23,7 +23,7 @@
+ #ifndef _CC256XB_H_
+ #define _CC256XB_H_
+ 
+-#include "bttypes.h"
++#include "BTTypes.h"
+ 
+    /* *********************************************************************** */
+    /* ************************** Patch RAM Version ************************** */

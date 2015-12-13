@@ -34,6 +34,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+extern DMA_HandleTypeDef hdma_usart2_rx;
+
+extern DMA_HandleTypeDef hdma_usart2_tx;
+
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -90,6 +94,36 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* Peripheral DMA init*/
+  
+    hdma_usart2_rx.Instance = DMA1_Stream5;
+    hdma_usart2_rx.Init.Channel = DMA_CHANNEL_4;
+    hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.Mode = DMA_NORMAL;
+    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_usart2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    HAL_DMA_Init(&hdma_usart2_rx);
+
+    __HAL_LINKDMA(huart,hdmarx,hdma_usart2_rx);
+
+    hdma_usart2_tx.Instance = DMA1_Stream6;
+    hdma_usart2_tx.Init.Channel = DMA_CHANNEL_4;
+    hdma_usart2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_usart2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart2_tx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart2_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart2_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart2_tx.Init.Mode = DMA_NORMAL;
+    hdma_usart2_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_usart2_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    HAL_DMA_Init(&hdma_usart2_tx);
+
+    __HAL_LINKDMA(huart,hdmatx,hdma_usart2_tx);
+
   /* USER CODE BEGIN USART2_MspInit 1 */
 
   /* USER CODE END USART2_MspInit 1 */
@@ -116,6 +150,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 
+    /* Peripheral DMA DeInit*/
+    HAL_DMA_DeInit(huart->hdmarx);
+    HAL_DMA_DeInit(huart->hdmatx);
   }
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 

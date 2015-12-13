@@ -40,6 +40,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
+DMA_HandleTypeDef hdma_usart2_tx;
 
 //osThreadId defaultTaskHandle;
 
@@ -51,6 +53,7 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 //void StartDefaultTask(void const * argument);
 
@@ -80,6 +83,7 @@ void init_HW(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
@@ -179,6 +183,22 @@ void MX_USART2_UART_Init(void)
 
 }
 
+/** 
+  * Enable DMA controller clock
+  */
+void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+
+}
+
 /** Configure pins as 
         * Analog 
         * Input 
@@ -230,10 +250,10 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PB0 PB1 PB2 PB10 
                            PB12 PB13 PB14 PB15 
-                           PB3 PB4 PB5 PB9 */
+                           PB3 PB4 PB5 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_10 
                           |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-                          |GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_9;
+                          |GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -257,6 +277,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }

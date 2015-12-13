@@ -88,7 +88,9 @@ endif
 
 # STM32 CubeMX generated directory
 	CUBEDIR = $(SRCDIR)/STM32
- 
+	BLUETOOTH_DIR = $(SRCDIR)/Bluetopia
+	BTLIBDIR = $(BLUETOOTH_DIR)/lib/gcc
+	BTLIBFILE = Bluetopia_32_M4.fp_HW_FP
 
 # source directories (all *.c, *.cpp and *.S files included)
 	DIRS	:= $(SRCDIR)
@@ -104,6 +106,7 @@ endif
 	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 	DIRS	+= $(SRCDIR)/startup
 	DIRS    += $(SRCDIR)/wrappers
+	DIRS    += $(BLUETOOTH_DIR)/btpskrnl $(BLUETOOTH_DIR)/btpsvend $(BLUETOOTH_DIR)/btvs $(BLUETOOTH_DIR)/hcitrans.dma  $(BLUETOOTH_DIR)/include
 
 #	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 
@@ -178,6 +181,7 @@ endif
 	LD_FLAGS	+= -Wl,--gc-sections
 	LD_FLAGS	+= -L$(LD_SCRIPTS)
 	LD_FLAGS	+= -T$(LD_SCRIPT)
+	LD_FLAGS    += -L$(BTLIBDIR) -l$(BTLIBFILE)
 
 ifeq ($(USE_LTO),YES)
 	CFLAGS		+= -flto
@@ -231,9 +235,12 @@ all :
 
 patch: clean
 	patch -p0 < patches/main.patch
-	patch -p0 < patches/cmsis_os.patch
+	#patch -p0 < patches/cmsis_os.patch
 	#patch -p0 < patches/cdcCaseFix.patch
 	mv src/STM32/Src/main.c src/STM32/Src/inithw.c
+
+bluetoothPatch: clean
+	patch -p0 < patches/btCaseFix1.patch
 
 build:
 	$(MAKE) clean
