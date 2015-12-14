@@ -39,7 +39,7 @@
 	MCU			= cortex-m4
 	FPU			= -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 
-	STM32_LIB_WARNING_SUPRESS = -Wno-unused-parameter -Wno-cast-align -Wno-pointer-sign -Wno-redundant-decls -Wno-sign-compare -Wno-cast-qual -Wno-missing-field-initializers
+	STM32_LIB_WARNING_SUPRESS = -Wno-unused-parameter -Wno-cast-align -Wno-pointer-sign -Wno-redundant-decls -Wno-sign-compare -Wno-cast-qual -Wno-missing-field-initializers -Wno-type-limits -Wno-empty-body
 ###########################################################
 #  common part for all my cortex-m3/m4 projects
 ###########################################################

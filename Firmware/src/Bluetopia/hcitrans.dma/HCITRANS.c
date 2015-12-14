@@ -22,9 +22,14 @@
 #include "semphr.h"         /* FreeRTOS Semaphore Prototypes/Constants.       */
 #include "portmacro.h"
 
+typedef struct
+{
+  __IO uint32_t ISR;   /*!< DMA interrupt status register */
+  __IO uint32_t Reserved0;
+  __IO uint32_t IFCR;  /*!< DMA interrupt flag clear register */
+} DMA_Base_Registers;
+
 extern UART_HandleTypeDef huart2;
-extern DMA_HandleTypeDef hdma_usart2_rx;
-extern DMA_HandleTypeDef hdma_usart2_tx;
 
    /* The following define the size of the buffers used by HCITRANS.    */
 #define INPUT_BUFFER_SIZE        1536
@@ -47,11 +52,8 @@ extern DMA_HandleTypeDef hdma_usart2_tx;
    /* is completed.                                                     */
 #define OUTPUT_MAXIMUM_DMA_SIZE  32
 
-#define ClearReset()             GPIO_SetBits(HCITR_RESET_GPIO_PORT, (1 << HCITR_RESET_PIN))
-#define SetReset()               GPIO_ResetBits(HCITR_RESET_GPIO_PORT, (1 << HCITR_RESET_PIN))
-
-#define EnableUartPeriphClock()  HCITR_UART_RCC_PERIPH_CLK_CMD(HCITR_UART_RCC_PERIPH_CLK_BIT, ENABLE)
-#define DisableUartPeriphClock() HCITR_UART_RCC_PERIPH_CLK_CMD(HCITR_UART_RCC_PERIPH_CLK_BIT, DISABLE)
+#define ClearReset()             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1)
+#define SetReset()				 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0)
 
 #define DisableInterrupts()      portENTER_CRITICAL()
 #define EnableInterrupts()       portEXIT_CRITICAL()
@@ -120,8 +122,7 @@ static int                        HCITransportOpen        = 0;
 
 
    /* Local Function Prototypes.                                        */
-static void SetBaudRate(USART_TypeDef *UartBase, unsigned int BaudRate);
-static void ConfigureGPIO(GPIO_TypeDef *Port, unsigned int Pin, GPIOMode_TypeDef Mode);
+static void SetBaudRate(unsigned int BaudRate);
 static void SetSuspendGPIO(Boolean_t Suspend);
 static void StartTxDMATransfer(void);
 static void StartRxDMATransfer(void);
@@ -131,79 +132,12 @@ static Boolean_t ProcessRxDMA(void);
    /* reconfiguring the entire port.  This function is also potentially */
    /* more accurate than the method used in the ST standard peripheral  */
    /* libraries.                                                        */
-static void SetBaudRate(USART_TypeDef *UartBase, unsigned int BaudRate)
+static void SetBaudRate(unsigned int BaudRate)
 {
-   RCC_ClocksTypeDef RCC_ClocksStatus;
-   unsigned int      SourceFrequency;
-   unsigned int      Divider;
-   unsigned int      TempDiv;
-
-	RCC_GetClocksFreq(&RCC_ClocksStatus);
-
-#if((HCITR_UART == 1) || (HCITR_UART == 6))
-
-   SourceFrequency = RCC_ClocksStatus.PCLK2_Frequency;
-
-#else
-
-   SourceFrequency = RCC_ClocksStatus.PCLK1_Frequency;
-
-#endif
-
-   /* The following calculation will yield the integer divider          */
-   /* concatenated with the fractional divider.  If 16-bit oversampling */
-   /* is used, the least significant 4 bits will be the fraction divider*/
-   /* and if 8-bit oversampling is used, the least significant 3 bits   */
-   /* will be the fraction divider.                                     */
-   Divider = (((SourceFrequency * 2) / BaudRate) + 1) / 2;
-
-   /* The integer divider must be between 1 and 4095 so if the divider  */
-   /* value is less than 16, 8-bit oversampling must be used.           */
-   if(Divider < 16)
-   {
-      /* When 8-bit oversampling is used, bits [2..0] of the BRR        */
-      /* register represent the fractional divider and bits [15..4]     */
-      /* represent the integer divider.  Because of this, the integer   */
-      /* divider needs to be shifted left one bit before the baud rate  */
-      /* control register is updated.                                   */
-      TempDiv = Divider & 0x7;
-      Divider = (Divider & ~0x07) << 1;
-      Divider |= TempDiv;
-
-      /* Disable the UART while updating the baud rate.                 */
-      UartBase->CR1 &= ~USART_CR1_UE;
-      UartBase->CR1 |= USART_CR1_OVER8;
-   }
-   else
-   {
-      /* For lower frequencies, 16bit oversampling may be used.         */
-
-      /* Disable the UART while updating the baud rate.                 */
-      UartBase->CR1 &= ~USART_CR1_UE;
-      UartBase->CR1 &= ~USART_CR1_OVER8;
-   }
-
-   UartBase->BRR = Divider;
-   UartBase->CR1 |= USART_CR1_UE;
+	huart2.Init.BaudRate = BaudRate;
+	HAL_UART_Init(&huart2);
 }
 
-   /* The following function is a utility function to set the           */
-   /* configuration of a specified GPIO.  This function accepts as its  */
-   /* parameters the GPIO port, pin and mode of operation.              */
-static void ConfigureGPIO(GPIO_TypeDef *Port, unsigned int Pin, uint32_t mode, uint32_t alternate)
-{
-   GPIO_InitTypeDef GpioConfiguration;
-
-   /* Setup the configuration structure.                                */
-   GpioConfiguration.Pin   = 1 << Pin;
-   GpioConfiguration.Mode  = mode;
-   GpioConfiguration.Speed = GPIO_SPEED_HIGH;
-   GpioConfiguration.Alternate = alternate;
-   GpioConfiguration.Pull  = GPIO_NOPULL;
-
-   /* Configure the GPIO.                                               */
-   GPIO_Init(Port, &GpioConfiguration);
-}
 
    /* The following function is responsible for setting the CTS and RTS */
    /* GPIO to the correct state when entering and leaving suspend mode. */
@@ -263,7 +197,16 @@ static void StartTxDMATransfer(void)
       if(UartContext.TxPreviousDMALength > (OUTPUT_BUFFER_SIZE - UartContext.TxOutIndex))
          UartContext.TxPreviousDMALength = OUTPUT_BUFFER_SIZE - UartContext.TxOutIndex;
 
-      HAL_UART_Transmit_DMA(huart2,  (uint8_t*)&(UartContext.TxBuffer[UartContext.TxOutIndex]),UartContext.TxPreviousDMALength);
+      /* Set the address and length of the transfer.                    */
+
+      HAL_DMA_Start_IT(huart2.hdmatx, (uint32_t)&(UartContext.TxBuffer[UartContext.TxOutIndex]), (uint32_t)&huart2.Instance->DR, UartContext.TxPreviousDMALength);
+
+	 /* Clear the TC flag in the SR register by writing 0 to it */
+	 __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_TC);
+
+	 /* Enable the DMA transfer for transmit request by setting the DMAT bit
+		in the UART CR3 register */
+	 huart2.Instance->CR3 |= USART_CR3_DMAT;
 
       /* Adjust the indexes.                                            */
       UartContext.TxOutIndex  += UartContext.TxPreviousDMALength;
@@ -271,7 +214,6 @@ static void StartTxDMATransfer(void)
          UartContext.TxOutIndex = 0;
    }
 }
-
    /* The following function starts a RX DMA transfer if one is not     */
    /* already in progress.                                              */
    /* * NOTE * Interrupts Must be disabled when calling this function as*/
@@ -292,10 +234,32 @@ static void StartRxDMATransfer(void)
    /* space in the buffer for another DMA transfer.                     */
    if((!(UartContext.RxDMAInProgress)) && (UartContext.RxBytesUsed != UartContext.RxBufferSize) && ((BufferEnd - UartContext.RxInIndex) >= INPUT_DMA_SIZE))
    {
-	  HAL_UART_Receive_DMA(huart2, (uint8_t*)(&(UartContext.RxBuffer[UartContext.RxInIndex]), INPUT_DMA_SIZE);
+	  HAL_DMA_Start_IT(huart2.hdmarx, (uint32_t)&huart2.Instance->DR, (uint32_t)(&(UartContext.RxBuffer[UartContext.RxInIndex])), INPUT_DMA_SIZE);
+	  huart2.Instance->CR3 |= USART_CR3_DMAR;
 
       UartContext.RxDMAInProgress = TRUE;
    }
+}
+
+
+void stopRxDMA(){
+	huart2.Instance->CR3 &= ~USART_CR3_DMAR;
+	HAL_DMA_Abort(huart2.hdmarx);
+	DMA_Base_Registers *regs;
+	regs = (DMA_Base_Registers *)huart2.hdmarx->StreamBaseAddress;
+	regs->IFCR = DMA_FLAG_TCIF0_4 << huart2.hdmarx->StreamIndex;
+	regs->IFCR = DMA_FLAG_HTIF0_4 << huart2.hdmarx->StreamIndex;
+
+	UartContext.RxDMAInProgress = FALSE;
+}
+
+void stopTxDMA(){
+	huart2.Instance->CR3 &= ~USART_CR3_DMAT;
+	HAL_DMA_Abort(huart2.hdmatx);
+	DMA_Base_Registers *regs;
+	regs = (DMA_Base_Registers *)huart2.hdmatx->StreamBaseAddress;
+	regs->IFCR = DMA_FLAG_TCIF0_4 << huart2.hdmatx->StreamIndex;
+	regs->IFCR = DMA_FLAG_HTIF0_4 << huart2.hdmatx->StreamIndex;
 }
 
    /* The following function processes data on the Rx DMA stream. Before*/
@@ -310,24 +274,13 @@ static Boolean_t ProcessRxDMA(void)
    unsigned int Length;
 
    /* Check if any data is available in the DMA buffer.                 */
-   if(__HAL_DMA_GET_COUNTER(hdma_usart2_rx) != INPUT_DMA_SIZE)
+   if(__HAL_DMA_GET_COUNTER(huart2.hdmarx) != INPUT_DMA_SIZE)
    {
       /* Make sure the DMA is disabled and clear the interrupt flags.   */
-	  hdma_usart2_rx->Instance->CR3 &= ~USART_CR3_DMAR;
-	  HAL_DMA_Abort(hdma_usart2_rx->hdmarx);
-
-	  if(hdma_usart2_rx->State == HAL_UART_STATE_BUSY_TX_RX){
-		  hdma_usart2_rx->State = HAL_UART_STATE_BUSY_TX;
-	  } else if(hdma_usart2_rx->State == HAL_UART_STATE_BUSY_RX){
-		  hdma_usart2_rx->State = HAL_UART_STATE_READY;
-	  }
-
-      DMA_ClearFlag(HCITR_RXD_DMA_STREAM, HCITR_RXD_DMA_FLAG_TCIF | HCITR_RXD_DMA_FLAG_HTIF);
-
-      UartContext.RxDMAInProgress = FALSE;
+	  stopRxDMA();
 
       /* Note how much data is in the buffer and adjust the indexes.    */
-      Length = INPUT_DMA_SIZE - (unsigned short)(HCITR_RXD_DMA_STREAM->NDTR);
+      Length = INPUT_DMA_SIZE - (unsigned short)(huart2.hdmarx->Instance->NDTR);
       UartContext.RxBytesUsed += Length;
       UartContext.RxInIndex   += Length;
 
@@ -349,6 +302,8 @@ static Boolean_t ProcessRxDMA(void)
 
    return(ret_val);
 }
+
+
 
    /* The following thread is used to process the data that has been    */
    /* received from the UART and placed in the receive buffer.          */
@@ -435,10 +390,8 @@ static void *RxThread(void *Param)
    /* UART TXD DMA.                                                     */
    /* * NOTE * This function is mapped to the appropriate DMA in        */
    /*          HCITRCFG.h.                                              */
-void HCITR_TXD_IRQHandler(void)
+void HCITR_TXD_IRQHandler( struct __DMA_HandleTypeDef * hdma)
 {
-   DMA_ClearFlag(HCITR_TXD_DMA_STREAM, HCITR_TXD_DMA_FLAG_TCIF);
-
    UartContext.TxBytesFree         += UartContext.TxPreviousDMALength;
    UartContext.TxPreviousDMALength  = 0;
 
@@ -450,7 +403,7 @@ void HCITR_TXD_IRQHandler(void)
    /* UART RXD DMA.                                                     */
    /* * NOTE * This function is mapped to the appropriate DMA in        */
    /*          HCITRCFG.h.                                              */
-void HCITR_RXD_IRQHandler(void)
+void HCITR_RXD_IRQHandler( struct __DMA_HandleTypeDef * hdma)
 {
    signed portBASE_TYPE xHigherPriorityTaskWoken;
 
@@ -509,6 +462,11 @@ void HCITR_CTS_IRQ_HANDLER(void)
    /* negative return value to signify an error.                        */
 int BTPSAPI HCITR_COMOpen(HCI_COMMDriverInformation_t *COMMDriverInformation, HCITR_COMDataCallback_t COMDataCallback, unsigned long CallbackParameter)
 {
+
+    huart2.hdmarx->XferCpltCallback = &HCITR_RXD_IRQHandler;
+    huart2.hdmatx->XferCpltCallback = &HCITR_TXD_IRQHandler;
+
+
    int ret_val;
 
    /* First, make sure that the port is not already open and make sure  */
@@ -554,39 +512,18 @@ int BTPSAPI HCITR_COMOpen(HCI_COMMDriverInformation_t *COMMDriverInformation, HC
       /* If there was no error, then continue to setup the port.        */
       if(ret_val != HCITR_ERROR_UNABLE_TO_OPEN_TRANSPORT)
       {
-         /* Enable the peripheral clocks for the UART and its GPIO.     */
-         EnableUartPeriphClock();
-         RCC_AHB1PeriphClockCmd(HCITR_TXD_GPIO_AHB_BIT | HCITR_RXD_GPIO_AHB_BIT | HCITR_RTS_GPIO_AHB_BIT | HCITR_CTS_GPIO_AHB_BIT | HCITR_RESET_GPIO_AHB_BIT | HCITR_TXD_DMA_AHB_BIT | HCITR_RXD_DMA_AHB_BIT, ENABLE);
-
          /* Configure the GPIO.                                         */
-         ConfigureGPIO(HCITR_RESET_GPIO_PORT, HCITR_RESET_PIN, GPIO_MODE_OUTPUT_PP, 0);
-         SetReset();
+    	 SetReset();
 
-         ConfigureGPIO(HCITR_TXD_GPIO_PORT, HCITR_TXD_PIN, GPIO_MODE_AF_PP, HCITR_UART_GPIO_AF);
-
-         ConfigureGPIO(HCITR_RXD_GPIO_PORT, HCITR_RXD_PIN, GPIO_MODE_AF_PP, HCITR_UART_GPIO_AF);
-
-         ConfigureGPIO(HCITR_RTS_GPIO_PORT, HCITR_RTS_PIN, GPIO_MODE_AF_PP, HCITR_UART_GPIO_AF);
-         GPIO_SetBits(HCITR_RTS_GPIO_PORT, (1 << HCITR_RTS_PIN));
-
-         ConfigureGPIO(HCITR_CTS_GPIO_PORT, HCITR_CTS_PIN, GPIO_MODE_AF_PP, HCITR_UART_GPIO_AF);
-
-         /* Initialize the UART.                                        */
-         USART_Init(HCITR_UART_BASE, (UART_InitTypeDef *)&UartConfiguration);
 
          /* Reconfigure the baud rate to make sure it is as accurate as */
          /* possible.                                                   */
-         SetBaudRate(HCITR_UART_BASE, COMMDriverInformation->BaudRate);
+         SetBaudRate(COMMDriverInformation->BaudRate);
 
          StartRxDMATransfer();
 
-         NVIC_SetPriority(HCITR_TXD_IRQ, INTERRUPT_PRIORITY);
-         NVIC_SetPriority(HCITR_RXD_IRQ, INTERRUPT_PRIORITY);
-         NVIC_EnableIRQ(HCITR_TXD_IRQ);
-         NVIC_EnableIRQ(HCITR_RXD_IRQ);
-
          /* Enable the UART.                                            */
-         USART_Cmd(HCITR_UART_BASE, ENABLE);
+         //USART_Cmd(HCITR_UART_BASE, ENABLE);
 
 #ifdef SUPPORT_TRANSPORT_SUSPEND
 
@@ -656,20 +593,14 @@ void BTPSAPI HCITR_COMClose(unsigned int HCITransportID)
 
 #endif
 
-      NVIC_DisableIRQ(HCITR_TXD_IRQ);
-      NVIC_DisableIRQ(HCITR_RXD_IRQ);
 
-      /* Appears to be valid, go ahead and close the port.              */
-      USART_DMACmd(HCITR_UART_BASE, USART_DMAReq_Rx, DISABLE);
-      DMA_Cmd(HCITR_RXD_DMA_STREAM, DISABLE);
-      while(DMA_GetCmdStatus(HCITR_RXD_DMA_STREAM) == ENABLE);
+      huart2.hdmarx->XferCpltCallback = NULL;
+      huart2.hdmatx->XferCpltCallback = NULL;
 
-      USART_DMACmd(HCITR_UART_BASE, USART_DMAReq_Tx, DISABLE);
-      DMA_Cmd(HCITR_TXD_DMA_STREAM, DISABLE);
-      while(DMA_GetCmdStatus(HCITR_TXD_DMA_STREAM) == ENABLE);
+      stopRxDMA();
+      stopTxDMA();
 
-      DMA_ClearFlag(HCITR_RXD_DMA_STREAM, HCITR_RXD_DMA_FLAG_TCIF | HCITR_RXD_DMA_FLAG_HTIF);
-      DMA_ClearFlag(HCITR_TXD_DMA_STREAM, HCITR_TXD_DMA_FLAG_TCIF);
+      HAL_UART_DeInit(&huart2);
 
       /* Place the Bluetooth Device in Reset.                           */
       SetReset();
@@ -682,9 +613,6 @@ void BTPSAPI HCITR_COMClose(unsigned int HCITransportID)
 
       /* Close the semaphore.                                           */
       vQueueDelete((xQueueHandle)(UartContext.DataReceivedEvent));
-
-      /* Disable the peripheral clock for the UART.                     */
-      DisableUartPeriphClock();
 
       /* Note the Callback information.                                 */
       COMDataCallback   = UartContext.COMDataCallbackFunction;
@@ -725,7 +653,7 @@ void BTPSAPI HCITR_COMReconfigure(unsigned int HCITransportID, HCI_Driver_Reconf
          if(ReconfigureInformation->ReconfigureFlags & HCI_COMM_RECONFIGURE_INFORMATION_RECONFIGURE_FLAGS_CHANGE_BAUDRATE)
          {
             DisableInterrupts();
-            SetBaudRate(HCITR_UART_BASE, ReconfigureInformation->BaudRate);
+            SetBaudRate(ReconfigureInformation->BaudRate);
             EnableInterrupts();
          }
       }
@@ -770,7 +698,7 @@ int BTPSAPI HCITR_COMWrite(unsigned int HCITransportID, unsigned int Length, uns
       {
          DisableInterrupts();
 
-         EnableUartPeriphClock();
+         //EnableUartPeriphClock();
          SetSuspendGPIO(FALSE);
          UartContext.SuspendState = hssNormal;
 

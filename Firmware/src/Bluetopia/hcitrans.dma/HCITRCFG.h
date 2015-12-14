@@ -138,9 +138,6 @@
    /* UART control mapping.                                             */
 #define HCITR_UART_BASE                (DEF_CONCAT2(HCITR_UART_TYPE, HCITR_UART))
 
-#define HCITR_UART_RCC_PERIPH_CLK_CMD  (DEF_CONCAT3(RCC_APB, HCITR_UART_APB, PeriphClockCmd))
-#define HCITR_UART_RCC_PERIPH_CLK_BIT  (DEF_CONCAT3(DEF_CONCAT3(RCC_APB, HCITR_UART_APB, Periph_), HCITR_UART_TYPE, HCITR_UART))
-#define HCITR_UART_GPIO_AF             (DEF_CONCAT3(GPIO_AF7_, HCITR_UART_TYPE, HCITR_UART))
 
    /* GPIO mapping.                                                     */
 #define HCITR_TXD_GPIO_PORT            (DEF_CONCAT2(GPIO, HCITR_TXD_PORT))
@@ -177,8 +174,6 @@
 
 #define HCITR_TXD_IRQ                  (DEF_CONCAT3(DEF_CONCAT3(DMA, HCITR_DMA_TXD_NUMBER, _Stream), HCITR_DMA_TXD_STREAM, _IRQn))
 #define HCITR_RXD_IRQ                  (DEF_CONCAT3(DEF_CONCAT3(DMA, HCITR_DMA_RXD_NUMBER, _Stream), HCITR_DMA_RXD_STREAM, _IRQn))
-#define HCITR_TXD_IRQHandler           (DEF_CONCAT3(DEF_CONCAT3(DMA, HCITR_DMA_TXD_NUMBER, _Stream), HCITR_DMA_TXD_STREAM, _IRQHandler))
-#define HCITR_RXD_IRQHandler           (DEF_CONCAT3(DEF_CONCAT3(DMA, HCITR_DMA_RXD_NUMBER, _Stream), HCITR_DMA_RXD_STREAM, _IRQHandler))
 
    /* Location of the Data register for the UART in use.                */
 #define HCITR_UART_DR_REGISTER_ADDRESS (((unsigned int)(DEF_CONCAT3(HCITR_UART_TYPE, HCITR_UART, _BASE))) + 4)
