@@ -128,7 +128,7 @@ IIRFilter <0x1000000, sizeof(num)/sizeof(float), sizeof(den)/sizeof(float)> filt
 int8_t ecgData[ECGBUF_LEN];
 volatile int buffPos=0;
 
-const int turnOffTimeLimit = 5*50;
+const int turnOffTimeLimit = 4*50;
 
 int8_t saturate8(int32_t data){
 	if (data>127)
@@ -181,8 +181,6 @@ namespace OS
 		memset(ecgData,0,sizeof(ecgData));
 		
 		
-		sleep(100);
-		
 		da.set(0xFFF);
 		
 		ad.setRate(50);
@@ -196,10 +194,10 @@ namespace OS
 		time_t timer=startTimer();
 		time_t resetTimer=0;
 		
-
+		int32_t logoCounter = 80;
 		
 		int32_t reset=0;
-		int turnOffCounter = 0;
+		int turnOffCounter = 2;
 		
         for(;;)
         {
@@ -212,7 +210,7 @@ namespace OS
 				resetTimer=startTimer();
 			}
 			
-			if (resetTimer && msPassed(resetTimer, 100)){
+			/*if (resetTimer && msPassed(resetTimer, 100)){
 				resetTimer=0;
 				filter.reset(newval,true);
 				detector.reset();
@@ -221,7 +219,7 @@ namespace OS
 				#endif
 
 				reset++;
-			}
+			}*/
 			
 			oldval = newval;
 			
@@ -241,67 +239,83 @@ namespace OS
 			fpsTmp++;
 			if (msPassed(timer,1000)){
 				timer=startTimer();
-				//-1: when this code runs, plus 1 frames must be rendered.
+				//-1: when this code runs, plus 1 frame must be rendered.
 				//Do not count the current frame.
 				fps=fpsTmp-1;
 				fpsTmp=0;
 			}
 			
+			if(logoCounter > 0)
+				logoCounter--;
+			
+			
 			if(signalQuality.isSignalGood()) {
-				fb.clear();
 				//tr.printf(0,0,"%d %d", fps, detector.getPulseRate());
 				//tr.printf(127 | TextRenderer::ALIGN_RIGHT,0,"%d", signalQuality.getNoiseQuantity() );
-				tr.printf(127 | TextRenderer::ALIGN_RIGHT,0,"%d", detector.getPulseRate());
+
+				fb.clear();	
+				
+				int pr = detector.getPulseRate();
+				if(pr > 0)
+					tr.printf(127 | TextRenderer::ALIGN_RIGHT,0,"%d", pr);
 				
 				int32_t prevdata=getEcgdata(ECGBUF_LEN-1);
-				#ifdef BACK_FILTER
-				//	filterBack.reset(prevdata, true);
-				#endif
 				for (int a=ECGBUF_LEN-1; a>0; a--){
-					int32_t data=getEcgdata(a);
-					
+					int32_t data=getEcgdata(a);			
 					if (a<(fb.width-1)){
 						int32_t avg=(data+prevdata)>>1;
 						fb.vLine(a+1, prevdata, avg);
 						fb.vLine(a, avg, data);
-						//fb.setPixel(a,data);
 					}
-					
 					prevdata=data;
-				}
+				}				
+
+
 				turnOffCounter = 0;
 			} else {
-				if(turnOffCounter == 0) {
+				if(turnOffCounter == 1 || logoCounter == 1) {
 					fb.drawImage(0,0,waiting);
-					pullup_off.off();
 				}
-				
+
 				if(turnOffCounter == 1) {
-					pullup_off.on();
+					signalQuality.reset();
+					pullup_off.off();					
 				}
 				
-				int sec = (turnOffTimeLimit + 10 - turnOffCounter) / 50;
+				if(turnOffCounter == 20) {
+					if(newval > 27000 || newval < -27000) {
+						power_on.off();					
+					} else {
+						pullup_off.on();	
+					}		
+				}
 				
-				tr.printf(0,0,"%d", sec);			
+				if(turnOffCounter == 40) {
+					power_on.on();
+					filter.reset(newval,true);
+					detector.reset();
+					#ifdef BACK_FILTER
+					filterBack.reset(newval, true);	
+					#endif					
+				}
+
+				
+				int sec = (turnOffTimeLimit - turnOffCounter) / 50;
+				
+				if(logoCounter == 0 && turnOffCounter > 30)
+					tr.printf(0,0,"%d", sec);			
 				
 				turnOffCounter++;
 				
-				if(turnOffCounter > turnOffTimeLimit) {
-					pullup_off.off();
-					power_on.off();
-				} 
-				
-				if(turnOffCounter > turnOffTimeLimit + 10) {
-					pullup_off.on();
-					power_on.on();
-					turnOffCounter = 1;
+				if(turnOffCounter == turnOffTimeLimit) {
+					turnOffCounter = 0;
 				}
+				
+				detector.reset();
 			}
-			
 			display.sendFramebuffer(fb.getImage());
-         	
+		}
 			
-        }
 
 		
 	}

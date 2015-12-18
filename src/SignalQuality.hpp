@@ -10,6 +10,7 @@ class SignalQuality{
 		bool isSignalGood();
 		int signalHasBeenGoodFor();
 		int getNoiseQuantity();
+		void reset();
 	private:
 		int32_t prevSample, prev2Sample;
 		bool lastSampleGood;

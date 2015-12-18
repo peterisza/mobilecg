@@ -1,18 +1,22 @@
 #include "SignalQuality.hpp"
 
 #define DCLIMIT 15000
-#define ACLIMIT 126
-#define TIMELIMIT 50
-#define NOISELIMIT 4200
+#define ACLIMIT 120
+#define TIMELIMIT 100
+#define NOISELIMIT 3400
 
-SignalQuality::SignalQuality():
-	prevSample(0),
-	prev2Sample(0),
-	lastSampleGood(false),
-	howLong(0),
-	noiseQuantity(0),
-	oobCounter(0)
+SignalQuality::SignalQuality()
 {
+	reset();
+}
+
+void SignalQuality::reset() {
+	prevSample = 0;
+	prev2Sample = 0;
+	lastSampleGood = false;
+	howLong = 0;
+	noiseQuantity = 0;
+	oobCounter = 0;
 }
 
 void SignalQuality::processSample(int32_t raw, int8_t filtered) {
@@ -26,9 +30,10 @@ void SignalQuality::processSample(int32_t raw, int8_t filtered) {
 	if(oobCounter > 0)	
 		oobCounter--;
 	
-	if(oobCounter > 100)
+	if(oobCounter > 0) {
 		lastSampleGood = false;
-		
+		oobCounter = 0;
+	}
 	
 	int noise = 0;
 	if(prev2Sample < prevSample && prevSample > filtered)	
