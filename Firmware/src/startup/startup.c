@@ -113,6 +113,8 @@ void FPU_IRQHandler               (void);
 void SPI4_IRQHandler              (void);
 void SPI5_IRQHandler              (void);
 
+void *__dso_handle;
+
 /******************************************************************************
 * Vector table for a Cortex M4F.
 ******************************************************************************/
