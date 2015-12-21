@@ -5,7 +5,7 @@
 GPIO led1('B', 6);
 GPIO led2('B', 7);
 
-Bluetooth bt("\x00\xB0\xC1\xFA\x52", "MobilECG");
+Bluetooth bt("MobilECG");
 
 extern "C" UART_HandleTypeDef huart2;
 
