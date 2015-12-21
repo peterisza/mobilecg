@@ -52,8 +52,8 @@ extern UART_HandleTypeDef huart2;
    /* is completed.                                                     */
 #define OUTPUT_MAXIMUM_DMA_SIZE  32
 
-#define ClearReset()             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1)
-#define SetReset()				 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0)
+#define ClearReset()             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET)
+#define SetReset()				 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET)
 
 #define DisableInterrupts()      portENTER_CRITICAL()
 #define EnableInterrupts()       portEXIT_CRITICAL()
