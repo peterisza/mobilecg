@@ -40,8 +40,12 @@ class Bluetooth {
 		BD_ADDR_t           CurrentRemoteBD_ADDR;
 
 		int                 ServerPortID;
+		int					SerialPortID;
 
 		DWord_t             SPPServerSDPHandle;
+		Word_t              Connection_Handle;
+
+		char tmpBuffer[64];
 
 		static const int MAX_SUPPORTED_LINK_KEYS = 1;
 
@@ -71,6 +75,7 @@ class Bluetooth {
 		int setClassOfDevice(unsigned int classOfDev);
 		int setConnectabilityMode(GAP_Connectability_Mode_t ConnectableMode);
 		int setPairabilityMode(GAP_Pairability_Mode_t PairabilityMode);
+		int pinCodeResponse(const char *pinCode);
 
 		static void BTPSAPI GAP_Event_Callback(unsigned int BluetoothStackID, GAP_Event_Data_t *GAP_Event_Data, unsigned long CallbackParameter);
 		static void BTPSAPI HCI_Event_Callback(unsigned int BluetoothStackID, HCI_Event_Data_t *HCI_Event_Data, unsigned long CallbackParameter);
@@ -81,11 +86,13 @@ class Bluetooth {
 		void sppEventCallback(unsigned int bluetoothStackID, SPP_Event_Data_t *SPP_Event_Data);
 	private:
 		const char *name;
+		char pin[17];
 
 	public:
 		Bluetooth(const char *name);
 		virtual ~Bluetooth();
 		void init();
+		void setPin(const char *pin);
 };
 
 #endif /* SRC_BLUETOOTH_H_ */

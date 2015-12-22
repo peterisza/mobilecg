@@ -8,6 +8,8 @@
 #include "Bluetooth.h"
 #include <cstring>
 #include <helpers.h>
+#include <Logger.h>
+#include <algorithm>
 
 #define DEFAULT_IO_CAPABILITY          (icNoInputNoOutput)
 #define DEFAULT_MITM_PROTECTION                  (FALSE)
@@ -17,12 +19,16 @@ Bluetooth::Bluetooth(const char *i_name) {
 	SPPServerSDPHandle=0;
 	bluetoothStackID=0;
 	ServerPortID=0;
+	SerialPortID=0;
+	Connection_Handle=0;
 	OOBSupport=FALSE;
 	MITMProtection=DEFAULT_MITM_PROTECTION;
 	IOCapability     = DEFAULT_IO_CAPABILITY;
 	OOBSupport       = FALSE;
 
 	this->name = i_name;
+
+	setPin("1234");
 }
 
 Bluetooth::~Bluetooth() {
@@ -46,6 +52,7 @@ int Bluetooth::displayCallback(int length, char *message){
 int Bluetooth::initializeApplication()
 {
   int ret_val = -1;
+  SerialPortID = 0;
 
   /* Initiailize some defaults.                                        */
   /*SerialPortID           = 0;
@@ -128,8 +135,153 @@ void BTPSAPI Bluetooth::SPP_Event_Callback(unsigned int BluetoothStackID, SPP_Ev
 
 
 void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t *SPP_Event_Data){
-	UNUSED(BluetoothStackID);
-	UNUSED(SPP_Event_Data);
+
+	int       ret_val = 0;
+	int       TempLength;
+	Boolean_t Done;
+
+	/* **** SEE SPPAPI.H for a list of all possible event types.  This   */
+	/* program only services its required events.                   **** */
+
+	/* First, check to see if the required parameters appear to be       */
+	/* semi-valid.                                                       */
+	if((SPP_Event_Data) && (BluetoothStackID))
+	{
+	  /* The parameters appear to be semi-valid, now check to see what  */
+	  /* type the incoming event is.                                    */
+	  switch(SPP_Event_Data->Event_Data_Type)
+	  {
+		 case etPort_Open_Request_Indication:
+			/* A remote port is requesting a connection.                */
+			/* Accept the connection always.                            */
+			SPP_Open_Port_Request_Response(BluetoothStackID, SPP_Event_Data->Event_Data.SPP_Open_Port_Request_Indication_Data->SerialPortID, TRUE);
+			break;
+		 case etPort_Open_Indication:
+			/* A remote port is requesting a connection.                */
+			/* Save the Serial Port ID for later use.                   */
+			SerialPortID = SPP_Event_Data->Event_Data.SPP_Open_Port_Indication_Data->SerialPortID;
+
+			/* Flag that we are now connected.                          */
+			Connected  = TRUE;
+
+			/* Query the connection handle.                             */
+			ret_val = GAP_Query_Connection_Handle(BluetoothStackID, SPP_Event_Data->Event_Data.SPP_Open_Port_Indication_Data->BD_ADDR, &Connection_Handle);
+			if(ret_val)
+			{
+			   /* Failed to Query the Connection Handle.                */
+			   ret_val           = 0;
+			   Connection_Handle = 0;
+			}
+			break;
+		 case etPort_Open_Confirmation:
+			/* Needed only in client mode. */
+			Logger::panic("etPort_Open_Confirmation: not implemented.");
+			break;
+		 case etPort_Close_Port_Indication:
+			/* The Remote Port was Disconnected.                        */
+			/* Invalidate the Serial Port ID.                           */
+			//if(UI_Mode == UI_MODE_IS_CLIENT)
+			//   SerialPortID = 0;
+
+			Connection_Handle = 0;
+			//SendInfo.BytesToSend = 0;
+
+			/* Flag that we are no longer connected.                    */
+			Connected         = FALSE;
+			break;
+		 case etPort_Status_Indication:
+			/* Display Information about the new Port Status.           */
+			break;
+		 case etPort_Data_Indication:
+		   /* If we are operating in Raw Data Display Mode then     */
+		   /* simply display the data that was give to use.         */
+
+		  /* Initialize Done to false.                          */
+		  Done = FALSE;
+
+		  /* Loop through and read all data that is present in  */
+		  /* the buffer.                                        */
+		  while(!Done)
+		  {
+			 /* Read as much data as possible.                  */
+			 if((TempLength = SPP_Data_Read(BluetoothStackID, SerialPortID, (Word_t)sizeof(tmpBuffer)-1, (Byte_t *)tmpBuffer)) > 0)
+			 {
+				/* Now simply display each character that we    */
+				/* have just read.                              */
+
+			 }
+			 else
+			 {
+				/* Regardless if an error occurred, we are      */
+				/* finished with the current loop.              */
+				Done = TRUE;
+			 }
+		  }
+
+			break;
+		 case etPort_Send_Port_Information_Indication:
+			/* Simply Respond with the information that was sent to us. */
+			ret_val = SPP_Respond_Port_Information(BluetoothStackID, SPP_Event_Data->Event_Data.SPP_Send_Port_Information_Indication_Data->SerialPortID, &SPP_Event_Data->Event_Data.SPP_Send_Port_Information_Indication_Data->SPPPortInformation);
+			break;
+		 case etPort_Transmit_Buffer_Empty_Indication:
+			/* The transmit buffer is now empty after being full.  Next */
+			/* check the current application state.                     */
+#if 0
+			if(SendInfo.BytesToSend)
+			{
+			   /* Send the remainder of the last attempt.               */
+			   TempLength            = (DataStrLen-SendInfo.BytesSent);
+			   SendInfo.BytesSent    = SPP_Data_Write(BluetoothStackID, SerialPortID, TempLength, (unsigned char *)&(DataStr[SendInfo.BytesSent]));
+			   if((int)(SendInfo.BytesSent) >= 0)
+			   {
+				  if(SendInfo.BytesSent <= SendInfo.BytesToSend)
+					 SendInfo.BytesToSend -= SendInfo.BytesSent;
+				  else
+					 SendInfo.BytesToSend = 0;
+
+				  while(SendInfo.BytesToSend)
+				  {
+					 /* Set the Number of bytes to send in the next     */
+					 /* packet.                                         */
+					 if(SendInfo.BytesToSend > DataStrLen)
+						TempLength = DataStrLen;
+					 else
+						TempLength = SendInfo.BytesToSend;
+
+					 SendInfo.BytesSent = SPP_Data_Write(BluetoothStackID, SerialPortID, TempLength, (unsigned char *)DataStr);
+					 if((int)(SendInfo.BytesSent) >= 0)
+					 {
+						SendInfo.BytesToSend -= SendInfo.BytesSent;
+						if(SendInfo.BytesSent < TempLength)
+						   break;
+					 }
+					 else
+					 {
+						Display(("SPP_Data_Write returned %d.\r\n", (int)SendInfo.BytesSent));
+
+						SendInfo.BytesToSend = 0;
+					 }
+				  }
+			   }
+			   else
+			   {
+				  Display(("SPP_Data_Write returned %d.\r\n", (int)SendInfo.BytesSent));
+
+				  SendInfo.BytesToSend = 0;
+			   }
+			}
+
+
+			_DisplayPrompt = FALSE;
+#endif
+			break;
+		 default:
+			break;
+	  }
+
+
+	}
+
 }
 
 
@@ -192,6 +344,7 @@ void Bluetooth::gapEventCallback(unsigned int BluetoothStackID, GAP_Event_Data_t
 
 				  /* Inform the user that they will need to respond with*/
 				  /* a PIN Code Response.                               */
+				  pinCodeResponse(pin);
 				  break;
 			   case atAuthenticationStatus:
 				  /* Flag that there is no longer a current             */
@@ -584,6 +737,79 @@ int Bluetooth::setPairabilityMode(GAP_Pairability_Mode_t PairabilityMode)
    return GAP_Set_Pairability_Mode(bluetoothStackID, PairabilityMode);
 }
 
+int Bluetooth::pinCodeResponse(const char *pinCode)
+{
+   int                              Result;
+   int                              ret_val;
+   PIN_Code_t                       PINCode;
+   GAP_Authentication_Information_t GAP_Authentication_Information;
+
+   /* First, check that valid Bluetooth Stack ID exists.                */
+   if(bluetoothStackID)
+   {
+      /* First, check to see if there is an on-going Pairing operation  */
+      /* active.                                                        */
+      if(!COMPARE_BD_ADDR(CurrentRemoteBD_ADDR, NullADDR))
+      {
+         /* Make sure that all of the parameters required for this      */
+         /* function appear to be at least semi-valid.                  */
+         if((BTPS_StringLength(pinCode) > 0) && (BTPS_StringLength(pinCode) <= sizeof(PIN_Code_t)))
+         {
+            /* Parameters appear to be valid, go ahead and convert the  */
+            /* input parameter into a PIN Code.                         */
+
+            /* Initialize the PIN code.                                 */
+            ASSIGN_PIN_CODE(PINCode, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+            BTPS_MemCopy(&PINCode, pinCode, BTPS_StringLength(pinCode));
+
+            /* Populate the response structure.                         */
+            GAP_Authentication_Information.GAP_Authentication_Type      = atPINCode;
+            GAP_Authentication_Information.Authentication_Data_Length   = (Byte_t)(BTPS_StringLength(pinCode));
+            GAP_Authentication_Information.Authentication_Data.PIN_Code = PINCode;
+
+            /* Submit the Authentication Response.                      */
+            Result = GAP_Authentication_Response(bluetoothStackID, CurrentRemoteBD_ADDR, &GAP_Authentication_Information);
+
+            /* Check the return value for the submitted command for     */
+            /* success.                                                 */
+            if(!Result)
+            {
+               /* Flag success to the caller.                           */
+               ret_val = 0;
+            }
+            else
+            {
+               /* Inform the user that the Authentication Response was  */
+               /* not successful.                                       */
+               ret_val = -1;
+            }
+
+            /* Flag that there is no longer a current Authentication    */
+            /* procedure in progress.                                   */
+            ASSIGN_BD_ADDR(CurrentRemoteBD_ADDR, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+         }
+         else
+         {
+             ret_val = -1;
+         }
+      }
+      else
+      {
+         /* There is not currently an on-going authentication operation,*/
+         /* inform the user of this error condition.                    */
+         ret_val = -1;
+      }
+   }
+   else
+   {
+      /* No valid Bluetooth Stack ID exists.                            */
+      ret_val = -1;
+   }
+
+   return(ret_val);
+}
+
 void Bluetooth::init(){
 	int result;
 	HCI_DRIVER_SET_COMM_INFORMATION(&HCI_DriverInformation, 1, VENDOR_BAUD_RATE, cpHCILL_RTS_CTS);
@@ -598,4 +824,9 @@ void Bluetooth::init(){
 			openServer(SPP_PORT_NUMBER_MINIMUM);
 		}
 	}
+}
+
+void Bluetooth::setPin(const char *i_pin){
+	memcpy(pin, i_pin, std::min(strlen(i_pin),(size_t)16));
+	pin[16]=0;
 }
