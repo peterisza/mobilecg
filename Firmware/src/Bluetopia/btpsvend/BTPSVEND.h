@@ -20,4 +20,6 @@
 
 #include "BVENDAPI.h"           /* BTPS Vendor Specific Prototypes/Constants. */
 
+#define __SUPPORT_CC256X_PATCH__
+
 #endif

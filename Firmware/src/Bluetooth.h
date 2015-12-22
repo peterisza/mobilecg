@@ -64,8 +64,6 @@ class Bluetooth {
 		int deleteLinkKey(BD_ADDR_t BD_ADDR);
 		int initializeApplication();
 		int openStack();
-		int setConnect();
-		int setDisc();
 		int setPairable();
 		int closeStack();
 		int openServer(unsigned int port);

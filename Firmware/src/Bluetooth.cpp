@@ -10,7 +10,7 @@
 #include <helpers.h>
 
 #define DEFAULT_IO_CAPABILITY          (icNoInputNoOutput)
-#define DEFAULT_MITM_PROTECTION                  (TRUE)
+#define DEFAULT_MITM_PROTECTION                  (FALSE)
 
 Bluetooth::Bluetooth(const char *i_name) {
 	Connected=FALSE;
@@ -56,12 +56,11 @@ int Bluetooth::initializeApplication()
   NumberofValidResponses = 0;*/
 
  /* Try to Open the stack and check if it was successful.          */
- if(!openStack())
- {
-	/* The stack was opened successfully.  Now set some defaults.  */
+ if(!openStack()){
+ 	/* The stack was opened successfully.  Now set some defaults.  */
 
 	/* First, attempt to set the Device to be Connectable.         */
-	ret_val = setConnect();
+	ret_val = setConnectabilityMode(cmConnectableMode);
 
 	/* Next, check to see if the Device was successfully made      */
 	/* Connectable.                                                */
@@ -69,7 +68,7 @@ int Bluetooth::initializeApplication()
 	{
 	   /* Now that the device is Connectable attempt to make it    */
 	   /* Discoverable.                                            */
-	   ret_val = setDisc();
+	   ret_val = setDiscoverabilityMode(dmGeneralDiscoverableMode);
 
 	   /* Next, check to see if the Device was successfully made   */
 	   /* Discoverable.                                            */
@@ -113,47 +112,6 @@ int Bluetooth::initializeApplication()
  return ret_val;
 }
 
-/* The following function is responsible for placing the Local       */
-/* Bluetooth Device into Connectable Mode.  Once in this mode the    */
-/* Device will respond to Page Scans from other Bluetooth Devices.   */
-/* This function requires that a valid Bluetooth Stack ID exists     */
-/* before running.  This function returns zero on success and a      */
-/* negative value if an error occurred.                              */
-int Bluetooth::setConnect(){
-	int ret_val = 0;
-
-	/* First, check that a valid Bluetooth Stack ID exists.              */
-	if(bluetoothStackID){
-		/* Attempt to set the attached Device to be Connectable.          */
-		ret_val = GAP_Set_Connectability_Mode(bluetoothStackID, cmConnectableMode);
-	} else {
-		return -1;
-	}
-
-	return ret_val;
-}
-
-/* The following function is responsible for placing the Local       */
-/* Bluetooth Device into General Discoverablity Mode.  Once in this  */
-/* mode the Device will respond to Inquiry Scans from other Bluetooth*/
-/* Devices.  This function requires that a valid Bluetooth Stack ID  */
-/* exists before running.  This function returns zero on successful  */
-/* execution and a negative value if an error occurred.              */
-int Bluetooth::setDisc(){
-	int ret_val = 0;
-
-	/* First, check that a valid Bluetooth Stack ID exists.              */
-	if(bluetoothStackID){
-		/* A semi-valid Bluetooth Stack ID exists, now attempt to set the */
-		/* attached Devices Discoverablity Mode to General.               */
-		ret_val = GAP_Set_Discoverability_Mode(bluetoothStackID, dmGeneralDiscoverableMode, 0);
-	} else {
-		return -1;
-	}
-
-	return(ret_val);
-}
-
 void BTPSAPI Bluetooth::GAP_Event_Callback(unsigned int BluetoothStackID, GAP_Event_Data_t *GAP_Event_Data, unsigned long CallbackParameter){
 	((Bluetooth *)CallbackParameter)->gapEventCallback(BluetoothStackID, GAP_Event_Data);
 }
@@ -173,6 +131,7 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 	UNUSED(BluetoothStackID);
 	UNUSED(SPP_Event_Data);
 }
+
 
 void Bluetooth::gapEventCallback(unsigned int BluetoothStackID, GAP_Event_Data_t *GAP_Event_Data){
 	UNUSED(BluetoothStackID);
@@ -349,7 +308,7 @@ int Bluetooth::setPairable()
 	if(bluetoothStackID)
 	{
 		/* Attempt to set the attached device to be pairable.             */
-		Result = GAP_Set_Pairability_Mode(bluetoothStackID, pmPairableMode);
+		Result = setPairabilityMode(pmPairableMode);
 
 		/* Next, check the return value of the GAP Set Pairability mode   */
 		/* command for successful execution.                              */
@@ -431,7 +390,6 @@ int Bluetooth::openStack(){
 	/* First check to see if the Stack has already been opened.          */
 	if(!bluetoothStackID)
 	{
-
 	  /* Initialize BTPSKNRl.                                        */
 	  BTPS_Init(&BTPS_Initialization);
 
@@ -452,7 +410,6 @@ int Bluetooth::openStack(){
 		 IOCapability     = DEFAULT_IO_CAPABILITY;
 		 OOBSupport       = FALSE;
 		 MITMProtection   = DEFAULT_MITM_PROTECTION;
-
 
 		 /* Set the Name for the initial use.              */
 		 GAP_Set_Local_Device_Name (bluetoothStackID, const_cast<char *>(name));
@@ -604,79 +561,27 @@ int Bluetooth::openServer(unsigned int port){
 /* zero on successful execution and a negative value on all errors.  */
 int Bluetooth::setDiscoverabilityMode(GAP_Discoverability_Mode_t DiscoverabilityMode)
 {
-	int Result;
-
-	/* First, check that valid Bluetooth Stack ID exists.                */
-	if(bluetoothStackID)
-	{
-		/* Parameters mapped, now set the Discoverability Mode.        */
-		Result = GAP_Set_Discoverability_Mode(bluetoothStackID, DiscoverabilityMode, (DiscoverabilityMode == dmLimitedDiscoverableMode)?60:0);
-	} else {
-		Result = -1;
-	}
-
-	return Result;
+	return GAP_Set_Discoverability_Mode(bluetoothStackID, DiscoverabilityMode, (DiscoverabilityMode == dmLimitedDiscoverableMode)?60:0);
 }
 
 int Bluetooth::setClassOfDevice(unsigned int classOfDev)
 {
-   int               ret_val;
    Class_of_Device_t Class_of_Device;
 
-   /* First, check that valid Bluetooth Stack ID exists.                */
-   if(bluetoothStackID){
-	 /* Attempt to submit the command.                              */
-	 ASSIGN_CLASS_OF_DEVICE(Class_of_Device, (Byte_t)(classOfDev & 0xFF), (Byte_t)((classOfDev >> 8) & 0xFF), (Byte_t)((classOfDev >> 16) & 0xFF));
+   /* Attempt to submit the command.                              */
+   ASSIGN_CLASS_OF_DEVICE(Class_of_Device, (Byte_t)((classOfDev >> 16) & 0xFF), (Byte_t)((classOfDev >> 8) & 0xFF), (Byte_t)(classOfDev & 0xFF));
 
-	 ret_val = GAP_Set_Class_Of_Device(bluetoothStackID, Class_of_Device);
-   }
-   else
-   {
-      /* No valid Bluetooth Stack ID exists.                            */
-      ret_val = -1;
-   }
-
-   return(ret_val);
+   return GAP_Set_Class_Of_Device(bluetoothStackID, Class_of_Device);
 }
 
 int Bluetooth::setConnectabilityMode(GAP_Connectability_Mode_t ConnectableMode)
 {
-   int                       ret_val;
-
-   /* First, check that valid Bluetooth Stack ID exists.                */
-   if(bluetoothStackID)
-   {
-
-         /* Parameters mapped, now set the Connectabilty Mode.          */
-	   ret_val = GAP_Set_Connectability_Mode(bluetoothStackID, ConnectableMode);
-
-   }
-   else
-   {
-      /* No valid Bluetooth Stack ID exists.                            */
-      ret_val = -1;
-   }
-
-   return(ret_val);
+   return GAP_Set_Connectability_Mode(bluetoothStackID, ConnectableMode);
 }
 
 int Bluetooth::setPairabilityMode(GAP_Pairability_Mode_t PairabilityMode)
 {
-   int                     ret_val;
-
-   /* First, check that valid Bluetooth Stack ID exists.                */
-   if(bluetoothStackID)
-   {
-         /* Parameters mapped, now set the Pairability Mode.            */
-	   ret_val = GAP_Set_Pairability_Mode(bluetoothStackID, PairabilityMode);
-   }
-   else
-   {
-      /* No valid Bluetooth Stack ID exists.                            */
-      ret_val = -1;
-   }
-
-   return(ret_val);
+   return GAP_Set_Pairability_Mode(bluetoothStackID, PairabilityMode);
 }
 
 void Bluetooth::init(){
@@ -689,14 +594,8 @@ void Bluetooth::init(){
 
 	/* Initialize the application.                                       */
 	if((result = initializeApplication()) > 0){
-		if (!setClassOfDevice(0x0c025a)){
-			if (!setConnectabilityMode(cmConnectableMode)){
-				if (!setPairabilityMode(pmPairableMode_EnableSecureSimplePairing)){
-					if (!setDiscoverabilityMode(dmGeneralDiscoverableMode)){
-//						openServer(SPP_PORT_NUMBER_MINIMUM);
-					}
-				}
-			}
+		if (!setClassOfDevice(0x80510)){
+			openServer(SPP_PORT_NUMBER_MINIMUM);
 		}
 	}
 }
