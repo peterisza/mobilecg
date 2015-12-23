@@ -23,6 +23,9 @@ extern "C" {
 }
 
 #include <cstdint>
+#include <time.h>
+#include <CircularBuffer.h>
+#include <OS.h>
 
 class Bluetooth {
 	private:
@@ -45,7 +48,7 @@ class Bluetooth {
 		DWord_t             SPPServerSDPHandle;
 		Word_t              Connection_Handle;
 
-		char tmpBuffer[64];
+		char tmpBuffer[16];
 
 		static const int MAX_SUPPORTED_LINK_KEYS = 1;
 
@@ -77,6 +80,8 @@ class Bluetooth {
 		int setPairabilityMode(GAP_Pairability_Mode_t PairabilityMode);
 		int pinCodeResponse(const char *pinCode);
 
+		bool sendAvailable();
+
 		static void BTPSAPI GAP_Event_Callback(unsigned int BluetoothStackID, GAP_Event_Data_t *GAP_Event_Data, unsigned long CallbackParameter);
 		static void BTPSAPI HCI_Event_Callback(unsigned int BluetoothStackID, HCI_Event_Data_t *HCI_Event_Data, unsigned long CallbackParameter);
 		static void BTPSAPI SPP_Event_Callback(unsigned int BluetoothStackID, SPP_Event_Data_t *SPP_Event_Data, unsigned long CallbackParameter);
@@ -88,11 +93,18 @@ class Bluetooth {
 		const char *name;
 		char pin[17];
 
+		CircularBuffer<char, 64, true> writeBuffer;
+		OS::Mutex writeBufferMutex;
+
+		OS::Event bufferHasSpaceEvent;
 	public:
 		Bluetooth(const char *name);
 		virtual ~Bluetooth();
 		void init();
 		void setPin(const char *pin);
+
+		bool isConnected();
+		int send(const char *data, int size=0, time_t timeout=TIME_INF);
 };
 
 #endif /* SRC_BLUETOOTH_H_ */

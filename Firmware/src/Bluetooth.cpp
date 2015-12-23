@@ -181,7 +181,13 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 			/* The Remote Port was Disconnected.                        */
 			/* Invalidate the Serial Port ID.                           */
 			//if(UI_Mode == UI_MODE_IS_CLIENT)
-			//   SerialPortID = 0;
+			writeBufferMutex.lock();
+			writeBuffer.clear();
+			writeBufferMutex.unlock();
+			//if the port is closed, signal "bufferHasSpaceEvent",
+			//otherwise it will never return.
+			bufferHasSpaceEvent.signal();
+			SerialPortID = 0;
 
 			Connection_Handle = 0;
 			//SendInfo.BytesToSend = 0;
@@ -226,6 +232,8 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 		 case etPort_Transmit_Buffer_Empty_Indication:
 			/* The transmit buffer is now empty after being full.  Next */
 			/* check the current application state.                     */
+			if (sendAvailable())
+				bufferHasSpaceEvent.signal();
 #if 0
 			if(SendInfo.BytesToSend)
 			{
@@ -820,13 +828,80 @@ void Bluetooth::init(){
 
 	/* Initialize the application.                                       */
 	if((result = initializeApplication()) > 0){
-		if (!setClassOfDevice(0x80510)){
+		//if (!setClassOfDevice(0x80510)){
 			openServer(SPP_PORT_NUMBER_MINIMUM);
-		}
+		//}
 	}
 }
 
 void Bluetooth::setPin(const char *i_pin){
 	memcpy(pin, i_pin, std::min(strlen(i_pin),(size_t)16));
 	pin[16]=0;
+}
+
+int Bluetooth::send(const char *data, int size, time_t timeout){
+	UNUSED(timeout);
+	if (!isConnected())
+		return 0;
+
+	if (size==0)
+		size = strlen(data);
+
+	int origSize = size;
+	while (size){
+		if (!isConnected()){
+			return -1;
+		}
+
+		int toWrite;
+
+		bufferHasSpaceEvent.reset();
+
+		writeBufferMutex.lock();
+		toWrite = std::min(writeBuffer.free(), size);
+		writeBuffer.add(data, toWrite);
+		writeBufferMutex.unlock();
+
+		size -= toWrite;
+		data += toWrite;
+
+		if (toWrite<4){
+			origSize--;
+		}
+		bool sent = sendAvailable();
+		if (size && !sent){
+			bufferHasSpaceEvent.wait(timeout);
+		}
+	}
+
+	return origSize - size;
+}
+
+bool Bluetooth::isConnected(){
+	return Connected;
+}
+
+bool Bluetooth::sendAvailable(){
+	OS::MutexLocker locker(writeBufferMutex);
+
+	int sent;
+	bool everSent=false;
+	while (true){
+		auto backup = writeBuffer.backup();
+		int cnt=writeBuffer.get(tmpBuffer, sizeof(tmpBuffer));
+		writeBuffer.restore(backup);
+
+		if (cnt==0)
+			break;
+
+		sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)tmpBuffer);
+
+		if (sent<=0)
+			break;
+
+		everSent = true;
+		writeBuffer.skip(sent);
+	}
+
+	return everSent;
 }

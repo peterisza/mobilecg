@@ -15,3 +15,52 @@ void Task::exec_internal(const void *inst){
 void OS::run(){
 	osKernelStart();
 }
+
+Mutex::Mutex(){
+	sem = xSemaphoreCreateMutex();
+}
+
+Mutex::~Mutex(){
+	vSemaphoreDelete(sem);
+}
+
+bool Mutex::lock(time_t timeout){
+	return xSemaphoreTake(sem, timeout == TIME_INF ? portMAX_DELAY : timeout / portTICK_PERIOD_MS);
+}
+
+void Mutex::unlock(){
+	xSemaphoreGive(sem);
+}
+
+MutexLocker::MutexLocker(Mutex &mutex){
+	m=&mutex;
+	m->lock();
+}
+
+MutexLocker::~MutexLocker(){
+	m->unlock();
+}
+
+Event::Event(){
+	sem = xSemaphoreCreateBinary();
+
+}
+
+Event::~Event(){
+	vSemaphoreDelete(sem);
+}
+
+void Event::reset(){
+	xQueueReset(sem);
+	xSemaphoreTake(sem,0);
+}
+
+bool Event::wait(time_t timeout, bool doReset){
+	if (doReset)
+		reset();
+	return xSemaphoreTake(sem, timeout == TIME_INF ? portMAX_DELAY : timeout / portTICK_PERIOD_MS);
+}
+
+void Event::signal(){
+	xSemaphoreGive(sem);
+}

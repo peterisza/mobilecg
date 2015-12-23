@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <helpers.h>
+#include <time.h>
 
 extern "C"{
 	#include "cmsis_os.h"
@@ -39,6 +40,37 @@ namespace OS{
 	inline void sleep(const TickType_t val){
 		vTaskDelay(val);
 	}
+
+	class Mutex{
+		private:
+			SemaphoreHandle_t sem;
+		public:
+			Mutex();
+			~Mutex();
+
+			bool lock(time_t timeout = TIME_INF);
+			void unlock();
+	};
+
+	class Event{
+		private:
+			SemaphoreHandle_t sem;
+		public:
+			Event();
+			~Event();
+
+			bool wait(time_t timeout = TIME_INF, bool doReset=false);
+			void reset();
+			void signal();
+	};
+
+	class MutexLocker{
+		private:
+			Mutex *m;
+		public:
+			MutexLocker(Mutex &mutex);
+			~MutexLocker();
+	};
 }
 
 #endif /* SRC_WRAPPERS_OS_H_ */
