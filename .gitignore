@@ -4,3 +4,4 @@
 Hardware/holter-cache.lib
 CardECG/cardecg-cache.lib
 CardECG/cardecg.kicad_pcb-bak
+Software/**/*.o
