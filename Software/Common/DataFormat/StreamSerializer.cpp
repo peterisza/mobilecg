@@ -1,17 +1,17 @@
-#include "Serializer.hpp"
+#include "StreamSerializer.hpp"
 #include "PacketHeader.hpp"
 #include "helpers.hpp"
 
 using namespace ecg;
 
-Serializer::Serializer(FifoBuffer **streams, int numStreams):
+StreamSerializer::StreamSerializer(BitFifo **streams, int numStreams):
 	streams(streams),
 	numStreams(numStreams)
 {
 	
 }
 
-bool Serializer::makePacket(char* buffer, int totalSize) {
+bool StreamSerializer::makePacket(char* buffer, int totalSize) {
 	int totalAvailable = 0;
 	int toStoreTotal = 0;
 	int headerSize = sizeof(PacketHeader);
@@ -22,7 +22,7 @@ bool Serializer::makePacket(char* buffer, int totalSize) {
 	char* data = buffer + headerSize + 2*numStreams;
 	
 	for(int i = 0; i < numStreams; ++i)
-		totalAvailable += streams[i].getAvailableBytes();
+		totalAvailable += streams[i]->getAvailableBytes();
 
 	for(int i = 0; i < numStreams; ++i) {
 		int toStore = dataSize * streams[i]->getAvailableBytes() / totalAvailable;
@@ -44,16 +44,16 @@ bool Serializer::makePacket(char* buffer, int totalSize) {
 			sizes[i] = sizes[i] + 1;
 			correction--;
 		}
-		streams[i].popBytes(data, sizes[i]);
+		streams[i]->popBytes(data, sizes[i]);
 		data += sizes[i];
 	}
 	
-	header->packetType = PacketHeader::DATA_PACKET;
+	header->packetType = PacketHeader::STREAM_PACKET;
 	
 	return true;
 }
 
-bool Serializer::readPacket(const char* buffer, int totalSize) {
+bool StreamSerializer::readPacket(const char* buffer, int totalSize) {
 	int totalAvailable = 0;
 	int headerSize = sizeof(PacketHeader);
 	int dataSize = totalSize - 2*numStreams - headerSize;
@@ -62,11 +62,11 @@ bool Serializer::readPacket(const char* buffer, int totalSize) {
 	BigEndianInt16* sizes = (BigEndianInt16*) (buffer + headerSize);
 	const char* data = buffer + headerSize + 2*numStreams;
 	
-	if(header->packetType != PacketHeader::DATA_PACKET)
+	if(header->packetType != PacketHeader::STREAM_PACKET)
 		return false;
 	
 	for(int i = 0; i < numStreams; ++i) {
-		streams[i].pushBytes(data, sizes[i]);
+		streams[i]->pushBytes(data, sizes[i]);
 		data += sizes[i];
 	}
 	

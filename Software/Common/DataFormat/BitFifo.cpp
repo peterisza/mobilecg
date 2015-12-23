@@ -1,10 +1,10 @@
-#include "FifoBuffer.hpp"
+#include "BitFifo.hpp"
 
 #include <stdio.h>
 
 using namespace ecg;
 
-FifoBuffer::FifoBuffer(char *buffer, int sizeBytes):
+BitFifo::BitFifo(char *buffer, int sizeBytes):
 	buffer(buffer),
 	sizeBytes(sizeBytes),
 	sizeBits(sizeBytes*8),
@@ -13,26 +13,26 @@ FifoBuffer::FifoBuffer(char *buffer, int sizeBytes):
 {
 }
 
-int FifoBuffer::getAvailableBits() {
+int BitFifo::getAvailableBits() {
 	if(end >= start)
 		return end - start;
 	else
 		return sizeBits - start + end;
 }
 
-int FifoBuffer::getFreeBits() {
+int BitFifo::getFreeBits() {
 	return sizeBits - getAvailableBits() - 8;
 }
 
-int FifoBuffer::getAvailableBytes() {
+int BitFifo::getAvailableBytes() {
 	return getAvailableBits() >> 3;
 }
 
-int FifoBuffer::getFreeBytes() {
+int BitFifo::getFreeBytes() {
 	return sizeBytes - ((getAvailableBits() + 7) >> 3) - 1;
 }
 
-bool FifoBuffer::pushBits(uint32_t data, char numBits) {
+bool BitFifo::pushBits(uint32_t data, char numBits) {
 	if(getFreeBits() < numBits)
 		return false;
 	
@@ -61,7 +61,7 @@ bool FifoBuffer::pushBits(uint32_t data, char numBits) {
 	return true;
 }
 
-uint32_t FifoBuffer::popBits(char numBits) {
+uint32_t BitFifo::popBits(char numBits) {
 	if(getAvailableBits() < numBits)
 		return 0;
 	
@@ -83,19 +83,19 @@ uint32_t FifoBuffer::popBits(char numBits) {
 	return result;
 }
 
-bool FifoBuffer::pushByte(uint8_t data) {
+bool BitFifo::pushByte(uint8_t data) {
 	return pushBits(data, 8);
 }
 
-uint8_t FifoBuffer::popByte() {
+uint8_t BitFifo::popByte() {
 	return (uint8_t) popBits(8);
 }
 
-int FifoBuffer::getSizeBytes() {
+int BitFifo::getSizeBytes() {
 	return sizeBytes;
 }
 
-int FifoBuffer::popBytes(char *buffer, int size) {
+int BitFifo::popBytes(char *buffer, int size) {
 	if(getAvailableBytes() < size)
 		size = getAvailableBytes();
 	for(int i = 0; i < size; ++i) {
@@ -104,7 +104,7 @@ int FifoBuffer::popBytes(char *buffer, int size) {
 	return size;
 }
 
-int FifoBuffer::pushBytes(const char *buffer, int size) {
+int BitFifo::pushBytes(const char *buffer, int size) {
 	if(getFreeBytes() < size)
 		size = getFreeBytes();
 	for(int i = 0; i < size; ++i) {

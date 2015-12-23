@@ -18,4 +18,14 @@ public:
 	operator int16_t() const { return ntohs(rep); }
 };
 
+class BigEndianInt32
+{
+	int32_t rep;        
+
+public: 
+	BigEndianInt32() { }
+	BigEndianInt32(int32_t i) : rep(htonl(i)) { }
+	operator int32_t() const { return ntohl(rep); }
+};
+
 #endif

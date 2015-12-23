@@ -1,4 +1,5 @@
-#include "FifoBuffer.hpp"
+#include "BitFifo.hpp"
+#include "StreamSerializer.hpp"
 #include <iostream>
 
 using namespace std;
@@ -12,7 +13,7 @@ bool okay = true;
 void testFifoBuffer() {
 	const int size = 8;
 	char buffer[size];
-	ecg::FifoBuffer fb(buffer, size);
+	ecg::BitFifo fb(buffer, size);
 	EQUALS(fb.getFreeBytes(), 7);
 	EQUALS(fb.getFreeBits(), 56);
 
@@ -30,8 +31,19 @@ void testFifoBuffer() {
 }
 
 void testSerialization() {
-	ecg::FifoBuffer fbs[];	
-	Serializer
+	const int size1 = 1000;
+	const int size2 = 2000;
+	const int packetSize = 64;
+	char buffer1[size1], buffer2[size2];
+	ecg::BitFifo fb1(buffer1, size1), fb2(buffer2, size2);
+	ecg::BitFifo *fbs[2] = {&fb1, &fb2};
+	ecg::StreamSerializer ser(fbs, 2);
+	for(int i = 0; i < size1-1; ++i)
+		fb1.pushBits(i, 10);
+	for(int i = 0; i < size2-1; ++i)
+		fb2.pushBits(i, 10);
+	
+	//ser.makePacket();
 }
 
 int main()

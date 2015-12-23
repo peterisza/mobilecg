@@ -7,7 +7,7 @@ namespace ecg {
 	
 struct PacketHeader {
 	enum PacketType {
-		DATA_PACKET = 0
+		STREAM_PACKET = 0
 	};	
 	PacketType packetType;
 	uint16_t checksum;

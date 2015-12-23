@@ -7,9 +7,9 @@
 
 namespace ecg {
 
-class FifoBuffer {
+class BitFifo {
 	public:
-		FifoBuffer(char *buffer, int sizeBytes);
+		BitFifo(char *buffer, int sizeBytes);
 		
 		#ifndef EMBEDDED
 		/* TODO: constructor with dynamic memory allocation. */

@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++11
 runtest: test
 	./test
 
-test: FifoBuffer.o Serializer.o helpers.o
+test: BitFifo.o StreamSerializer.o helpers.o
 
 clean:
 	rm *.o test
