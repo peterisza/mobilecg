@@ -15,17 +15,7 @@ class BigEndianInt16
 public: 
 	BigEndianInt16() { }
 	BigEndianInt16(int16_t i) : rep(htons(i)) { }
-	operator int16_t() const { return ntohs(rep); }
-};
-
-class BigEndianInt32
-{
-	int32_t rep;        
-
-public: 
-	BigEndianInt32() { }
-	BigEndianInt32(int32_t i) : rep(htonl(i)) { }
-	operator int32_t() const { return ntohl(rep); }
+	operator int16_t() const { return ntohs(rep); }	
 };
 
 #endif

@@ -24,7 +24,7 @@ uint16_t htons(uint16_t x)
 
 uint32_t ntohl(uint32_t x) 
 {
-  #if BYTE_ORDER != BIG_ENDIAN
+  #if BYTE_ORDER == BIG_ENDIAN
 	return x;
   #else // LITTLE_ENDIAN
 	return   x << 24 & 0xFF000000
@@ -36,7 +36,7 @@ uint32_t ntohl(uint32_t x)
 
 uint16_t ntohs(uint16_t x)
 {
-  #if BYTE_ORDER != BIG_ENDIAN
+  #if BYTE_ORDER == BIG_ENDIAN
 	return x;
   #else // LITTLE_ENDIAN
 	return   x << 8 & 0xFF00

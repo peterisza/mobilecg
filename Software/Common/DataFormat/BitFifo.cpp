@@ -47,7 +47,7 @@ bool BitFifo::pushBits(uint32_t data, char numBits) {
 		buffer[end >> 3] |= (data & ((1 << bitsToPush) - 1)) << bitsInCurrentByte;
 		end += bitsToPush;
 		if(end >= sizeBits)
-			end = 0;
+			end -= sizeBits;
 		data >>= bitsToPush;
 		numBits -= bitsToPush;
 		//printf("Pushed %d bits, start: %d, end: %d.\n", bitsToPush, start, end);	
@@ -75,7 +75,7 @@ uint32_t BitFifo::popBits(char numBits) {
 		result |= ((buffer[start >> 3] >> (start & 7)) & ((1 << bitsToRead)-1)) << readBits;
 		start += bitsToRead;
 		if(start >= sizeBits)
-			start = 0;
+			start -= sizeBits;
 		readBits += bitsToRead;
 		//printf("Read %d bits, start: %d, end: %d.\n", bitsToRead, start, end);		
 	}

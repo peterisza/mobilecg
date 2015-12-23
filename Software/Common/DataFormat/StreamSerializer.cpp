@@ -2,6 +2,8 @@
 #include "PacketHeader.hpp"
 #include "helpers.hpp"
 
+#include <stdio.h>
+
 using namespace ecg;
 
 StreamSerializer::StreamSerializer(BitFifo **streams, int numStreams):
@@ -17,6 +19,8 @@ bool StreamSerializer::makePacket(char* buffer, int totalSize) {
 	int headerSize = sizeof(PacketHeader);
 	int dataSize = totalSize - 2*numStreams - headerSize;
 	
+	//printf("dataSize: %d\n", dataSize);
+	
 	PacketHeader* header = (PacketHeader*) buffer;
 	BigEndianInt16* sizes = (BigEndianInt16*) (buffer + headerSize);
 	char* data = buffer + headerSize + 2*numStreams;
@@ -24,11 +28,17 @@ bool StreamSerializer::makePacket(char* buffer, int totalSize) {
 	for(int i = 0; i < numStreams; ++i)
 		totalAvailable += streams[i]->getAvailableBytes();
 
+	//printf("totalAvailable: %d\n", totalAvailable);
+
+	if(totalAvailable == 0)
+		return false;
+
 	for(int i = 0; i < numStreams; ++i) {
 		int toStore = dataSize * streams[i]->getAvailableBytes() / totalAvailable;
 		sizes[i] = toStore;
 		toStoreTotal += toStore;
 	}
+
 	
 	if(toStoreTotal > totalAvailable)
 		return false;
@@ -44,7 +54,9 @@ bool StreamSerializer::makePacket(char* buffer, int totalSize) {
 			sizes[i] = sizes[i] + 1;
 			correction--;
 		}
-		streams[i]->popBytes(data, sizes[i]);
+		//printf("popping %d bytes from stream %d\n", (int)sizes[i], i);		
+		streams[i]->popBytes(data, (int)sizes[i]);
+		//printf("%d bytes remained in stream %d\n", streams[i]->getAvailableBytes(), i);	
 		data += sizes[i];
 	}
 	
