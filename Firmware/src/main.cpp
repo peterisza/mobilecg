@@ -31,7 +31,7 @@ void mainTaskCallback (OS::Task &task) {
 		led1.on();
 		led2.off();
 
-		for (int a=0; a<100; a++)
+		for (int a=0; a<5; a++)
 			bluetooth.send("pina");
 		bluetooth.send("\r\n");
 		OS::sleep(500);
@@ -39,14 +39,14 @@ void mainTaskCallback (OS::Task &task) {
 		led1.off();
 		led2.on();
 
-		for (int a=0; a<100; a++)
+		for (int a=0; a<5; a++)
 			bluetooth.send("fasz");
 		bluetooth.send("\r\n");
 		OS::sleep(500);
 	}
 }
 
-TASK(mainTask,mainTaskCallback);
+TASK(mainTask,mainTaskCallback,2048);
 
 
 int main(){
