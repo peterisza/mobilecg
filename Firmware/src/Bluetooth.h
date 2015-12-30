@@ -65,7 +65,7 @@ class Bluetooth {
 
 		unsigned int bluetoothStackID;
 
-		static const int VENDOR_BAUD_RATE = 921600L;
+		static const int VENDOR_BAUD_RATE = 1500000L;
 		static int displayCallback(int length, char *message);
 
 		int deleteLinkKey(BD_ADDR_t BD_ADDR);

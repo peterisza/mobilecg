@@ -1,6 +1,6 @@
 #include "GPIO.h"
 
-GPIO::GPIO(char bank, int iPin){
+GPIO::GPIO(char bank, int iPin, bool iInverter){
 	switch (bank){
 		case 'A':
 			gpioStruct = GPIOA;
@@ -18,11 +18,12 @@ GPIO::GPIO(char bank, int iPin){
 			gpioStruct = NULL;
 	}
 
+	this->inverted = iInverter;
 	this->pin = 1<<iPin;
 }
 
 void GPIO::set(bool val){
-	HAL_GPIO_WritePin(gpioStruct, pin, val ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(gpioStruct, pin, (val^inverted) ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 void GPIO::on(){

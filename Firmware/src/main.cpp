@@ -5,6 +5,9 @@
 GPIO led1('B', 6);
 GPIO led2('B', 7);
 
+GPIO en2v8('C', 1);
+GPIO bluetoothShutdown('C', 13, true);
+
 Bluetooth bluetooth("MobilECG");
 
 extern "C" UART_HandleTypeDef huart2;
@@ -12,18 +15,14 @@ extern "C" UART_HandleTypeDef huart2;
 void mainTaskCallback (OS::Task &task) {
 	UNUSED(task);
 
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 	OS::sleep(100);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+	en2v8.on();
 	OS::sleep(100);
 
-//	while(1);
 
-	/*while(1){
-		HAL_UART_DMAStop(&huart2);
-		HAL_UART_Transmit_DMA(&huart2, (uint8_t*)"PINA", 4);
-		OS::sleep(100);
-	}*/
+	OS::sleep(100);
+	bluetoothShutdown.off();
+	OS::sleep(100);
 
 	bluetooth.init();
 
@@ -50,7 +49,8 @@ TASK(mainTask,mainTaskCallback,2048);
 
 
 int main(){
+	bluetoothShutdown.on();
+	en2v8.off();
+
 	OS::run();
-
-
 }

@@ -9,8 +9,9 @@ class GPIO{
 	private:
 		GPIO_TypeDef* gpioStruct;
 		uint32_t pin;
+		bool inverted;
 	public:
-		GPIO(char bank, int pin);
+		GPIO(char bank, int pin, bool inverter=false);
 		void set(bool val);
 		void on();
 		void off();
