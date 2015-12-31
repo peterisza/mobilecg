@@ -182,6 +182,13 @@ template <typename Type, int vectorSize, bool useMemcpy=false> class CircularBuf
         	return toRead;
         }
 
+        int getContinousReadBuffer(Type *&buffer){
+        	int blockSize=std::min(used(), vectorSize - state.rpos);
+        	buffer = &vector[state.rpos];
+
+        	return blockSize;
+        }
+
         void skip(int n){
         	if (n==0)
         		return;

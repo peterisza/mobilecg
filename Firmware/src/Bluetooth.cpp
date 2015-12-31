@@ -887,15 +887,14 @@ bool Bluetooth::sendAvailable(){
 	int sent;
 	bool everSent=false;
 	while (true){
-		auto backup = writeBuffer.backup();
-		int cnt=writeBuffer.get(tmpBuffer, sizeof(tmpBuffer));
-		writeBuffer.restore(backup);
+		char *buffer;
+		int cnt=writeBuffer.getContinousReadBuffer(buffer);
 
 		if (cnt==0)
 			break;
 
 		writeBufferMutex.unlock();
-		sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)tmpBuffer);
+		sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)buffer);
 		writeBufferMutex.lock();
 
 		if (sent<=0)
