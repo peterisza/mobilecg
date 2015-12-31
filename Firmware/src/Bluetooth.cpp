@@ -882,7 +882,7 @@ bool Bluetooth::isConnected(){
 }
 
 bool Bluetooth::sendAvailable(){
-	OS::MutexLocker locker(writeBufferMutex);
+	writeBufferMutex.lock();
 
 	int sent;
 	bool everSent=false;
@@ -894,7 +894,9 @@ bool Bluetooth::sendAvailable(){
 		if (cnt==0)
 			break;
 
+		writeBufferMutex.unlock();
 		sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)tmpBuffer);
+		writeBufferMutex.lock();
 
 		if (sent<=0)
 			break;
@@ -903,5 +905,6 @@ bool Bluetooth::sendAvailable(){
 		writeBuffer.skip(sent);
 	}
 
+	writeBufferMutex.unlock();
 	return everSent;
 }

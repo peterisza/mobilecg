@@ -16,7 +16,7 @@ STACK_SIZE = 0x2000 ;
  * This constant is used to check that at least HEAP_SIZE of RAM
  * is available for heap. If not, linker will issue an error.
  */
-HEAP_SIZE = 16384 ;
+HEAP_SIZE = 32768 ;
 
 
 /**

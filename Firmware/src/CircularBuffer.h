@@ -49,7 +49,7 @@ template <typename Type, int vectorSize, bool useMemcpy=false> class CircularBuf
         	return state;
         }
 
-        void restore(CircularBufferState &istate){
+        void restore(const CircularBufferState &istate){
         	this->state=istate;
         }
 
@@ -99,7 +99,7 @@ template <typename Type, int vectorSize, bool useMemcpy=false> class CircularBuf
             return vector[absoluteIndex];
         }
 
-        void add(Type &t){
+        void add(const Type &t){
             vector[state.wpos]=t;
 
             if (state.full){
