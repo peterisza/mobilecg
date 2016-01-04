@@ -2,9 +2,14 @@
 
 using namespace OS;
 
-Task::Task(const char *name, TaskFunction iCallback, uint32_t stackSize, osPriority priority): def{ name, &exec_internal, priority, 0, stackSize}{
+Task::Task(const char *name, TaskFunction iCallback, uint32_t stackSize, void *iUserData, osPriority priority): def{ name, &exec_internal, priority, 0, stackSize}{
 	this->callback = iCallback;
+	this->userData = iUserData;
 	tid = osThreadCreate(&def, this);
+}
+
+void *Task::getUserData(){
+	return userData;
 }
 
 void Task::exec_internal(const void *inst){

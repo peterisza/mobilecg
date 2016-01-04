@@ -97,6 +97,14 @@ class Bluetooth {
 		OS::Mutex writeBufferMutex;
 
 		OS::Event bufferHasSpaceEvent;
+		OS::Event readyToSendEvent;
+
+		OS::Task sendTask;
+
+		bool running;
+		static void sendTaskCallbackStatic(OS::Task &task);
+
+		void sendTaskCallback();
 	public:
 		Bluetooth(const char *name);
 		virtual ~Bluetooth();

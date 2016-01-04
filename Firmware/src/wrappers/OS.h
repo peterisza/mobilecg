@@ -29,8 +29,11 @@ namespace OS{
 			typedef void (*TaskFunction)(Task &task);
 			TaskFunction callback;
 
+			void *userData;
 		public:
-			Task(const char *name, TaskFunction iCallback, uint32_t stackSize=512, osPriority priority = osPriorityNormal);
+			Task(const char *name, TaskFunction iCallback, uint32_t stackSize=512, void *userData=NULL, osPriority priority = osPriorityNormal);
+
+			void *getUserData();
 		private:
 			static void exec_internal(const void *);
 	};

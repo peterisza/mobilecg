@@ -14,7 +14,7 @@
 #define DEFAULT_IO_CAPABILITY          (icNoInputNoOutput)
 #define DEFAULT_MITM_PROTECTION                  (FALSE)
 
-Bluetooth::Bluetooth(const char *i_name) {
+Bluetooth::Bluetooth(const char *i_name): sendTask("BTSendTask", sendTaskCallbackStatic, 256, this) {
 	Connected=FALSE;
 	SPPServerSDPHandle=0;
 	bluetoothStackID=0;
@@ -28,11 +28,19 @@ Bluetooth::Bluetooth(const char *i_name) {
 
 	this->name = i_name;
 
+	running=true;
+
 	setPin("1234");
 }
 
-Bluetooth::~Bluetooth() {
+void Bluetooth::sendTaskCallbackStatic(OS::Task &task){
+	((Bluetooth *)task.getUserData())->sendTaskCallback();
+}
 
+
+Bluetooth::~Bluetooth() {
+	running=false;
+	readyToSendEvent.signal();
 }
 
 int Bluetooth::displayCallback(int length, char *message){
@@ -232,56 +240,7 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 		 case etPort_Transmit_Buffer_Empty_Indication:
 			/* The transmit buffer is now empty after being full.  Next */
 			/* check the current application state.                     */
-			if (sendAvailable())
-				bufferHasSpaceEvent.signal();
-#if 0
-			if(SendInfo.BytesToSend)
-			{
-			   /* Send the remainder of the last attempt.               */
-			   TempLength            = (DataStrLen-SendInfo.BytesSent);
-			   SendInfo.BytesSent    = SPP_Data_Write(BluetoothStackID, SerialPortID, TempLength, (unsigned char *)&(DataStr[SendInfo.BytesSent]));
-			   if((int)(SendInfo.BytesSent) >= 0)
-			   {
-				  if(SendInfo.BytesSent <= SendInfo.BytesToSend)
-					 SendInfo.BytesToSend -= SendInfo.BytesSent;
-				  else
-					 SendInfo.BytesToSend = 0;
-
-				  while(SendInfo.BytesToSend)
-				  {
-					 /* Set the Number of bytes to send in the next     */
-					 /* packet.                                         */
-					 if(SendInfo.BytesToSend > DataStrLen)
-						TempLength = DataStrLen;
-					 else
-						TempLength = SendInfo.BytesToSend;
-
-					 SendInfo.BytesSent = SPP_Data_Write(BluetoothStackID, SerialPortID, TempLength, (unsigned char *)DataStr);
-					 if((int)(SendInfo.BytesSent) >= 0)
-					 {
-						SendInfo.BytesToSend -= SendInfo.BytesSent;
-						if(SendInfo.BytesSent < TempLength)
-						   break;
-					 }
-					 else
-					 {
-						Display(("SPP_Data_Write returned %d.\r\n", (int)SendInfo.BytesSent));
-
-						SendInfo.BytesToSend = 0;
-					 }
-				  }
-			   }
-			   else
-			   {
-				  Display(("SPP_Data_Write returned %d.\r\n", (int)SendInfo.BytesSent));
-
-				  SendInfo.BytesToSend = 0;
-			   }
-			}
-
-
-			_DisplayPrompt = FALSE;
-#endif
+			readyToSendEvent.signal();
 			break;
 		 default:
 			break;
@@ -848,6 +807,7 @@ int Bluetooth::send(const char *data, int size, time_t timeout){
 		size = strlen(data);
 
 	int origSize = size;
+
 	while (size){
 		if (!isConnected()){
 			return -1;
@@ -862,16 +822,15 @@ int Bluetooth::send(const char *data, int size, time_t timeout){
 		writeBuffer.add(data, toWrite);
 		writeBufferMutex.unlock();
 
-		size -= toWrite;
-		data += toWrite;
+		if (toWrite){
+			size -= toWrite;
+			data += toWrite;
 
-		if (toWrite<4){
-			origSize--;
+			readyToSendEvent.signal();
 		}
-		bool sent = sendAvailable();
-		if (size && !sent){
+
+		if (size)
 			bufferHasSpaceEvent.wait(timeout);
-		}
 	}
 
 	return origSize - size;
@@ -881,29 +840,26 @@ bool Bluetooth::isConnected(){
 	return Connected;
 }
 
-bool Bluetooth::sendAvailable(){
-	writeBufferMutex.lock();
-
-	int sent;
-	bool everSent=false;
-	while (true){
+void Bluetooth::sendTaskCallback(){
+	while (running){
 		char *buffer;
-		int cnt=writeBuffer.getContinousReadBuffer(buffer);
+		int cnt;
+		int sent;
 
-		if (cnt==0)
-			break;
+		readyToSendEvent.reset();
 
-		writeBufferMutex.unlock();
-		sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)buffer);
 		writeBufferMutex.lock();
+		cnt=writeBuffer.getContinousReadBuffer(buffer);
+		if (cnt){
+			sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)buffer);
+			writeBuffer.skip(sent);
+		} else
+			sent=0;
+		writeBufferMutex.unlock();
 
-		if (sent<=0)
-			break;
-
-		everSent = true;
-		writeBuffer.skip(sent);
+		if (sent)
+			bufferHasSpaceEvent.signal();
+		else
+			readyToSendEvent.wait();
 	}
-
-	writeBufferMutex.unlock();
-	return everSent;
 }
