@@ -26,6 +26,10 @@ void mainTaskCallback (OS::Task &task) {
 
 	bluetooth.init();
 
+	TIM_HandleTypeDef tim;
+		tim.Instance = TIM1;
+		HAL_TIM_PWM_Start(&tim, TIM_CHANNEL_3);
+
 	while(1){
 		led1.on();
 		led2.off();
