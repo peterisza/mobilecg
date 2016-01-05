@@ -235,7 +235,10 @@ all :
 
 patch: clean
 	patch -p0 < patches/main.patch
-	#patch -p0 < patches/cmsis_os.patch
+	#for this file patch works in reverse direction (tries to patch the original file) on OSX 10.11. I was unable to figure out the problem.
+	#the patch file has the correct format, with --- on original file and +++ on the file needed to be modified. So hardcode the patch
+	#into the patch command.
+	patch  src/STM32/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h < patches/cmsis_os.patch
 	#patch -p0 < patches/cdcCaseFix.patch
 	mv src/STM32/Src/main.c src/STM32/Src/inithw.c
 
