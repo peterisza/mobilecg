@@ -1,6 +1,7 @@
 #include <OS.h>
 #include <GPIO.h>
 #include <Bluetooth.h>
+#include <ADS1298.h>
 
 GPIO led1('B', 6);
 GPIO led2('B', 7);
@@ -11,6 +12,8 @@ GPIO bluetoothShutdown('C', 13, true);
 Bluetooth bluetooth("MobilECG");
 
 extern "C" UART_HandleTypeDef huart2;
+
+ADS1298 ad;
 
 void mainTaskCallback (OS::Task &task) {
 	UNUSED(task);
@@ -26,12 +29,17 @@ void mainTaskCallback (OS::Task &task) {
 
 	bluetooth.init();
 
+	//Turn on ECG clock
 	TIM_HandleTypeDef tim;
-		tim.Instance = TIM1;
-		HAL_TIM_PWM_Start(&tim, TIM_CHANNEL_3);
+	tim.Instance = TIM1;
+	HAL_TIM_PWM_Start(&tim, TIM_CHANNEL_3);
+
+
+	ad.start();
 
 	while(1){
-		led1.on();
+		ad.start();
+		/*led1.on();
 		led2.off();
 
 		for (int a=0; a<100; a++)
@@ -45,7 +53,7 @@ void mainTaskCallback (OS::Task &task) {
 		for (int a=0; a<100; a++)
 			bluetooth.send("fasz");
 		bluetooth.send("\r\n");
-		OS::sleep(500);
+		OS::sleep(500);*/
 	}
 }
 
