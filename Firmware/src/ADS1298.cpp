@@ -1,7 +1,13 @@
 #include "ADS1298.h"
 #include <OS.h>
+#include <Logger.h>
+#include "stm32f4xx_hal.h"
 
 extern "C" SPI_HandleTypeDef hspi2;
+
+#define nPD_REFBUF 0x80
+#define CONFIG3_FIXED 0x40
+#define HR 0x80
 
 ADS1298::ADS1298():
 	reset('A', 6, true),
@@ -12,8 +18,9 @@ ADS1298::ADS1298():
 
 }
 
-ADS1298::~ADS1298() {
-
+ADS1298& ADS1298::instance(){
+	static ADS1298 inst;
+	return inst;
 }
 
 void ADS1298::writeReg(Register reg, uint8_t value){
@@ -45,14 +52,17 @@ void ADS1298::sendCommand(Command cmd){
 
 bool ADS1298::start(){
 	pinStart.off();
-	reset.on();
+	reset.off();
 	pwdn.off();
 
-	OS::sleep(20);
+	OS::sleep(100);
 
-	reset.off();
+	reset.on();
 	OS::sleep(20);
-	sendCommand(CMD_WAKEUP);
+	reset.off();
+
+	OS::sleep(20);
+	sendCommand(CMD_SDATAC);
 	OS::sleep(20);
 
 	uint8_t id = readReg(REG_ID);
@@ -71,9 +81,43 @@ bool ADS1298::start(){
 
 	nHardwareChannels = 4+2*nHardwareChannels;
 
+	//Enable internal reference
+	writeReg(REG_CONFIG3, CONFIG3_FIXED | nPD_REFBUF );
+
+	setSpeed(DIV_4096);
+
+	//Magic
+	writeReg(REG_CONFIG2, 0);
+
+	sendCommand(CMD_START);
+	sendCommand(CMD_RDATAC);
+
+
 	return true;
+}
+
+float ADS1298::setSpeed(SpeedDiv div, bool highRes){
+	float fmod=((float)FCLK) / (highRes ? 4 : 8);
+
+	if ((highRes && div==0) || ((!highRes) && div>=DIV_8192))
+		Logger::panic("ADS1298::setSpeed(): Invalid params");
+
+	if (highRes)
+		div = (SpeedDiv)(div-1);
+
+	writeReg(REG_CONFIG1, ((uint8_t)div) | (highRes ? HR : 0));
+
+	realFreq = fmod / (1<<(4+div));
+
+	return realFreq;
 }
 
 void ADS1298::stop(){
 
+}
+
+void EXTI4_IRQHandler(void){
+	ADS1298::instance().interrupt();
+	NVIC_ClearPendingIRQ(EXTI4_IRQn);
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 }

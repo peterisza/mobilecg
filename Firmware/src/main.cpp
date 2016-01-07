@@ -2,6 +2,7 @@
 #include <GPIO.h>
 #include <Bluetooth.h>
 #include <ADS1298.h>
+#include <Logger.h>
 
 GPIO led1('B', 6);
 GPIO led2('B', 7);
@@ -13,7 +14,6 @@ Bluetooth bluetooth("MobilECG");
 
 extern "C" UART_HandleTypeDef huart2;
 
-ADS1298 ad;
 
 void mainTaskCallback (OS::Task &task) {
 	UNUSED(task);
@@ -35,11 +35,11 @@ void mainTaskCallback (OS::Task &task) {
 	HAL_TIM_PWM_Start(&tim, TIM_CHANNEL_3);
 
 
-	ad.start();
+	if (!ADS1298::instance().start())
+		Logger::panic("Failed to initialize ADS1298.");
 
 	while(1){
-		ad.start();
-		/*led1.on();
+		led1.on();
 		led2.off();
 
 		for (int a=0; a<100; a++)
@@ -53,7 +53,7 @@ void mainTaskCallback (OS::Task &task) {
 		for (int a=0; a<100; a++)
 			bluetooth.send("fasz");
 		bluetooth.send("\r\n");
-		OS::sleep(500);*/
+		OS::sleep(500);
 	}
 }
 
