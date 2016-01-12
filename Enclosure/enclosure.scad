@@ -280,9 +280,9 @@ module enclosure ()
 scale([1.015,1.015,-1.015]) {
     difference() {
         enclosure();
-        translate([0,-25,0])
-            linear_extrude(50)
-                square([50, 50], true);
+        /*translate([0,-25,0])
+            linear_extrude(60)
+                square([60, 60], true);*/
     }    
     /*rotate([180,0,0])
         translate([0, -6, 0])
