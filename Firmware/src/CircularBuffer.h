@@ -26,7 +26,7 @@ struct CircularBufferState{
  * It's elements can be accessed both by their relative and their absolute position.
  *
  */
-template <typename Type, int vectorSize, bool useMemcpy=false> class CircularBuffer
+template <typename Type, int vectorSize, bool useMemcpy=false, bool overwrite=true> class CircularBuffer
 {
     private:
         Type vector[vectorSize];
@@ -124,6 +124,10 @@ template <typename Type, int vectorSize, bool useMemcpy=false> class CircularBuf
 
             state.full = free() <= cnt;
 
+            if (!overwrite){
+            	cnt=free();
+            }
+
             while (cnt){
             	int copySize = std::min(vectorSize - state.wpos, cnt);
             	if (useMemcpy){
@@ -185,6 +189,13 @@ template <typename Type, int vectorSize, bool useMemcpy=false> class CircularBuf
         int getContinousReadBuffer(Type *&buffer){
         	int blockSize=std::min(used(), vectorSize - state.rpos);
         	buffer = &vector[state.rpos];
+
+        	return blockSize;
+        }
+
+        int getContinousWriteBuffer(Type *&buffer){
+        	int blockSize=std::min(free(), vectorSize - state.wpos);
+        	buffer = &vector[state.wpos];
 
         	return blockSize;
         }
