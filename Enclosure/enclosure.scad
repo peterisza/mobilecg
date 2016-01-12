@@ -12,7 +12,7 @@ pcbHeight = 48;
 pcbExtWidth = 4.5;
 pcbExtHeight = 1;
 pcbRail = 1;
-pcbThickness = 1.6;
+pcbThickness = 1.82;
 pcbFromBottom = 2;
 backRailWidth = 10;
 connectorPosition = 10;
@@ -26,7 +26,6 @@ thinRailDepth = 0.5;
 
 cylinderResolution = 200;
 
-enclosure();
 
 
 pcbX = -innerWidth/2 + innerHeight + separatorWidth;
@@ -184,7 +183,7 @@ module pcbHolders() {
    translate([
         -backRailWidth/2 + innerWidth/2 - innerHeight/2,
         -backRailHeight / 2 + innerHeight/2,
-        -pcbRail/2 + innerDepth]
+        innerDepth + wallThickness - pcbRail]
     )
         linear_extrude(pcbRail)
             square([backRailWidth, backRailHeight], true);
@@ -192,11 +191,19 @@ module pcbHolders() {
 }
 
 module logo() {
-    translate([0,-outerHeight/2+logoHeight-0.01, 32])
+    translate([0,+outerHeight/2+0.01, 32])
         rotate([90,0,0]) scale([1.5, 1.5, 1])
-            scale([-1, -1, 1]) translate([-17.6/2, -15.06/2, 0])
+            scale([1, -1, 1]) translate([-17.6/2, -15.06/2, 0])
                 linear_extrude(logoHeight+0.02)
                     import (file = "logo2.dxf");    
+}
+
+module prototype() {
+    translate([10,-outerHeight/2+logoHeight,48])
+        scale([0.5,0.5,0.5])
+            rotate([90, -55+180, 0])
+                linear_extrude(10)
+                    text("PROTOTYPE", font="Liberation Sans:style=Bold");    
 }
 
 module lidBase() {
@@ -245,6 +252,7 @@ module enclosure ()
             outerWall();
             hdmiHole();   
             logo();
+            prototype();
             lidHole();
         }
    
@@ -258,19 +266,30 @@ module enclosure ()
         pcb();
     }
 
-    /*color("green")
-        pcb();*/
+    //color("green")
+     //   pcb();
 }
 
-color("red")
-    translate([0, outerHeight/2/* - wallThickness - hookThickness*2*/, -10])
+
+/*color("red")
+    translate([0, outerHeight/2, -10])
     rotate([90, 0, 0])
-        lid();
+        lid();*/
 
 
-/*
-translate([0, -6, 0])
-    lid();*/
+scale([1.015,1.015,-1.015]) {
+    difference() {
+        enclosure();
+        /*linear_extrude(50)
+            square([50, 50], true);*/
+    }    
+    /*rotate([180,0,0])
+        translate([0, -6, 0])
+            lid();*/
+}
+
+
+
 
 
 
