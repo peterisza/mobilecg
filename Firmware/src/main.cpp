@@ -42,6 +42,7 @@ void mainTaskCallback (OS::Task &task) {
 		auto buffer = ADS1298::instance().getBuffer();
 		if (!bluetooth.isConnected()){
 			buffer.clear();
+			OS::sleep(10);
 			continue;
 		}
 
@@ -53,7 +54,7 @@ void mainTaskCallback (OS::Task &task) {
 			continue;
 		}
 
-		int sent=bluetooth.send((char*)data, cnt, 10);
+		int sent=bluetooth.send((char*)data, cnt, TIME_INF);
 		buffer.skip(sent);
 	}
 }

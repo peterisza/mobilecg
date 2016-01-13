@@ -172,6 +172,8 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 			/* Flag that we are now connected.                          */
 			Connected  = TRUE;
 
+			writeBuffer.clear();
+
 			/* Query the connection handle.                             */
 			ret_val = GAP_Query_Connection_Handle(BluetoothStackID, SPP_Event_Data->Event_Data.SPP_Open_Port_Indication_Data->BD_ADDR, &Connection_Handle);
 			if(ret_val)
@@ -180,6 +182,8 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 			   ret_val           = 0;
 			   Connection_Handle = 0;
 			}
+
+			readyToSendEvent.signal();
 			break;
 		 case etPort_Open_Confirmation:
 			/* Needed only in client mode. */
@@ -829,8 +833,10 @@ int Bluetooth::send(const char *data, int size, time_t timeout){
 			readyToSendEvent.signal();
 		}
 
-		if (size)
-			bufferHasSpaceEvent.wait(timeout);
+		if (size){
+			if (!bufferHasSpaceEvent.wait(timeout))
+				break;
+		}
 	}
 
 	return origSize - size;
@@ -847,6 +853,11 @@ void Bluetooth::sendTaskCallback(){
 		int sent;
 
 		readyToSendEvent.reset();
+
+		if (!isConnected()){
+			readyToSendEvent.wait();
+			continue;
+		}
 
 		writeBufferMutex.lock();
 		cnt=writeBuffer.getContinousReadBuffer(buffer);
