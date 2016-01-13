@@ -103,10 +103,10 @@ bool ADS1298::start(){
 float ADS1298::setSpeed(SpeedDiv div, bool highRes){
 	float fmod=((float)FCLK) / (highRes ? 4 : 8);
 
-	if ((highRes && div==0) || ((!highRes) && div>=DIV_8192))
+	if (((!highRes) && div==0) || (highRes && div>=DIV_8192))
 		Logger::panic("ADS1298::setSpeed(): Invalid params");
 
-	if (highRes)
+	if (!highRes)
 		div = (SpeedDiv)(div-1);
 
 	writeReg(REG_CONFIG1, ((uint8_t)div) | (highRes ? HR : 0));
