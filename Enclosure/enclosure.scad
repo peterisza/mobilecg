@@ -16,7 +16,7 @@ pcbThickness = 1.82;
 pcbFromBottom = 2;
 backRailWidth = 10;
 connectorPosition = 10;
-logoHeight = 0.4;
+logoHeight = 0.5;
 hookThickness = 1.5;
 lidHoleWidth = 8;
 lidHolePosition = 8;
@@ -191,18 +191,24 @@ module pcbHolders() {
 }
 
 module logo() {
-    translate([0,+outerHeight/2+0.01, 32])
-        rotate([90,0,0]) scale([1.5, 1.5, 1])
+    translate([0,+outerHeight/2+0.01, 31])
+        rotate([90,0,0]) scale([1.6, 1.6, 1])
             scale([1, -1, 1]) translate([-17.6/2, -15.06/2, 0])
                 linear_extrude(logoHeight+0.02)
-                    import (file = "logo2.dxf");    
+                    import (file = "logo2.dxf");
 }
 
 module prototype() {
     translate([10,-outerHeight/2+logoHeight,48])
-        scale([0.5,0.5,0.5])
+        scale([0.5,1,0.5])
             rotate([90, -55+180, 0])
                 linear_extrude(10)
+                    text("PROTOTYPE", font="Liberation Sans:style=Bold");
+
+    translate([-14.6,+outerHeight/2,48.5])
+        scale([-0.35,1,0.35])
+            rotate([90, 180, 0])
+                linear_extrude(logoHeight)
                     text("PROTOTYPE", font="Liberation Sans:style=Bold");    
 }
 
