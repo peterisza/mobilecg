@@ -17,6 +17,7 @@ ADS1298::ADS1298():
 	diffSel('C',4)
 {
 	memset(zeroBuffer, 0, ADS1298_MAX_PACKET_LENGTH);
+	dmaRunning=false;
 }
 
 ADS1298& ADS1298::instance(){
@@ -81,8 +82,12 @@ bool ADS1298::start(){
 	}
 
 	nHardwareChannels = 4+2*nHardwareChannels;
+
 	selectedChannels = nHardwareChannels;
 	dataTransferSize = (selectedChannels + 1)*3;
+	int bufSize=ecgBuffer.maxSize();
+	bufSize -= bufSize % dataTransferSize;
+	ecgBuffer.resize(bufSize);
 
 	//Enable internal reference
 	writeReg(REG_CONFIG3, CONFIG3_FIXED | nPD_REFBUF );
@@ -117,12 +122,35 @@ float ADS1298::setSpeed(SpeedDiv div, bool highRes){
 }
 
 void ADS1298::interrupt(){
-//	HAL_SPI_DMAStop(&hspi2);
-	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)dmaDestBuffer, dataTransferSize);
+	uint8_t *buffer;
+
+	if (dmaRunning)
+		ecgBuffer.added(dataTransferSize);
+
+	if (ecgBuffer.getContinousWriteBuffer(buffer) < dataTransferSize){
+		dmaRunning=false;
+		return;
+	}
+
+	dmaRunning=true;
+	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)buffer, dataTransferSize);
 }
 
 void ADS1298::stop(){
+	disableIrq();
+	dmaRunning=false;
 
+	sendCommand(CMD_SDATAC);
+	OS::sleep(20);
+	sendCommand(CMD_STOP);
+}
+
+ADS1298::EcgBuffer &ADS1298::getBuffer(){
+	return ecgBuffer;
+}
+
+void ADS1298::disableIrq(){
+	HAL_NVIC_DisableIRQ(EXTI4_IRQn);
 }
 
 void ADS1298::enableIrq(){

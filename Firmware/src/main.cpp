@@ -39,25 +39,44 @@ void mainTaskCallback (OS::Task &task) {
 		Logger::panic("Failed to initialize ADS1298.");
 
 	while(1){
+		auto buffer = ADS1298::instance().getBuffer();
+		if (!bluetooth.isConnected()){
+			buffer.clear();
+			continue;
+		}
+
+		uint8_t *data;
+		int cnt = buffer.getContinousReadBuffer(data);
+
+		if (cnt<128){
+			OS::sleep(10);
+			continue;
+		}
+
+		int sent=bluetooth.send((char*)data, cnt, 10);
+		buffer.skip(sent);
+	}
+}
+
+TASK(mainTask,mainTaskCallback,4096);
+
+void ledTaskCallback (OS::Task &task) {
+	UNUSED(task);
+
+	while(1){
 		led1.on();
 		led2.off();
 
-		for (int a=0; a<100; a++)
-			bluetooth.send("pina");
-		bluetooth.send("\r\n");
 		OS::sleep(500);
 
 		led1.off();
 		led2.on();
 
-		for (int a=0; a<100; a++)
-			bluetooth.send("fasz");
-		bluetooth.send("\r\n");
 		OS::sleep(500);
 	}
 }
 
-TASK(mainTask,mainTaskCallback,4096);
+TASK(ledTask, ledTaskCallback,128);
 
 
 int main(){
