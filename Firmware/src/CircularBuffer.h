@@ -215,7 +215,11 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
         }
 
         void added(int n){
+        	state.full = n>=free();
         	state.wpos = wrap(state.wpos + n);
+        	if (state.full){
+        		state.rpos=state.wpos;
+        	}
         }
 
         void skip(int n){

@@ -93,7 +93,7 @@ class Bluetooth {
 		const char *name;
 		char pin[17];
 
-		CircularBuffer<char, 64, true> writeBuffer;
+		CircularBuffer<char, 2048, true> writeBuffer;
 		OS::Mutex writeBufferMutex;
 
 		OS::Event bufferHasSpaceEvent;
