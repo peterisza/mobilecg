@@ -863,12 +863,13 @@ void Bluetooth::sendTaskCallback(){
 		cnt=writeBuffer.getContinousReadBuffer(buffer);
 		if (cnt){
 			sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)buffer);
-			writeBuffer.skip(sent);
+			if (sent>0)
+				writeBuffer.skip(sent);
 		} else
 			sent=0;
 		writeBufferMutex.unlock();
 
-		if (sent)
+		if (sent>0)
 			bufferHasSpaceEvent.signal();
 		else
 			readyToSendEvent.wait();
