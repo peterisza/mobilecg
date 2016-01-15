@@ -1,5 +1,7 @@
 #include "BitFifo.hpp"
 #include "StreamSerializer.hpp"
+#include "DifferenceEcgCompressor.hpp"
+#include "FlatEcgPredictor.hpp"
 #include <iostream>
 
 using namespace std;
@@ -65,7 +67,31 @@ void testSerialization() {
 			EQUALS(ofb2.popBits(bits), buf2idx & ((1 << bits) - 1));
 			buf2idx++;
 		}
+	}	
+}
+
+void testEcgCompression() {
+	const int bufferSize = 10000;
+	char buffer[bufferSize];
+	ecg::BitFifo stream(buffer, bufferSize);
+	ecg::FlatEcgPredictor predictor(3);
+	ecg::DifferenceEcgCompressor
+		compressor(stream, 3, predictor),
+		decompressor(stream, 3, predictor);
+	
+	int ecgdata[1000][3];
+	for(int i = 0; i < 1000; ++i) {
+		for(int ch = 0; ch < 3; ++ch)
+			ecgdata[i][ch] = rand()%(1 << 24) - (1 << 23);
+		compressor.putSample(ecgdata[i]);
 	}
+	predictor.reset();
+	for(int i = 0; i < 10; ++i) {
+		int sample[3];
+		decompressor.getSample(sample);
+		printf("%d %d %d - %d %d %d\n", ecgdata[i][0], ecgdata[i][1], ecgdata[i][2], sample[0], sample[1], sample[2]);
+	}
+	
 	
 }
 
@@ -73,6 +99,7 @@ int main()
 {
 	testFifoBuffer();
 	testSerialization();
+	testEcgCompression();
 	
 	if(okay) {
 		cout << "All tests passed." << endl;

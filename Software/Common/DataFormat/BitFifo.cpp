@@ -13,6 +13,11 @@ BitFifo::BitFifo(char *buffer, int sizeBytes):
 {
 }
 
+void BitFifo::reset() {
+	start = 0;
+	end = 0;
+}
+
 int BitFifo::getAvailableBits() {
 	if(end >= start)
 		return end - start;

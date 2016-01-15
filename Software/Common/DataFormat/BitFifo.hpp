@@ -32,6 +32,8 @@ class BitFifo {
 		
 		int getSizeBytes();
 		
+		void reset();
+		
 	private:
 		char *buffer;
 		int sizeBytes;
