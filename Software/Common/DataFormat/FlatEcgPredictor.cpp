@@ -2,9 +2,9 @@
 
 using namespace ecg;
 
-FlatEcgPredictor::FlatEcgPredictor(int pNumChannels):
-	numChannels(pNumChannels)
+FlatEcgPredictor::FlatEcgPredictor()
 {
+	numChannels=0;
 	reset();
 }
 
@@ -20,4 +20,8 @@ int FlatEcgPredictor::getPrediction(int channel) {
 void FlatEcgPredictor::reset() {
 	for(int i = 0; i < numChannels; ++i)
 		prediction[i] = 0;	
+}
+
+void FlatEcgPredictor::setNumChannels(const int pNumChannels){
+	numChannels = pNumChannels;
 }

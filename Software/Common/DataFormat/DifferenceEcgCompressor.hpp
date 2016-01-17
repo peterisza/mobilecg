@@ -12,9 +12,10 @@ class DifferenceEcgCompressor {
 		static const int fullBitNum = 24;
 		static const int smallBitNum = 10;	
 	
-		DifferenceEcgCompressor(ecg::BitFifo &bitStream, unsigned numChannels, IEcgPredictor& ecgPredictor);
+		DifferenceEcgCompressor(ecg::BitFifo &bitStream, IEcgPredictor& ecgPredictor);
 		bool putSample(const int* channels);
 		bool getSample(int *channels);
+		void setNumChannels(unsigned numChannels);
 	private:
 		ecg::BitFifo &bitStream;
 		unsigned numChannels;

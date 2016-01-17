@@ -7,7 +7,8 @@ namespace ecg {
 
 class FlatEcgPredictor: public IEcgPredictor {
 	public:
-		FlatEcgPredictor(int numChannels);
+		FlatEcgPredictor();
+		virtual void setNumChannels(const int numChannels);
 		virtual int getPrediction(int channel);
 		virtual void putSample(const int* channels);
 		virtual void reset();

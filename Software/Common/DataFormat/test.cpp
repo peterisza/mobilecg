@@ -74,10 +74,14 @@ void testEcgCompression() {
 	const int bufferSize = 10000;
 	char buffer[bufferSize];
 	ecg::BitFifo stream(buffer, bufferSize);
-	ecg::FlatEcgPredictor predictor(3);
+	ecg::FlatEcgPredictor predictor;
 	ecg::DifferenceEcgCompressor
-		compressor(stream, 3, predictor),
-		decompressor(stream, 3, predictor);
+		compressor(stream, predictor),
+		decompressor(stream, predictor);
+	
+	predictor.setNumChannels(3);
+	compressor.setNumChannels(3);
+	decompressor.setNumChannels(3);
 	
 	int ecgdata[1000][3];
 	for(int i = 0; i < 1000; ++i) {

@@ -4,13 +4,11 @@
 using namespace ecg;
 
 
-DifferenceEcgCompressor::DifferenceEcgCompressor(BitFifo &pBitStream, unsigned pNumChannels, IEcgPredictor& pEcgPredictor):
+DifferenceEcgCompressor::DifferenceEcgCompressor(BitFifo &pBitStream, IEcgPredictor& pEcgPredictor):
 	bitStream(pBitStream),
-	numChannels(pNumChannels),
 	ecgPredictor(pEcgPredictor)
 {
-	if(numChannels > maxChannels)
-		numChannels = maxChannels;
+	numChannels=0;
 }
 
 bool DifferenceEcgCompressor::putSample(const int* channels) {
@@ -40,4 +38,10 @@ bool DifferenceEcgCompressor::getSample(int *channels) {
 			channels[i] = ecgPredictor.getPrediction(i) + bitStream.popBitsSigned(smallBitNum);
 	}	
 	ecgPredictor.putSample(channels);
+}
+
+void DifferenceEcgCompressor::setNumChannels(unsigned pNumChannels){
+	numChannels=pNumChannels;
+	if(numChannels > maxChannels)
+		numChannels = maxChannels;
 }

@@ -31,6 +31,18 @@ class ADS1298 {
 
 		ADS1298();
 	public:
+		struct ECGBlock{
+			uint32_t status:24;
+			uint32_t channel1:24;
+			uint32_t channel2:24;
+			uint32_t channel3:24;
+			uint32_t channel4:24;
+			uint32_t channel5:24;
+			uint32_t channel6:24;
+			uint32_t channel7:24;
+			uint32_t channel8:24;
+		} __attribute__((packed));
+
 		typedef CircularBuffer<uint8_t, 4096, true> EcgBuffer;
 		static ADS1298& instance();
 
