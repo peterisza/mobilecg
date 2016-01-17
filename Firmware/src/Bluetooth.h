@@ -112,7 +112,7 @@ class Bluetooth {
 		void setPin(const char *pin);
 
 		bool isConnected();
-		int send(const char *data, int size=0, time_t timeout=TIME_INF);
+		int send(const char *data, int size=0, time_t timeout=TIME_INF, bool startSend=true);
 };
 
 #endif /* SRC_BLUETOOTH_H_ */

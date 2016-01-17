@@ -802,10 +802,16 @@ void Bluetooth::setPin(const char *i_pin){
 	pin[16]=0;
 }
 
-int Bluetooth::send(const char *data, int size, time_t timeout){
+int Bluetooth::send(const char *data, int size, time_t timeout, bool startSend){
 	UNUSED(timeout);
 	if (!isConnected())
 		return 0;
+
+	if (data==NULL){
+		if (startSend)
+			readyToSendEvent.signal();
+		return 0;
+	}
 
 	if (size==0)
 		size = strlen(data);
@@ -830,6 +836,9 @@ int Bluetooth::send(const char *data, int size, time_t timeout){
 			size -= toWrite;
 			data += toWrite;
 
+			if (startSend)
+				readyToSendEvent.signal();
+		} else {
 			readyToSendEvent.signal();
 		}
 
