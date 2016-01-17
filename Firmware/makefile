@@ -107,7 +107,7 @@ endif
 	DIRS	+= $(SRCDIR)/startup
 	DIRS    += $(SRCDIR)/wrappers
 	DIRS    += $(BLUETOOTH_DIR)/btpskrnl $(BLUETOOTH_DIR)/btpsvend $(BLUETOOTH_DIR)/btvs $(BLUETOOTH_DIR)/hcitrans.dma  $(BLUETOOTH_DIR)/include
-
+	DIRS    += $(SRCDIR)/common
 #	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
 
 # includes

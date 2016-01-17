@@ -2,8 +2,8 @@
 
 using namespace ecg;
 
-FlatEcgPredictor::FlatEcgPredictor(int numChannels):
-	numChannels(numChannels)
+FlatEcgPredictor::FlatEcgPredictor(int pNumChannels):
+	numChannels(pNumChannels)
 {
 	reset();
 }

@@ -4,10 +4,10 @@
 
 using namespace ecg;
 
-BitFifo::BitFifo(char *buffer, int sizeBytes):
-	buffer(buffer),
-	sizeBytes(sizeBytes),
-	sizeBits(sizeBytes*8),
+BitFifo::BitFifo(char *iBuffer, int iSizeBytes):
+	buffer(iBuffer),
+	sizeBytes(iSizeBytes),
+	sizeBits(iSizeBytes*8),
 	start(0),
 	end(0)
 {
@@ -109,20 +109,20 @@ int BitFifo::getSizeBytes() {
 	return sizeBytes;
 }
 
-int BitFifo::popBytes(char *buffer, int size) {
+int BitFifo::popBytes(char *iBuffer, int size) {
 	if(getAvailableBytes() < size)
 		size = getAvailableBytes();
 	for(int i = 0; i < size; ++i) {
-		buffer[i] = popByte();
+		iBuffer[i] = popByte();
 	}
 	return size;
 }
 
-int BitFifo::pushBytes(const char *buffer, int size) {
+int BitFifo::pushBytes(const char *iBuffer, int size) {
 	if(getFreeBytes() < size)
 		size = getFreeBytes();
 	for(int i = 0; i < size; ++i) {
-		pushByte(buffer[i]);
+		pushByte(iBuffer[i]);
 	}
 	return size;
 }
