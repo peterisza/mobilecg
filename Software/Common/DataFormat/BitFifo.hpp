@@ -20,6 +20,7 @@ class BitFifo {
 		
 		uint8_t popByte();
 		uint32_t popBits(char numBits);
+		int32_t popBitsSigned(char numBits);
 		
 		int popBytes(char *buffer, int size);
 		int pushBytes(const char *buffer, int size);

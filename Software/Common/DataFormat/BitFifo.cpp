@@ -88,6 +88,15 @@ uint32_t BitFifo::popBits(char numBits) {
 	return result;
 }
 
+int32_t BitFifo::popBitsSigned(char numBits) {
+	int32_t data = popBits(numBits);
+	//printf(" unsigned %d\n", data);
+	if(data & (1 << (numBits-1)))
+		data |= ~((1 << numBits)-1);
+	//printf(" signed %d\n", data);
+	return data;
+}
+
 bool BitFifo::pushByte(uint8_t data) {
 	return pushBits(data, 8);
 }

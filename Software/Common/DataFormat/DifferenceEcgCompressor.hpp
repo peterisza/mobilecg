@@ -19,6 +19,13 @@ class DifferenceEcgCompressor {
 		ecg::BitFifo &bitStream;
 		unsigned numChannels;
 		IEcgPredictor &ecgPredictor;
+		
+		static const int smallMin = (1 << (smallBitNum-1)) - (1 << smallBitNum);
+		static const int smallMax = -smallMin-1;
+		
+		static const int fullMin = (1 << (fullBitNum-1)) - (1 << fullBitNum);
+		static const int fullMax = -fullMin-1;
+		
 };
 
 }

@@ -81,15 +81,24 @@ void testEcgCompression() {
 	
 	int ecgdata[1000][3];
 	for(int i = 0; i < 1000; ++i) {
-		for(int ch = 0; ch < 3; ++ch)
-			ecgdata[i][ch] = rand()%(1 << 24) - (1 << 23);
+		for(int ch = 0; ch < 3; ++ch) {
+			bool small = rand()%10 < 4;
+			//printf(small ? "small\n" : "big\n");
+			if(small || i == 0)
+				ecgdata[i][ch] = rand()%(1 << 24) - (1 << 23);
+			else
+				ecgdata[i][ch] = ecgdata[i-1][ch] + (rand()%1000) - 500;
+		}
 		compressor.putSample(ecgdata[i]);
 	}
 	predictor.reset();
-	for(int i = 0; i < 10; ++i) {
+	for(int i = 0; i < 1000; ++i) {
 		int sample[3];
 		decompressor.getSample(sample);
-		printf("%d %d %d - %d %d %d\n", ecgdata[i][0], ecgdata[i][1], ecgdata[i][2], sample[0], sample[1], sample[2]);
+		//printf("%d %d %d - %d %d %d\n", ecgdata[i][0], ecgdata[i][1], ecgdata[i][2], sample[0], sample[1], sample[2]);
+		for(int ch = 0; ch < 3; ++ch) {
+			EQUALS(ecgdata[i][ch], sample[ch]);
+		}
 	}
 	
 	
