@@ -48,10 +48,7 @@ void mainTaskCallback (OS::Task &task) {
 			continue;
 		}
 
-		uint8_t *data;
-		int cnt = buffer.getContinousReadBuffer(data);
-
-		if (cnt<0xFF){
+		if (buffer.used()<0xFF){
 			OS::sleep(10);
 			continue;
 		}

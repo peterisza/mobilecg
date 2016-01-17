@@ -31,6 +31,7 @@ void ECGSender::send(){
 
 	//Send header
 	packetizer->startPacket(header, Packetizer::ECG, (uint16_t)(size + sizeof(ECGHeader)));
+	packetizer->checksumBlock((uint8_t*)ecgHeader, sizeof(ECGHeader));
 	if (!Bluetooth::instance().send((char*)header, Packetizer::HEADER_SIZE + sizeof(ECGHeader), TIME_INF, false)){
 		return;
 	}
@@ -38,13 +39,16 @@ void ECGSender::send(){
 	//Send data
 	while(size){
 		uint8_t *buf;
-		int currSize = buffer.getContinousReadBuffer(buf);
+		int currSize = std::min(buffer.getContinousReadBuffer(buf), (int)size);
 
-		if (!Bluetooth::instance().send((char*)buf, currSize, TIME_INF, false)){
+		packetizer->checksumBlock(buf, currSize);
+		int sent=Bluetooth::instance().send((char*)buf, currSize, TIME_INF, false);
+		if (sent<=0){
 			return;
 		}
 
-		size-=currSize;
+		buffer.skip(sent);
+		size-=sent;
 	}
 
 	//Send checksum

@@ -846,11 +846,10 @@ int Bluetooth::send(const char *data, int size, time_t timeout, bool startSend){
 
 			if (startSend)
 				readyToSendEvent.signal();
-		} else {
-			readyToSendEvent.signal();
 		}
 
 		if (size){
+			readyToSendEvent.signal();
 			if (!bufferHasSpaceEvent.wait(timeout))
 				break;
 		}
