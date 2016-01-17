@@ -3,6 +3,8 @@
 #include <Bluetooth.h>
 #include <ADS1298.h>
 #include <Logger.h>
+#include <Packetizer.h>
+#include <ECGSender.h>
 
 GPIO led1('B', 6);
 GPIO led2('B', 7);
@@ -10,10 +12,10 @@ GPIO led2('B', 7);
 GPIO en2v8('C', 1);
 GPIO bluetoothShutdown('C', 13, true);
 
-Bluetooth bluetooth("MobilECG");
-
 extern "C" UART_HandleTypeDef huart2;
 
+Packetizer dataPacketizer;
+ECGSender ecgSender(dataPacketizer);
 
 void mainTaskCallback (OS::Task &task) {
 	UNUSED(task);
@@ -27,7 +29,7 @@ void mainTaskCallback (OS::Task &task) {
 	bluetoothShutdown.off();
 	OS::sleep(100);
 
-	bluetooth.init();
+	Bluetooth::instance().init("MobilECG");
 
 	//Turn on ECG clock
 	TIM_HandleTypeDef tim;
@@ -40,7 +42,7 @@ void mainTaskCallback (OS::Task &task) {
 
 	while(1){
 		auto buffer = ADS1298::instance().getBuffer();
-		if (!bluetooth.isConnected()){
+		if (!Bluetooth::instance().isConnected()){
 			buffer.clear();
 			OS::sleep(10);
 			continue;
@@ -49,13 +51,12 @@ void mainTaskCallback (OS::Task &task) {
 		uint8_t *data;
 		int cnt = buffer.getContinousReadBuffer(data);
 
-		if (cnt<128){
+		if (cnt<0xFF){
 			OS::sleep(10);
 			continue;
 		}
 
-		int sent=bluetooth.send((char*)data, cnt, TIME_INF);
-		buffer.skip(sent);
+		ecgSender.send();
 	}
 }
 

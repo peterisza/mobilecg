@@ -1,18 +1,21 @@
 #include "Packetizer.h"
 
+uint32_t Packetizer::packetId=0;
+
 Packetizer::Packetizer() {
-	packetId=0;
 	resetChecksum();
 }
 
 Packetizer::~Packetizer() {
 }
 
-void Packetizer::startPacket(uint8_t *destBuffer, uint16_t length){
+void Packetizer::startPacket(uint8_t *destBuffer, PacketType type, uint16_t length){
 	Header *header = (Header *)destBuffer;
 	header->signature = SIGNATURE;
 	header->packetId = packetId;
 	header->length = length;
+	header->type = type;
+	header->version = VERSION;
 
 	packetId++;
 }

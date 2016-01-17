@@ -124,6 +124,8 @@ float ADS1298::setSpeed(SpeedDiv div, bool highRes){
 void ADS1298::interrupt(){
 	uint8_t *buffer;
 
+	sampleId++;
+
 	if (dmaRunning)
 		ecgBuffer.added(dataTransferSize);
 
@@ -147,6 +149,14 @@ void ADS1298::stop(){
 
 ADS1298::EcgBuffer &ADS1298::getBuffer(){
 	return ecgBuffer;
+}
+
+uint32_t ADS1298::getSampleId(){
+	return sampleId;
+}
+
+uint8_t ADS1298::getActiveChannels(){
+	return selectedChannels;
 }
 
 void ADS1298::disableIrq(){

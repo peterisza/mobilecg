@@ -14,7 +14,8 @@
 #define DEFAULT_IO_CAPABILITY          (icNoInputNoOutput)
 #define DEFAULT_MITM_PROTECTION                  (FALSE)
 
-Bluetooth::Bluetooth(const char *i_name): sendTask("BTSendTask", sendTaskCallbackStatic, 256, this) {
+
+Bluetooth::Bluetooth(): sendTask("BTSendTask", sendTaskCallbackStatic, 256, this) {
 	Connected=FALSE;
 	SPPServerSDPHandle=0;
 	bluetoothStackID=0;
@@ -26,11 +27,16 @@ Bluetooth::Bluetooth(const char *i_name): sendTask("BTSendTask", sendTaskCallbac
 	IOCapability     = DEFAULT_IO_CAPABILITY;
 	OOBSupport       = FALSE;
 
-	this->name = i_name;
+	this->name = "";
 
 	running=true;
 
 	setPin("1234");
+}
+
+Bluetooth& Bluetooth::instance(){
+	static Bluetooth inst;
+	return inst;
 }
 
 void Bluetooth::sendTaskCallbackStatic(OS::Task &task){
@@ -781,8 +787,10 @@ int Bluetooth::pinCodeResponse(const char *pinCode)
    return(ret_val);
 }
 
-void Bluetooth::init(){
+void Bluetooth::init(const char *iname){
 	int result;
+	this->name = iname;
+
 	HCI_DRIVER_SET_COMM_INFORMATION(&HCI_DriverInformation, 1, VENDOR_BAUD_RATE, cpHCILL_RTS_CTS);
 	HCI_DriverInformation.DriverInformation.COMMDriverInformation.InitializationDelay = 100;
 

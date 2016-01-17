@@ -23,6 +23,8 @@ class ADS1298 {
 		int nHardwareChannels;
 		int selectedChannels;
 		int dataTransferSize;
+		uint32_t sampleId;
+
 		static const int FCLK=2000000;
 
 		float realFreq;
@@ -38,6 +40,8 @@ class ADS1298 {
 		EcgBuffer &getBuffer();
 
 		void interrupt();
+		uint32_t getSampleId();
+		uint8_t getActiveChannels();
 	private:
 		void sendCommand(Command cmd);
 		void writeReg(Register reg, uint8_t value);

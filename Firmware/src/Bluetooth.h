@@ -105,10 +105,13 @@ class Bluetooth {
 		static void sendTaskCallbackStatic(OS::Task &task);
 
 		void sendTaskCallback();
+
+		Bluetooth();
 	public:
-		Bluetooth(const char *name);
+		static Bluetooth& instance();
+
 		virtual ~Bluetooth();
-		void init();
+		void init(const char *name);
 		void setPin(const char *pin);
 
 		bool isConnected();
