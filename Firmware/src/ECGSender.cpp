@@ -23,7 +23,7 @@ void ECGSender::send(){
 
 	auto buffer = ADS1298::instance().getBuffer();
 	uint32_t size = buffer.used();
-	uint32_t blockSize = (ecgHeader->channelCount+1)*24;
+	uint32_t blockSize = (ecgHeader->channelCount+1)*3;
 
 	if (size>MAX_SEND_SIZE)
 		size=MAX_SEND_SIZE;

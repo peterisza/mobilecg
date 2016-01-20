@@ -4,10 +4,18 @@
 #include <stdint.h>
 
 class Packetizer {
+private:
+	struct Header{
+		uint8_t version;
+		uint8_t type;
+		uint32_t signature;
+		uint32_t packetId;
+		uint16_t length;
+	} __attribute__((packed));
 public:
 	enum PacketType {ECG=0};
 
-	static const uint32_t HEADER_SIZE = 11;
+	static const uint32_t HEADER_SIZE = sizeof(Header);
 	static const uint32_t SIGNATURE = 0x41544144;
 	static const uint8_t VERSION = 0;
 	typedef uint16_t Checksum;
@@ -19,13 +27,7 @@ public:
 	void checksumBlock(uint8_t *data, int cnt);
 	Checksum getChecksum();
 private:
-	struct Header{
-		uint8_t version;
-		uint8_t type;
-		uint32_t signature;
-		uint32_t packetId;
-		uint16_t length;
-	} __attribute__((packed));
+
 
 	static uint32_t packetId;
 	Checksum checksum;
