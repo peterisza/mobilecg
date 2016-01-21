@@ -8,7 +8,7 @@ class DrawableObject{
         virtual void init(AAssetManager *assetManager)=0;
         virtual void glInit()=0;
         virtual void draw()=0;
-        virtual void resize(int w, int h){};
+        virtual void contextResized(int w, int h){};
         void setZOrder(int z);
 
     protected:

@@ -9,7 +9,7 @@
 #include <cassert>
 #include <string>
 
-#include "GridDrawer.h"
+#include "EcgArea.h"
 #include "Helper.h"
 
 #define  LOG_TAG    "sensorgraph"
@@ -44,14 +44,13 @@ class sensorgraph {
     AccelerometerData sensorDataFilter;
     int sensorDataIndex;
 
-    GridDrawer grid;
 
  public:
     sensorgraph() : sensorDataIndex(0) {}
 
 
     void init(AAssetManager *assetManager) {
-        grid.init(assetManager);
+        EcgArea::instance().init(assetManager);
 
         vertexShaderSource=helper::loadAsset(assetManager, "shader.vert");
         fragmentShaderSource=helper::loadAsset(assetManager, "shader.frag");
@@ -89,8 +88,8 @@ class sensorgraph {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        grid.glInit();
-        grid.setZOrder(1);
+        EcgArea::instance().glInit();
+        EcgArea::instance().setZOrder(1);
 
         shaderProgram = helper::createGlProgram(vertexShaderSource, fragmentShaderSource);
         assert(shaderProgram != 0);
@@ -101,7 +100,7 @@ class sensorgraph {
 
     void surfaceChanged(int w, int h) {
         glViewport(0, 0, w, h);
-        grid.resize(w,h);
+        EcgArea::instance().contextResized(w,h);
     }
 
     void generateXPos() {
@@ -129,7 +128,7 @@ class sensorgraph {
         glClearColor(0.f, 0.f, 0.f, 1.0f);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-        grid.draw();
+        EcgArea::instance().draw();
 
         glUseProgram(shaderProgram);
 

@@ -13,6 +13,7 @@ const GLfloat TexturedSurface::vertexCoordinates[8]={
 TexturedSurface::TexturedSurface(){
     position[0]=0;
     position[1]=0;
+    redraw(NULL);
 }
 
 void TexturedSurface::init(AAssetManager *assetManager){
@@ -26,21 +27,37 @@ void TexturedSurface::glInit(){
     shader_a_Position=helper::getGlAttributeWithAssert(shaderProgram, "a_Position");
     shader_screenSize=helper::getGlUniformWithAssert(shaderProgram, "screenSize");
     shader_position=helper::getGlUniformWithAssert(shaderProgram, "position");
+    shader_size=helper::getGlUniformWithAssert(shaderProgram, "size");
+
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 }
 
 void TexturedSurface::draw(){
     glUseProgram(shaderProgram);
 
+    glBindTexture(GL_TEXTURE_2D, texture);
+    if (!imageOnGPU && image!=NULL) {
+        imageOnGPU=true;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width(), image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                     image->getData());
+    }
+
+
     glVertexAttribPointer(shader_a_Position, 2, GL_FLOAT, GL_FALSE, 0, vertexCoordinates);
     glEnableVertexAttribArray(shader_a_Position);
     glUniform2f(shader_screenSize, screenSize[0],screenSize[1]);
     glUniform3f(shader_position, position[0], position[1], zCoordinate);
+    glUniform2f(shader_size, (GLfloat)width,(GLfloat)height);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void TexturedSurface::resize(int w, int h){
+void TexturedSurface::contextResized(int w, int h){
     screenSize[0]=w;
     screenSize[1]=h;
 }
@@ -48,4 +65,14 @@ void TexturedSurface::resize(int w, int h){
 void TexturedSurface::setPosition(float x, float y){
     position[0]=x;
     position[1]=y;
+}
+
+void TexturedSurface::setSize(float w, float h){
+    width=w;
+    height=h;
+}
+
+void TexturedSurface::redraw(Image *pimage){
+    image=pimage;
+    imageOnGPU=false;
 }

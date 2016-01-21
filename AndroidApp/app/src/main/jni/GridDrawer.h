@@ -3,10 +3,24 @@
 
 #include <android/asset_manager_jni.h>
 #include <string>
+#include "Vec2.h"
 #include "TexturedSurface.h"
+
+#include "Image.h"
 
 class GridDrawer:public TexturedSurface {
     public:
+        virtual void contextResized(int w, int h);
+    private:
+        void drawGrid();
+        Image image;
+        Vec2<int> size;
+
+        static const Image::Pixel padColor;
+        static const Image::Pixel backgroundColor;
+        static const Image::Pixel gridMainColor;
+        static const Image::Pixel gridSmallColor;
+
 };
 
 
