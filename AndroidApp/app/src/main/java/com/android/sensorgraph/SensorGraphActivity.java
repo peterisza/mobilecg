@@ -48,8 +48,8 @@ public class SensorGraphActivity extends Activity {
 
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
-                SensorGraphJNI.surfaceChanged(width, height);
                 SensorGraphJNI.setDotPerCM(displayMetrics.xdpi / 2.54f, displayMetrics.ydpi / 2.54f);
+                SensorGraphJNI.surfaceChanged(width, height);
             }
 
             @Override

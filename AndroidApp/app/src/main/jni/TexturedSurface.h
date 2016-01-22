@@ -30,6 +30,7 @@ private:
     GLuint shader_screenSize;
     GLuint shader_position;
     GLuint shader_size;
+    GLuint vertexBuffer;
 
     GLuint texture;
 

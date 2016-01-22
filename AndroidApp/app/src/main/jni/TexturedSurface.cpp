@@ -34,6 +34,10 @@ void TexturedSurface::glInit(){
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER , vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER , sizeof(vertexCoordinates), vertexCoordinates, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 void TexturedSurface::draw(){
@@ -48,13 +52,17 @@ void TexturedSurface::draw(){
     }
 
 
-    glVertexAttribPointer(shader_a_Position, 2, GL_FLOAT, GL_FALSE, 0, vertexCoordinates);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glVertexAttribPointer(shader_a_Position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
     glEnableVertexAttribArray(shader_a_Position);
     glUniform2f(shader_screenSize, screenSize[0],screenSize[1]);
     glUniform3f(shader_position, position[0], position[1], zCoordinate);
     glUniform2f(shader_size, (GLfloat)width,(GLfloat)height);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 void TexturedSurface::contextResized(int w, int h){

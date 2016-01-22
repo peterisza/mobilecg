@@ -75,11 +75,11 @@ void GridDrawer::refresh(){
     #endif
 
     //Draw main grid
-    for (float x=padX; x<=endX; x+=dx){
+    for (float x=padX; x<=endX+dx/2; x+=dx){
         image.vLine(x, padY, endY, gridMainColor);
     }
 
-    for (float y=padY; y<=endY; y+=dy){
+    for (float y=padY; y<=endY+dy/2; y+=dy){
         image.hLine(y, padX, endX, gridMainColor);
     }
 
