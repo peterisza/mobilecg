@@ -17,8 +17,10 @@
 package com.android.sensorgraph;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -27,9 +29,15 @@ import javax.microedition.khronos.opengles.GL10;
 public class SensorGraphActivity extends Activity {
 
     GLSurfaceView mView;
+    DisplayMetrics displayMetrics;
 
-    @Override protected void onCreate(Bundle icicle) {
+    @Override
+    protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
         mView = new GLSurfaceView(getApplication());
         mView.setEGLContextClientVersion(2);
         mView.setRenderer(new GLSurfaceView.Renderer() {
@@ -41,6 +49,7 @@ public class SensorGraphActivity extends Activity {
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
                 SensorGraphJNI.surfaceChanged(width, height);
+                SensorGraphJNI.setDotPerCM(displayMetrics.xdpi / 2.54f, displayMetrics.ydpi / 2.54f);
             }
 
             @Override
@@ -54,10 +63,11 @@ public class SensorGraphActivity extends Activity {
                 SensorGraphJNI.init(getAssets());
             }
         });
-	    setContentView(mView);
+        setContentView(mView);
     }
 
-    @Override protected void onPause() {
+    @Override
+    protected void onPause() {
         super.onPause();
         mView.onPause();
         mView.queueEvent(new Runnable() {
@@ -68,7 +78,8 @@ public class SensorGraphActivity extends Activity {
         });
     }
 
-    @Override protected void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
         mView.onResume();
         mView.queueEvent(new Runnable() {

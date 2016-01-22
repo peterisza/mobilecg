@@ -103,6 +103,10 @@ class sensorgraph {
         EcgArea::instance().contextResized(w,h);
     }
 
+    void setDpcm(float x, float y){
+        EcgArea::instance().setPixelDensity(Vec2<float>(x,y));
+    }
+
     void generateXPos() {
         for (auto i = 0; i < SENSOR_HISTORY_LENGTH; i++) {
             float t = static_cast<float>(i) / static_cast<float>(SENSOR_HISTORY_LENGTH - 1);
@@ -185,6 +189,15 @@ JNIEXPORT void JNICALL
         (void)env;
         (void)type;
         gSensorGraph.surfaceChanged(width, height);
+    }
+
+
+    JNIEXPORT void JNICALL
+    Java_com_android_sensorgraph_SensorGraphJNI_setDotPerCM(JNIEnv *env, jclass type, jfloat xdpcm,
+                                                           jfloat ydpcm) {
+        (void)env;
+        (void)type;
+        gSensorGraph.setDpcm(xdpcm, ydpcm);
     }
 
 

@@ -11,8 +11,8 @@
 class GridDrawer:public TexturedSurface {
     public:
         virtual void contextResized(int w, int h);
+        void refresh();
     private:
-        void drawGrid();
         Image image;
         Vec2<int> size;
 

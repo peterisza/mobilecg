@@ -35,3 +35,7 @@ const Vec2<float> &EcgArea::getPixelDensity(){
     return pixelDensity;
 }
 
+void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
+    pixelDensity=pPixelDensity;
+    grid.refresh();
+}

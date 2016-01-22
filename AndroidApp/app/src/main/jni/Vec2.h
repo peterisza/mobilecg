@@ -24,6 +24,27 @@ template <class type> struct Vec2{
     const type &operator [](int elem) const{
         return elem ? y : x;
     }
+
+    Vec2<type> &operator=(const Vec2<type> &other){
+        this->x=other.x;
+        this->y=other.y;
+
+        return *this;
+    }
+
+    Vec2<type> &operator*(const type &other){
+        this->x*=other;
+        this->y*=other;
+
+        return *this;
+    }
+
+    Vec2<type> &operator/(const type &other){
+        this->x/=other;
+        this->y/=other;
+
+        return *this;
+    }
 };
 
 #endif //ANDROIDAPP_VEC2_H

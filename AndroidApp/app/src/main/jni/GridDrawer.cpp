@@ -23,11 +23,11 @@ void GridDrawer::contextResized(int w, int h){
 
     image.resize(w,h);
 
-    drawGrid();
+    refresh();
 }
 
 
-void GridDrawer::drawGrid(){
+void GridDrawer::refresh(){
     const Vec2<float> &pixelDensity = EcgArea::instance().getPixelDensity();
     const Rect &activeArea = EcgArea::instance().getActiveArea();
 

@@ -25,6 +25,8 @@ class EcgArea: public DrawableGroup{
         const Rect &getActiveArea();
         const Vec2<float> &getPixelDensity();
 
+        void setPixelDensity(const Vec2<float> &pixelDensity);
+
 };
 
 
