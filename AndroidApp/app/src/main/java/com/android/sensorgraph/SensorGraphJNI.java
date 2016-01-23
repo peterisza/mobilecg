@@ -33,4 +33,5 @@ public class SensorGraphJNI {
      public static native void drawFrame();
      public static native void pause();
      public static native void resume();
+     public static native void processEcgData(byte[] data, int size);
 }

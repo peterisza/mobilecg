@@ -222,4 +222,12 @@ JNIEXPORT void JNICALL
         (void)type;
         gSensorGraph.resume();
     }
+
+    JNIEXPORT void JNICALL
+    Java_com_android_sensorgraph_SensorGraphJNI_processEcgData(JNIEnv *env, jclass type, jcharArray jdata, jint size) {
+        (void)type;
+        jchar* data = env->GetCharArrayElements(jdata, 0);
+
+        env->ReleaseCharArrayElements(jdata, data, 0);
+    }
 }
