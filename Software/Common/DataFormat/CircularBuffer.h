@@ -114,7 +114,8 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
         }
 
         void add(const Type &t){
-            vector[state.wpos]=t;
+            if (overwrite || (!state.full))
+                vector[state.wpos]=t;
 
             if (state.full){
                 wrapInc(state.wpos);
@@ -131,16 +132,18 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
             if (cnt==0)
                 return;
 
-            if (cnt > vectorSize){
-            	data += cnt - vectorSize;
-            	cnt = vectorSize;
-            }
 
             state.full = free() <= cnt;
 
-            if (!overwrite){
-            	cnt=free();
+            if (overwrite && cnt > vectorSize){
+            	data += cnt - vectorSize;
+            	cnt = vectorSize;
+                state.rpos=0;
+                state.wpos=0;
+            } else if (!overwrite && state.full){
+                cnt=free();
             }
+
 
             while (cnt){
             	int copySize = std::min(vectorSize - state.wpos, cnt);
