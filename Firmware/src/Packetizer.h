@@ -6,11 +6,11 @@
 class Packetizer {
 private:
 	struct Header{
+		uint32_t signature;
+		uint16_t length;
 		uint8_t version;
 		uint8_t type;
-		uint32_t signature;
 		uint32_t packetId;
-		uint16_t length;
 	} __attribute__((packed));
 public:
 	enum PacketType {ECG=0};
