@@ -4,15 +4,17 @@
 #include <stdint.h>
 
 class Packetizer {
-private:
+public:
 	struct Header{
 		uint32_t signature;
 		uint16_t length;
 		uint8_t version;
 		uint8_t type;
 		uint32_t packetId;
+		uint8_t reserved;
+		uint8_t headerChecksum;
 	} __attribute__((packed));
-public:
+	
 	enum PacketType {ECG=0};
 
 	static const uint32_t HEADER_SIZE = sizeof(Header);
