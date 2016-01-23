@@ -25,6 +25,7 @@ void Packetizer::startPacket(uint8_t *destBuffer, PacketType type, uint16_t leng
         header->headerChecksum += *h;
     }
 
+    header->headerChecksum=-header->headerChecksum;
 	packetId++;
 }
 
@@ -35,7 +36,7 @@ void Packetizer::checksumBlock(uint8_t *data, int cnt){
 }
 
 Packetizer::Checksum Packetizer::getChecksum(){
-	return checksum;
+	return -checksum;
 }
 
 void Packetizer::resetChecksum(){
