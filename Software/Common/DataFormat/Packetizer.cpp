@@ -18,7 +18,7 @@ void Packetizer::startPacket(uint8_t *destBuffer, PacketType type, uint16_t leng
 	header->version = VERSION;
 	header->reserved=0;
 
-	header->headerChecksum=0;
+	resetChecksum();
 
 
     for (uint8_t *h = (uint8_t *)header; h<(uint8_t*)&header->headerChecksum; ++h ){

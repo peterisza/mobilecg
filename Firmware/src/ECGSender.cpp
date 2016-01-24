@@ -60,10 +60,11 @@ void ECGSender::send(){
 	}
 
 	ecgHeader->numBits = compressFifo.getAvailableBits();
-	size = (ecgHeader->numBits+7) / 8 + sizeof(ECGHeader);
+	size = (ecgHeader->numBits+7) / 8;
+
 
 	//Send header
-	packetizer->startPacket(header, Packetizer::ECG, (uint16_t)(size));
+	packetizer->startPacket(header, Packetizer::ECG, (uint16_t)(size+sizeof(ECGHeader)));
 	packetizer->checksumBlock((uint8_t*)ecgHeader, sizeof(ECGHeader));
 	if (Bluetooth::instance().send((char*)header, Packetizer::HEADER_SIZE + sizeof(ECGHeader), TIME_INF, false)<=0){
 		return;

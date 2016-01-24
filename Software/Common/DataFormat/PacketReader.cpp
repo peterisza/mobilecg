@@ -88,7 +88,9 @@ static uint8_t pina;
 bool PacketReader::isPacketOkay() {
 	Packetizer::Header* header = getPacketHeader();
 	LOGD("Kurvaanyad: %d", header->packetId);
-	uint16_t sum = -calcCheckSum(0, sizeof(Packetizer::Header) + header->length);
+	int *pinalyuk=(int*)(&buffer[sizeof(Packetizer::Header)+5]);
+	LOGD("Bits: %d",*pinalyuk);
+	uint16_t sum = -calcCheckSum(sizeof(Packetizer::Header), sizeof(Packetizer::Header) + header->length);
 	uint16_t *checksum = (uint16_t*) &buffer[sizeof(Packetizer::Header) + header->length];
 	LOGD("checksum calculated: %d, in packet: %d\n", sum, *checksum);
 	if(sum != *checksum)
