@@ -2,6 +2,8 @@
 #include "helpers.hpp"
 
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 PacketReader::PacketReader():
 	index(0)
@@ -10,28 +12,39 @@ PacketReader::PacketReader():
 }
 
 void PacketReader::addByte(char byte) {
+	if(packetReady)
+		reset();
+		
+	if(buffer.size() > MAX_BUFFER_SIZE)
+		reset();
+
+	if(
+		(index == 1 && buffer[0] != 'D') || 
+		(index == 2 && buffer[1] != 'A') ||
+		(index == 3 && buffer[2] != 'T') ||
+		(index == 4 && buffer[3] != 'A') 
+	) {
+		reset();
+	}
+	
 	if(buffer.size() <= index)
 		buffer.resize(index+1000);
 	buffer[index] = byte;
 	index++;
 	packetReady = false;
-	if(
-		(index == 0 && byte != 'D') || 
-		(index == 1 && byte != 'A') ||
-		(index == 2 && byte != 'T') ||
-		(index == 3 && byte != 'A') 
-	) {
-		reset();
-	}
 	
 	if(index == sizeof(Packetizer::Header) && !isHeaderOkay()) {
+		int oldIndex = index;
 		reset();
+		lookForMissedPackets(oldIndex);
 	}
 	
-	if(index > sizeof(Packetizer::Header)) {
-		if(!isPacketOkay())
+	if(packetReceived()) {
+		if(!isPacketOkay()) {
+			int oldIndex = index;
 			reset();
-		else {
+			lookForMissedPackets(oldIndex);
+		} else {
 			packetReady = true;
 		}	
 	}
@@ -65,12 +78,19 @@ bool PacketReader::isHeaderOkay() {
 	return true;
 }
 
+bool PacketReader::packetReceived() {
+	Packetizer::Header* header = getPacketHeader();
+	if(index < sizeof(Packetizer::Header))
+		return false;
+	return index == sizeof(Packetizer::Header) + header->length + 2;
+}
+
 bool PacketReader::isPacketOkay() {
 	Packetizer::Header* header = getPacketHeader();
-	if(index != sizeof(Packetizer::Header) + header->length)
-		return false;
-	uint16_t sum = calcCheckSum(sizeof(Packetizer::Header), sizeof(Packetizer::Header) + header->length);
-	if(sum != 0)
+	uint16_t sum = -calcCheckSum(sizeof(Packetizer::Header), sizeof(Packetizer::Header) + header->length);
+	uint16_t *checksum = (uint16_t*) &buffer[sizeof(Packetizer::Header) + header->length];
+	//printf("%d %d\n", sum, *checksum);
+	if(sum != *checksum)
 		return false;
 	return true;
 }
@@ -91,4 +111,10 @@ bool PacketReader::isSignatureOkay() {
 
 void PacketReader::reset() {
 	index = 0;
+	packetReady = false;
+}
+
+void PacketReader::lookForMissedPackets(int length) {
+	for(int i = 1; i < length; ++i)
+		addByte(buffer[i]);
 }

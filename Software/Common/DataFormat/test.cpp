@@ -2,7 +2,11 @@
 #include "StreamSerializer.hpp"
 #include "DifferenceEcgCompressor.hpp"
 #include "FlatEcgPredictor.hpp"
+#include "Packetizer.h"
+#include "PacketReader.hpp"
 #include <iostream>
+
+#include <string.h>
 
 using namespace std;
 
@@ -104,8 +108,69 @@ void testEcgCompression() {
 			EQUALS(ecgdata[i][ch], sample[ch]);
 		}
 	}
+}
+
+char* addPacket(char* buffer, const char* message) {
+	static int packetId = 0;
 	
+	Packetizer packetizer;
 	
+	int length = strlen(message);
+	
+	packetizer.startPacket((uint8_t*) buffer, Packetizer::ECG, length);
+ 	Packetizer::Header *header = (Packetizer::Header*) buffer;
+	strcpy(buffer+sizeof(Packetizer::Header), message);
+	uint16_t *checkSum = (uint16_t*) &buffer[sizeof(Packetizer::Header) + length];
+	packetizer.checksumBlock((uint8_t*) message, strlen(message));  	
+ 	*checkSum = packetizer.getChecksum();
+ 	
+ 	return buffer + sizeof(Packetizer::Header) + length + 2;
+}
+
+char* addRandomJunk(char* start, int length) {
+	for(int i = 0; i < length; ++i)
+		start[i] = i;
+	return start + length;
+}
+
+void testPacketReader() {
+	const int bufferSize = 2048;
+	char buffer[bufferSize];
+	char* ptr = buffer;
+	
+	const char* messages[10];
+	
+	ptr = addRandomJunk(ptr, 15);
+	ptr = addPacket(ptr, messages[0] = "A");
+	ptr = addPacket(ptr, messages[1] = "Test message 1.");
+	ptr = addPacket(ptr, messages[2] = "Test message 2.");
+	ptr = addRandomJunk(ptr, 100);
+	ptr = addPacket(ptr, messages[3] = "Another packet test message.");
+	ptr = addPacket(ptr, "Incomplete packet.") - 10;
+	ptr = addPacket(ptr, messages[4] = "The packet following the incomplete one.");
+	ptr = addRandomJunk(ptr, 100);	
+	ptr = addPacket(ptr, messages[5] = "");
+	ptr = addPacket(ptr, "") - 5;
+	ptr = addPacket(ptr, messages[6] = "Final packet.");		 	
+	
+	PacketReader reader;
+	int cnt = 0;
+	for(int i = 0; i < ptr - buffer; ++i) {
+		reader.addByte(buffer[i]);
+		if(reader.isPacketReady()) {
+			Packetizer::Header* header = reader.getPacketHeader();
+			const char* data = reader.getPacketData();
+			//printf("Packet received. Length=%d, ID=%d.\n", (int)header->length, (int)header->packetId);
+			EQUALS((int)header->length, strlen(messages[cnt]));
+			//printf("  data: [");
+			for(int i = 0; i < header->length; ++i) {
+				//printf("%c", data[i]);
+				EQUALS(data[i], messages[cnt][i]);
+			}
+			//printf("], expected=[%s]\n\n", messages[cnt]);
+			cnt++;
+		}
+	}
 }
 
 int main()
@@ -113,6 +178,7 @@ int main()
 	testFifoBuffer();
 	testSerialization();
 	testEcgCompression();
+	testPacketReader();
 	
 	if(okay) {
 		cout << "All tests passed." << endl;
