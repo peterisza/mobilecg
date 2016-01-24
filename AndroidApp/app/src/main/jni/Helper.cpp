@@ -32,7 +32,7 @@ namespace helper {
             std::vector<GLchar> errorLog(maxLength);
             glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
 
-            LOGE("Failed to compiler shader: \r\n%s",errorLog.data());
+            LOGE("Failed to compiler shader: %s",errorLog.data());
 
             assert(false);
         }
@@ -58,13 +58,19 @@ namespace helper {
 
     GLuint getGlUniformWithAssert(GLuint shader, const char *name){
         GLuint result=glGetUniformLocation(shader, name);
-        assert(result != -1);
+        if (result==-1){
+            LOGE("Uniform not found: %s",name);
+            assert(false);
+        }
         return result;
     }
 
     GLuint getGlAttributeWithAssert(GLuint shader, const char *name){
         GLuint result=glGetAttribLocation(shader, name);
-        assert(result != -1);
+        if (result==-1){
+            LOGE("Attribute not found: %s",name);
+            assert(false);
+        }
         return result;
     }
 

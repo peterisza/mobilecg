@@ -15,11 +15,10 @@ public:
 	Packetizer::Header* getPacketHeader();
 	
 	/* only valid until the next byte is added */	
-	const char* getPacketData();
+	char* getPacketData();
 private:
 	static const int MAX_BUFFER_SIZE = 8192;
 
-	void fixEndianness();
 	bool isHeaderOkay();
 	bool isPacketOkay();
 	bool isSignatureOkay();

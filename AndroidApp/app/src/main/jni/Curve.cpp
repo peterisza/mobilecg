@@ -38,11 +38,12 @@ GLuint Curve::getXCoordinates(){
 }
 
 Curve::Curve(): DrawableObject(){
-    scale.x=1;
-    scale.y=10;
+    scale.x=0.2;
+    scale.y=0.01;
     position.y=100;
     currNumOfPoints=0;
     requiredNumOfPoints=1;
+    clearWidthInPoints=100;
 
     color[0]=1;
     color[1]=0;
@@ -78,6 +79,10 @@ void Curve::glInit(){
     shader_color=helper::getGlUniformWithAssert(shaderProgram, "color");
     shader_a_Value=helper::getGlAttributeWithAssert(shaderProgram, "a_Value");
 
+    shader_endOffset=helper::getGlUniformWithAssert(shaderProgram, "endOffset");
+    shader_clearWidth=helper::getGlUniformWithAssert(shaderProgram, "clearWidth");
+    shader_pointCount=helper::getGlUniformWithAssert(shaderProgram, "pointCount");
+
     glGenBuffers(1, &valueBuffer);
 
     getXCoordinates();
@@ -106,10 +111,6 @@ void Curve::moveNewDataToGPU(){
 
     if (!remaining)
         return;
-
-    if (currWritePos >= currNumOfPoints){
-        currWritePos = 0;
-    }
 
     glBindBuffer(GL_ARRAY_BUFFER , valueBuffer);
     while (remaining){
@@ -146,19 +147,29 @@ void Curve::draw(){
     glUniform2f(shader_scale, scale[0], scale[1]);
     glUniform3f(shader_color, color[0], color[1], color[2]);
 
+    glUniform1f(shader_endOffset, currWritePos);
+    glUniform1f(shader_pointCount, currNumOfPoints);
+    glUniform1f(shader_clearWidth, clearWidthInPoints);
+
     glBindBuffer(GL_ARRAY_BUFFER, valueBuffer);
     glVertexAttribPointer(shader_a_Value, 1, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(shader_a_Value);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glLineWidth(3);
     glDrawArrays(GL_LINE_STRIP, 0, currNumOfPoints);
+    glLineWidth(1);
 }
 
+bool pina=true;
 void Curve::contextResized(int w, int h){
-    screenSize.w=w;
-    screenSize.h=h;
+    screenSize.w = w;
+    screenSize.h = h;
 
-    const Rect &area=EcgArea::instance().getActiveArea();
-    position.x=area.left();
+    position.y=h/2;
+
+    xCoordinatesLength=-1;
+    const Rect &area = EcgArea::instance().getActiveArea();
+    position.x = area.left();
     setLength(area.width());
 }

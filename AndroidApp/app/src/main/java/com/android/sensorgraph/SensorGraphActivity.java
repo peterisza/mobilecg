@@ -25,6 +25,9 @@ import android.util.DisplayMetrics;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 
 public class SensorGraphActivity extends Activity {
 
@@ -35,19 +38,31 @@ public class SensorGraphActivity extends Activity {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B5:D8:7C");
+
+        ConnectThread receiver=new ConnectThread(device);
+        receiver.start();
+
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         mView = new GLSurfaceView(getApplication());
         mView.setEGLContextClientVersion(2);
+        mView.setEGLConfigChooser(new MultisampleConfig());
         mView.setRenderer(new GLSurfaceView.Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+                gl.glEnable(gl.GL_LINE_SMOOTH);
+                gl.glHint(gl.GL_LINE_SMOOTH_HINT, gl.GL_NICEST);
                 SensorGraphJNI.surfaceCreated();
             }
 
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
+                gl.glEnable( gl.GL_LINE_SMOOTH );
+                gl.glHint(gl.GL_LINE_SMOOTH_HINT, gl.GL_NICEST);
                 SensorGraphJNI.setDotPerCM(displayMetrics.xdpi / 2.54f, displayMetrics.ydpi / 2.54f);
                 SensorGraphJNI.surfaceChanged(width, height);
             }

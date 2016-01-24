@@ -14,7 +14,7 @@ public:
 		uint8_t reserved;
 		uint8_t headerChecksum;
 	} __attribute__((packed));
-	
+
 	enum PacketType {ECG=0};
 
 	static const uint32_t HEADER_SIZE = sizeof(Header);

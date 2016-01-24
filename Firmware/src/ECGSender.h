@@ -8,6 +8,7 @@
 #include <DifferenceEcgCompressor.hpp>
 #include <FlatEcgPredictor.hpp>
 #include <ADS1298.h>
+#include "EcgHeaderCommon.h"
 
 class ECGSender {
 public:
@@ -16,12 +17,7 @@ public:
 
 	void send();
 private:
-	static const int MAX_SEND_SIZE = 2160;
-	//The worst case output size after compression. It is very unlikely that
-	//this will be ever filled, but it's the theoretical maximum.
-	static const int COMPRESS_OUTPUT_BUFFER = 25*MAX_SEND_SIZE/24+1;
-
-	uint8_t compressBuffer[COMPRESS_OUTPUT_BUFFER];
+	uint8_t compressBuffer[ECG_COMPRESS_OUTPUT_BUFFER_SIZE];
 	int sampleOfChannels[ecg::DifferenceEcgCompressor::maxChannels];
 
 	ecg::BitFifo compressFifo;
@@ -30,11 +26,6 @@ private:
 
 	ADS1298::ECGBlock tempBlock;
 
-	struct ECGHeader{
-		uint8_t channelCount;
-		uint32_t sampleCount;
-		uint32_t numBits;
-	} __attribute__((packed));
 
 	Packetizer *packetizer;
 };

@@ -1,9 +1,10 @@
 #include "PacketReader.hpp"
-#include "helpers.hpp"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "log.h"
+//#define LOGD printf
 
 PacketReader::PacketReader():
 	index(0)
@@ -40,14 +41,19 @@ void PacketReader::addByte(char byte) {
 	}
 	
 	if(packetReceived()) {
+		LOGD("potential packet, length=%d", index);
+
 		if(!isPacketOkay()) {
+			LOGD("packet NOT okay");
 			int oldIndex = index;
 			reset();
 			lookForMissedPackets(oldIndex);
 		} else {
+			LOGD("okay");
 			packetReady = true;
 		}	
 	}
+
 }
 
 bool PacketReader::isPacketReady() {
@@ -58,21 +64,14 @@ Packetizer::Header* PacketReader::getPacketHeader() {
 	return (Packetizer::Header*) buffer.data();
 }
 
-const char* PacketReader::getPacketData() {
+char* PacketReader::getPacketData() {
 	return &buffer[sizeof(Packetizer::Header)];
-}
-
-
-void PacketReader::fixEndianness() {
-	Packetizer::Header* header = getPacketHeader();
-	//header->signature = ntohl(header->signature);
-	header->length = ntohs(header->length);
-	header->packetId = ntohl(header->packetId);
 }
 
 bool PacketReader::isHeaderOkay() {
 	Packetizer::Header* header = getPacketHeader();
 	uint8_t sum = calcCheckSum(0, sizeof(Packetizer::Header));
+	LOGD("packetId %d", header->packetId);
 	if(sum != 0)
 		return false;
 	return true;
@@ -85,11 +84,13 @@ bool PacketReader::packetReceived() {
 	return index == sizeof(Packetizer::Header) + header->length + 2;
 }
 
+static uint8_t pina;
 bool PacketReader::isPacketOkay() {
 	Packetizer::Header* header = getPacketHeader();
-	uint16_t sum = -calcCheckSum(sizeof(Packetizer::Header), sizeof(Packetizer::Header) + header->length);
+	LOGD("Kurvaanyad: %d", header->packetId);
+	uint16_t sum = -calcCheckSum(0, sizeof(Packetizer::Header) + header->length);
 	uint16_t *checksum = (uint16_t*) &buffer[sizeof(Packetizer::Header) + header->length];
-	//printf("%d %d\n", sum, *checksum);
+	LOGD("checksum calculated: %d, in packet: %d\n", sum, *checksum);
 	if(sum != *checksum)
 		return false;
 	return true;
@@ -98,7 +99,7 @@ bool PacketReader::isPacketOkay() {
 int PacketReader::calcCheckSum(int start, int end) {
 	int sum = 0;
 	for(int i = start; i < end; ++i)
-		sum += (int)buffer[i];
+		sum += (uint8_t)buffer[i];
 	return sum;
 }
 

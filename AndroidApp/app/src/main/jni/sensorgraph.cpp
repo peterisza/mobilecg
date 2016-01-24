@@ -12,6 +12,8 @@
 #include "EcgArea.h"
 #include "Helper.h"
 #include "log.h"
+#include "PacketRouter.h"
+#include "PacketReader.hpp"
 
 const int LOOPER_ID_USER = 3;
 const int SENSOR_HISTORY_LENGTH = 100;
@@ -32,6 +34,7 @@ class sensorgraph {
     GLuint vSensorValueHandle;
     GLuint uFragColorHandle;
     GLfloat xPos[SENSOR_HISTORY_LENGTH];
+
 
     struct AccelerometerData {
         GLfloat x;
@@ -82,6 +85,8 @@ class sensorgraph {
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -122,8 +127,8 @@ class sensorgraph {
             sensorDataFilter.z = a * event.acceleration.z + (1.0f - a) * sensorDataFilter.z;
         }
 
-        GLfloat data=sensorDataFilter.x;
-        EcgArea::instance().putData(&data,1,1);
+       // GLfloat data=sensorDataFilter.x;
+       // EcgArea::instance().putData(&data,1,1);
 
         sensorData[sensorDataIndex] = sensorDataFilter;
         sensorData[SENSOR_HISTORY_LENGTH+sensorDataIndex] = sensorDataFilter;
@@ -226,10 +231,25 @@ JNIEXPORT void JNICALL
     }
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_processEcgData(JNIEnv *env, jclass type, jcharArray jdata, jint size) {
+    Java_com_android_sensorgraph_SensorGraphJNI_processEcgData(JNIEnv *env, jclass type, jbyteArray jdata, jint size) {
         (void)type;
-        jchar* data = env->GetCharArrayElements(jdata, 0);
 
-        env->ReleaseCharArrayElements(jdata, data, 0);
+
+        jbyte* data = env->GetByteArrayElements(jdata, 0);
+        char* chars = (char*) data;
+
+        uint16_t fasz=0;
+        for (int a=0;a<size;a++){
+            fasz+=chars[a];
+        }
+      //  LOGD("Pinaaaaaaaa %d %d", (int)size, (int)fasz);
+        static PacketReader packetReader;
+        for(int i=0; i < size; ++i) {
+            packetReader.addByte(chars[i]);
+            if(packetReader.isPacketReady()) {
+                PacketRouter::instance().packetReceived(packetReader.getPacketHeader(), packetReader.getPacketData());
+            }
+        }
+        env->ReleaseByteArrayElements(jdata, data, 0);
     }
 }

@@ -4,12 +4,12 @@
 
 using namespace ecg;
 
-BitFifo::BitFifo(char *iBuffer, int iSizeBytes):
+BitFifo::BitFifo(char *iBuffer, int iSizeBytes, int bitsAlreadyInBuffer):
 	buffer(iBuffer),
 	sizeBytes(iSizeBytes),
 	sizeBits(iSizeBytes*8),
 	start(0),
-	end(0)
+	end(bitsAlreadyInBuffer)
 {
 }
 

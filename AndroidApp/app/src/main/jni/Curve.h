@@ -31,10 +31,12 @@ class Curve: public DrawableObject{
 
         GLfloat color[3];
 
+        GLfloat clearWidthInPoints;
+
         static std::vector<GLfloat> invalidBuffer;
 
 
-        CircularBuffer<GLfloat, 128, true, false> newPointBuffer;
+        CircularBuffer<GLfloat, 12800, true, false> newPointBuffer;
 
         GLuint shaderProgram;
         GLuint shader_a_Position;
@@ -43,6 +45,11 @@ class Curve: public DrawableObject{
         GLuint shader_scale;
         GLuint shader_color;
         GLuint shader_a_Value;
+
+        GLuint shader_endOffset;
+        GLuint shader_pointCount;
+        GLuint shader_clearWidth;
+
         GLuint valueBuffer;
 
         int requiredNumOfPoints;

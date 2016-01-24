@@ -4,7 +4,7 @@
 
 
 ECGSender::ECGSender(Packetizer &iPacketizer):
-	compressFifo((char*)compressBuffer, COMPRESS_OUTPUT_BUFFER),
+	compressFifo((char*)compressBuffer, ECG_COMPRESS_OUTPUT_BUFFER_SIZE),
 	compressor(compressFifo, ecgPredictor)
 {
 	packetizer = &iPacketizer;
@@ -25,8 +25,8 @@ void ECGSender::send(){
 	uint32_t size = buffer.used();
 	uint32_t blockSize = (ecgHeader->channelCount+1)*3;
 
-	if (size>MAX_SEND_SIZE)
-		size=MAX_SEND_SIZE;
+	if (size>ECG_MAX_SEND_SIZE)
+		size=ECG_MAX_SEND_SIZE;
 
 	size -= size % blockSize;
 	ecgHeader->sampleCount = size / blockSize;
@@ -60,10 +60,10 @@ void ECGSender::send(){
 	}
 
 	ecgHeader->numBits = compressFifo.getAvailableBits();
-	size = (ecgHeader->numBits+7) / 8;
+	size = (ecgHeader->numBits+7) / 8 + sizeof(ECGHeader);
 
 	//Send header
-	packetizer->startPacket(header, Packetizer::ECG, (uint16_t)(size + sizeof(ECGHeader)));
+	packetizer->startPacket(header, Packetizer::ECG, (uint16_t)(size));
 	packetizer->checksumBlock((uint8_t*)ecgHeader, sizeof(ECGHeader));
 	if (Bluetooth::instance().send((char*)header, Packetizer::HEADER_SIZE + sizeof(ECGHeader), TIME_INF, false)<=0){
 		return;
