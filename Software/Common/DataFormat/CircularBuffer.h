@@ -127,7 +127,6 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
                 }
             }
         }
-
         void add(const Type *data, int cnt){
             if (cnt==0)
                 return;
@@ -140,21 +139,20 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
             	cnt = vectorSize;
                 state.rpos=0;
                 state.wpos=0;
-            } else if (!overwrite && state.full){
+            } else if ((!overwrite) && state.full){
                 cnt=free();
             }
-
 
             while (cnt){
             	int copySize = std::min(vectorSize - state.wpos, cnt);
             	if (useMemcpy){
             		//Memcpy can be much faster depending on your data size,
             		//but not works with custom operator =
-            		memcpy((char*)&vector[state.wpos], (const char*)data, copySize);
+            		memcpy((char*)&vector[state.wpos], (const char*)data, copySize*sizeof(Type));
             		state.wpos+=copySize;
             		data+=copySize;
             	} else {
-            		for (; state.wpos<copySize; state.wpos++, data++)
+            		for (int i=0; i<copySize; ++i, ++state.wpos, ++data)
             			vector[state.wpos] = *data;
             	}
 
@@ -188,11 +186,11 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
         		if (useMemcpy){
         			//Memcpy can be much faster depending on your data size,
         			//but not works with custom operator =
-					memcpy((char*)dest, (const char*)&vector[state.rpos], copySize);
+					memcpy((char*)dest, (const char*)&vector[state.rpos], copySize*sizeof(Type));
 					state.rpos+=copySize;
 					dest+=copySize;
 				} else {
-					for (; state.rpos<copySize; state.rpos++, dest++)
+					for (int i=0; i<copySize; ++i, ++state.rpos, ++dest)
 						*dest = vector[state.rpos];
 				}
 

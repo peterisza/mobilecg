@@ -1,15 +1,25 @@
 #include "EcgArea.h"
+#include "log.h"
 
 EcgArea::EcgArea():
         pixelDensity(100,100){
 
     grid.setZOrder(10);
     drawableList.push_back(&grid);
+    drawableList.push_back(&ecgCurve);
+
+    ecgCurve.setZOrder(0);
 }
 
 EcgArea &EcgArea::instance(){
     static EcgArea area;
     return area;
+}
+
+void EcgArea::init(AAssetManager *assetManager){
+    DrawableGroup::init(assetManager);
+
+    ecgCurve.setLength(500);
 }
 
 void EcgArea::contextResized(int w, int h){
@@ -37,4 +47,8 @@ const Vec2<float> &EcgArea::getPixelDensity(){
 
 void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
     pixelDensity=pPixelDensity;
+}
+
+void EcgArea::putData(float *data, int nChannels, int nPoints){
+    ecgCurve.put(data, nPoints);
 }

@@ -1,5 +1,7 @@
 #include "Helper.h"
 #include <cassert>
+#include "log.h"
+#include <vector>
 
 namespace helper {
     std::string loadAsset(AAssetManager *assetManager, std::string name){
@@ -22,7 +24,18 @@ namespace helper {
         glCompileShader(shader);
         GLint shaderCompiled = 0;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderCompiled);
-        assert(shaderCompiled != 0);
+        if (shaderCompiled == GL_FALSE){
+            GLint maxLength = 0;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+            // The maxLength includes the NULL character
+            std::vector<GLchar> errorLog(maxLength);
+            glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
+
+            LOGE("Failed to compiler shader: \r\n%s",errorLog.data());
+
+            assert(false);
+        }
         return shader;
     }
 

@@ -2,10 +2,14 @@
 #include "EcgArea.h"
 #include "Helper.h"
 #include <algorithm>
+#include "log.h"
 
 int Curve::xCoordinatesLength=0;
 GLfloat *Curve::xCoordinates=NULL;
 GLuint Curve::xCoordinatesOnGPU=0;
+const float Curve::POINT_INVALID=0.0/0.0;
+
+std::vector<GLfloat> Curve::invalidBuffer(1000, Curve::POINT_INVALID);
 
 GLuint Curve::getXCoordinates(){
     const Rect &activeArea = EcgArea::instance().getActiveArea();
@@ -33,9 +37,35 @@ GLuint Curve::getXCoordinates(){
     return xCoordinatesOnGPU;
 }
 
+Curve::Curve(): DrawableObject(){
+    scale.x=1;
+    scale.y=10;
+    position.y=100;
+    currNumOfPoints=0;
+    requiredNumOfPoints=1;
+
+    color[0]=1;
+    color[1]=0;
+    color[2]=0;
+}
+
 void Curve::init(AAssetManager *assetManager){
-    vertexShader = helper::loadAsset(assetManager, "texturedSurface.vert");
-    fragmentShader = helper::loadAsset(assetManager, "texturedSurface.frag");
+    vertexShader = helper::loadAsset(assetManager, "curve.vert");
+    fragmentShader = helper::loadAsset(assetManager, "curve.frag");
+}
+
+void Curve::clear(){
+    //Fill value with invalid data
+    glBindBuffer(GL_ARRAY_BUFFER , valueBuffer);
+    for (int offset=0; offset<currNumOfPoints; offset+=invalidBuffer.size()){
+        int transferblock = std::min((int)invalidBuffer.size(), currNumOfPoints - offset);
+        glBufferSubData(GL_ARRAY_BUFFER, offset*sizeof(GLfloat), transferblock*sizeof(GLfloat), invalidBuffer.data());
+    }
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
+}
+
+void Curve::setLength(int lengthInPixels){
+    requiredNumOfPoints = lengthInPixels / scale[0];
 }
 
 void Curve::glInit(){
@@ -46,12 +76,64 @@ void Curve::glInit(){
     shader_position=helper::getGlUniformWithAssert(shaderProgram, "position");
     shader_scale=helper::getGlUniformWithAssert(shaderProgram, "scale");
     shader_color=helper::getGlUniformWithAssert(shaderProgram, "color");
-    shader_a_Value=helper::getGlUniformWithAssert(shaderProgram, "a_Value");
+    shader_a_Value=helper::getGlAttributeWithAssert(shaderProgram, "a_Value");
+
+    glGenBuffers(1, &valueBuffer);
 
     getXCoordinates();
 }
 
+void Curve::put(GLfloat *data, int n){
+    newPointBuffer.add(data, n);
+}
+
+void Curve::resizeOnGPU(){
+    if (requiredNumOfPoints==currNumOfPoints){
+        return;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER , valueBuffer);
+    glBufferData(GL_ARRAY_BUFFER , sizeof(GLfloat)*requiredNumOfPoints, NULL, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER , 0);
+
+    currNumOfPoints = requiredNumOfPoints;
+    currWritePos=0;
+    clear();
+}
+
+void Curve::moveNewDataToGPU(){
+    int remaining=newPointBuffer.used();
+
+    if (!remaining)
+        return;
+
+    if (currWritePos >= currNumOfPoints){
+        currWritePos = 0;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER , valueBuffer);
+    while (remaining){
+        GLfloat *buffer;
+
+        int transferSize=std::min(newPointBuffer.getContinousReadBuffer(buffer), remaining);
+        transferSize=std::min(transferSize, (int)(currNumOfPoints-currWritePos));
+
+        glBufferSubData(GL_ARRAY_BUFFER, currWritePos*sizeof(GLfloat), transferSize*sizeof(GLfloat), buffer);
+
+        remaining -= transferSize;
+        currWritePos += transferSize;
+        newPointBuffer.skip(transferSize);
+
+        if (currWritePos >= currNumOfPoints){
+            currWritePos = 0;
+        }
+    }
+}
+
 void Curve::draw(){
+    resizeOnGPU();
+    moveNewDataToGPU();
+
     glUseProgram(shaderProgram);
 
     glBindBuffer(GL_ARRAY_BUFFER, getXCoordinates());
@@ -59,9 +141,24 @@ void Curve::draw(){
     glEnableVertexAttribArray(shader_a_Position);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glUniform2f(shader_screenSize, screenSize[0],screenSize[1]);
+    glUniform3f(shader_position, position[0], position[1], zCoordinate);
+    glUniform2f(shader_scale, scale[0], scale[1]);
+    glUniform3f(shader_color, color[0], color[1], color[2]);
 
+    glBindBuffer(GL_ARRAY_BUFFER, valueBuffer);
+    glVertexAttribPointer(shader_a_Value, 1, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(shader_a_Value);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glDrawArrays(GL_LINE_STRIP, 0, currNumOfPoints);
 }
 
 void Curve::contextResized(int w, int h){
+    screenSize.w=w;
+    screenSize.h=h;
 
+    const Rect &area=EcgArea::instance().getActiveArea();
+    position.x=area.left();
+    setLength(area.width());
 }

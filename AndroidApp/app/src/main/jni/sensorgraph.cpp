@@ -11,9 +11,7 @@
 
 #include "EcgArea.h"
 #include "Helper.h"
-
-#define  LOG_TAG    "sensorgraph"
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#include "log.h"
 
 const int LOOPER_ID_USER = 3;
 const int SENSOR_HISTORY_LENGTH = 100;
@@ -123,6 +121,10 @@ class sensorgraph {
             sensorDataFilter.y = a * event.acceleration.y + (1.0f - a) * sensorDataFilter.y;
             sensorDataFilter.z = a * event.acceleration.z + (1.0f - a) * sensorDataFilter.z;
         }
+
+        GLfloat data=sensorDataFilter.x;
+        EcgArea::instance().putData(&data,1,1);
+
         sensorData[sensorDataIndex] = sensorDataFilter;
         sensorData[SENSOR_HISTORY_LENGTH+sensorDataIndex] = sensorDataFilter;
         sensorDataIndex = (sensorDataIndex + 1) % SENSOR_HISTORY_LENGTH;
