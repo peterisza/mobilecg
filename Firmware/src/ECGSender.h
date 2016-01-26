@@ -32,7 +32,7 @@ private:
 	bool testSignal;
 
 
-	TestSignalGenerator sineGenerator;
+	TestSignalGenerator testGenerator;
 };
 
 #endif /* SRC_ECGSENDER_H_ */

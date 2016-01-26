@@ -5,7 +5,7 @@
 ECGSender::ECGSender(Packetizer &iPacketizer):
 	compressFifo((char*)compressBuffer, ECG_COMPRESS_OUTPUT_BUFFER_SIZE),
 	compressor(compressFifo, ecgPredictor),
-	sineGenerator(15000,500)
+	testGenerator(15000,500)
 {
 	packetizer = &iPacketizer;
 	testSignal=true;
@@ -47,8 +47,8 @@ void ECGSender::send(){
 
 		if (testSignal){
 			for (int a=0; a<ecgHeader->channelCount; a++){
-				sampleOfChannels[a]=sineGenerator.getSample(2.0*M_PI*a/ecgHeader->channelCount);
-				sineGenerator.next();
+				sampleOfChannels[a]=testGenerator.getSample(2.0*M_PI*a/ecgHeader->channelCount);
+				testGenerator.next();
 			}
 		} else {
 			//Convert the 24 bit output format of the ECG to something usable
