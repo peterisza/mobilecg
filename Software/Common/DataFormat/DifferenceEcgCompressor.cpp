@@ -37,7 +37,7 @@ bool DifferenceEcgCompressor::getSample(int *channels) {
 		int full = bitStream.popBits(1);
 		//printf('');
 		int bitNum = full ? fullBitNum : smallBitNum;
-		if(bitStream.getFreeBits() < bitNum)
+		if(bitStream.getAvailableBits() < bitNum)
 			return false;
 		if(full)
 			channels[i] = bitStream.popBitsSigned(fullBitNum);

@@ -10,7 +10,7 @@ FlatEcgPredictor::FlatEcgPredictor()
 
 void FlatEcgPredictor::putSample(const int* channels) {
 	for(int i = 0; i < numChannels; ++i)
-		prediction[i] = channels[i];	
+		prediction[i] = channels[i];
 }
 
 int FlatEcgPredictor::getPrediction(int channel) {

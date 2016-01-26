@@ -89,8 +89,12 @@ void testEcgCompression() {
 	compressor.setNumChannels(3);
 	decompressor.setNumChannels(3);
 	
+	
+	TestSignalGenerator tsg(15000, 500);	
 	int ecgdata[1000][3];
 	for(int i = 0; i < 1000; ++i) {
+		if(i % 100 == 0)
+			predictor.reset();
 		for(int ch = 0; ch < 3; ++ch) {
 			bool small = rand()%10 < 4;
 			//printf(small ? "small\n" : "big\n");
@@ -99,16 +103,21 @@ void testEcgCompression() {
 			else
 				ecgdata[i][ch] = ecgdata[i-1][ch] + (rand()%1000) - 500;
 		}
+		ecgdata[i][0] = tsg.getNextSample();
 		compressor.putSample(ecgdata[i]);
 	}
 	predictor.reset();
+
 	for(int i = 0; i < 1000; ++i) {
+		if(i % 100 == 0)
+			predictor.reset();
 		int sample[3];
 		decompressor.getSample(sample);
 		//printf("%d %d %d - %d %d %d\n", ecgdata[i][0], ecgdata[i][1], ecgdata[i][2], sample[0], sample[1], sample[2]);
 		for(int ch = 0; ch < 3; ++ch) {
 			EQUALS(ecgdata[i][ch], sample[ch]);
 		}
+		//printf("%d\n", sample[0]);
 	}
 }
 
