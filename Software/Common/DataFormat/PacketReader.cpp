@@ -3,8 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "log.h"
-//#define LOGD printf
+#define LOGD
 
 PacketReader::PacketReader():
 	index(0)

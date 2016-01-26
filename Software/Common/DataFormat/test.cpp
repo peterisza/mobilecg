@@ -6,6 +6,8 @@
 #include "PacketReader.hpp"
 #include <iostream>
 
+#include "TestSignalGenerator.hpp"
+
 #include <string.h>
 
 using namespace std;
