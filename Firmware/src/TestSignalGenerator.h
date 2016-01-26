@@ -10,7 +10,7 @@
 class TestSignalGenerator {
 	public:
 		TestSignalGenerator(int a, int p):
-			amplitude(a), phase(0)
+			amplitude(a)
 		{
 			setPeriod(p);
 		}
@@ -21,21 +21,25 @@ class TestSignalGenerator {
 		
 		void setPeriod(int p) {
 			period = p;
-			delta = 2*M_PI/period;
 		}
 		
-		int getSample(float phaseDelta=0.0) {
-			return sin(phase + phaseDelta) * amplitude;
+		int getSample(int phaseOffset = 0) {
+			int phase = (index + phaseOffset) % period;
+			int r = phase * 2 * amplitude / period;
+			if(r > amplitude)
+				r = amplitude - r;
+			return r;
 		}
 
 		void next(){
-			phase += delta;
+			index++;
 		}
 	private:
 		int amplitude;
 		int period;
-		float phase;
-		float delta;
+		int index;
+		/*float phase;
+		float delta;*/
 };
 
 #endif

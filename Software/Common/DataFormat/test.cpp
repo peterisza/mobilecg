@@ -1,5 +1,5 @@
 #include "BitFifo.hpp"
-#include "StreamSerializer.hpp"
+//#include "StreamSerializer.hpp"
 #include "DifferenceEcgCompressor.hpp"
 #include "FlatEcgPredictor.hpp"
 #include "Packetizer.h"
@@ -37,7 +37,7 @@ void testFifoBuffer() {
 
 	EQUALS(fb.getFreeBits(), 56);
 }
-
+/*
 void testSerialization() {
 	const int size1 = 1000;
 	const int size2 = 2000;
@@ -75,7 +75,7 @@ void testSerialization() {
 		}
 	}	
 }
-
+*/
 void testEcgCompression() {
 	const int bufferSize = 10000;
 	char buffer[bufferSize];
@@ -103,7 +103,8 @@ void testEcgCompression() {
 			else
 				ecgdata[i][ch] = ecgdata[i-1][ch] + (rand()%1000) - 500;
 		}
-		ecgdata[i][0] = tsg.getNextSample();
+		ecgdata[i][0] = tsg.getSample();
+		tsg.next();
 		compressor.putSample(ecgdata[i]);
 	}
 	predictor.reset();
@@ -171,14 +172,14 @@ void testPacketReader() {
 		if(reader.isPacketReady()) {
 			Packetizer::Header* header = reader.getPacketHeader();
 			const char* data = reader.getPacketData();
-			//printf("Packet received. Length=%d, ID=%d.\n", (int)header->length, (int)header->packetId);
+			printf("Packet received. Length=%d, ID=%d.\n", (int)header->length, (int)header->packetId);
 			EQUALS((int)header->length, strlen(messages[cnt]));
-			//printf("  data: [");
+			printf("  data: [");
 			for(int i = 0; i < header->length; ++i) {
-				//printf("%c", data[i]);
-				EQUALS(data[i], messages[cnt][i]);
+				printf("%c", data[i]);
+				//EQUALS(data[i], messages[cnt][i]);
 			}
-			//printf("], expected=[%s]\n\n", messages[cnt]);
+			printf("], expected=[%s]\n\n", messages[cnt]);
 			cnt++;
 		}
 	}
@@ -187,7 +188,7 @@ void testPacketReader() {
 int main()
 {
 	testFifoBuffer();
-	testSerialization();
+	//testSerialization();
 	testEcgCompression();
 	testPacketReader();
 	
