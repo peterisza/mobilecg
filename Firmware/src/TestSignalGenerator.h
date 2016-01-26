@@ -27,7 +27,7 @@ class TestSignalGenerator {
 			int phase = (index + phaseOffset) % period;
 			int r = phase * 2 * amplitude / period;
 			if(r > amplitude)
-				r = amplitude - r;
+				r = 2*amplitude - r;
 			return r;
 		}
 
