@@ -2,13 +2,13 @@
 #include "ADS1298.h"
 #include "Bluetooth.h"
 
-
 ECGSender::ECGSender(Packetizer &iPacketizer):
 	compressFifo((char*)compressBuffer, ECG_COMPRESS_OUTPUT_BUFFER_SIZE),
-	compressor(compressFifo, ecgPredictor)
+	compressor(compressFifo, ecgPredictor),
+	sineGenerator(15000,500)
 {
 	packetizer = &iPacketizer;
-
+	testSignal=true;
 }
 
 ECGSender::~ECGSender() {
@@ -45,15 +45,22 @@ void ECGSender::send(){
 	for (unsigned pos=0; pos<size; pos+=blockSize){
 		buffer.get((uint8_t*)&tempBlock, blockSize);
 
-		//Convert the 24 bit output format of the ECG to something usable
-		sampleOfChannels[0]=tempBlock.channel1;
-		sampleOfChannels[1]=tempBlock.channel2;
-		sampleOfChannels[2]=tempBlock.channel3;
-		sampleOfChannels[3]=tempBlock.channel4;
-		sampleOfChannels[4]=tempBlock.channel5;
-		sampleOfChannels[5]=tempBlock.channel6;
-		sampleOfChannels[6]=tempBlock.channel7;
-		sampleOfChannels[7]=tempBlock.channel8;
+		if (testSignal){
+			for (int a=0; a<ecgHeader->channelCount; a++){
+				sampleOfChannels[a]=sineGenerator.getSample(2.0*M_PI*a/ecgHeader->channelCount);
+				sineGenerator.next();
+			}
+		} else {
+			//Convert the 24 bit output format of the ECG to something usable
+			sampleOfChannels[0]=tempBlock.channel1;
+			sampleOfChannels[1]=tempBlock.channel2;
+			sampleOfChannels[2]=tempBlock.channel3;
+			sampleOfChannels[3]=tempBlock.channel4;
+			sampleOfChannels[4]=tempBlock.channel5;
+			sampleOfChannels[5]=tempBlock.channel6;
+			sampleOfChannels[6]=tempBlock.channel7;
+			sampleOfChannels[7]=tempBlock.channel8;
+		}
 
 		//Compress
 		compressor.putSample(sampleOfChannels);

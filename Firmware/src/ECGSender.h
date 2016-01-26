@@ -9,6 +9,7 @@
 #include <FlatEcgPredictor.hpp>
 #include <ADS1298.h>
 #include "EcgHeaderCommon.h"
+#include "TestSignalGenerator.h"
 
 class ECGSender {
 public:
@@ -28,6 +29,10 @@ private:
 
 
 	Packetizer *packetizer;
+	bool testSignal;
+
+
+	TestSignalGenerator sineGenerator;
 };
 
 #endif /* SRC_ECGSENDER_H_ */

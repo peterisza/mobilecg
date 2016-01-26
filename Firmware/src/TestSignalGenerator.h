@@ -3,12 +3,16 @@
 
 #include <math.h>
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
+
 class TestSignalGenerator {
 	public:
-		TestSignalGenerator(int amplitude, int period):
-			amplitude(amplitude), phase(0)
+		TestSignalGenerator(int a, int p):
+			amplitude(a), phase(0)
 		{
-			setPeriod(period);
+			setPeriod(p);
 		}
 		
 		void setAmplitude(int a) {
@@ -20,9 +24,12 @@ class TestSignalGenerator {
 			delta = 2*M_PI/period;
 		}
 		
-		int getNextSample() {
+		int getSample(float phaseDelta=0.0) {
+			return sin(phase + phaseDelta) * amplitude;
+		}
+
+		void next(){
 			phase += delta;
-			return sin(phase) * amplitude;
 		}
 	private:
 		int amplitude;
