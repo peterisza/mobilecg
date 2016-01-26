@@ -70,7 +70,7 @@ char* PacketReader::getPacketData() {
 bool PacketReader::isHeaderOkay() {
 	Packetizer::Header* header = getPacketHeader();
 	uint8_t sum = calcCheckSum(0, sizeof(Packetizer::Header));
-	LOGD("packetId %d", header->packetId);
+	LOGD("packetId %d sum %d\n", header->packetId, (int)sum);
 	if(sum != 0)
 		return false;
 	return true;

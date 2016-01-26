@@ -103,7 +103,7 @@ void testEcgCompression() {
 			else
 				ecgdata[i][ch] = ecgdata[i-1][ch] + (rand()%1000) - 500;
 		}
-		ecgdata[i][0] = tsg.getSample();
+		ecgdata[i][0] = tsg.getSample(2.4);
 		tsg.next();
 		compressor.putSample(ecgdata[i]);
 	}
@@ -172,14 +172,14 @@ void testPacketReader() {
 		if(reader.isPacketReady()) {
 			Packetizer::Header* header = reader.getPacketHeader();
 			const char* data = reader.getPacketData();
-			printf("Packet received. Length=%d, ID=%d.\n", (int)header->length, (int)header->packetId);
+			//printf("Packet received. Length=%d, ID=%d.\n", (int)header->length, (int)header->packetId);
 			EQUALS((int)header->length, strlen(messages[cnt]));
-			printf("  data: [");
+			//printf("  data: [");
 			for(int i = 0; i < header->length; ++i) {
-				printf("%c", data[i]);
+				//printf("%c", data[i]);
 				//EQUALS(data[i], messages[cnt][i]);
 			}
-			printf("], expected=[%s]\n\n", messages[cnt]);
+			//printf("], expected=[%s]\n\n", messages[cnt]);
 			cnt++;
 		}
 	}
