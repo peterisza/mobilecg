@@ -17,6 +17,17 @@ extern "C" SPI_HandleTypeDef hspi2;
 #define C3_RLD_SENSE_ON (1<<1)
 #define C3_RLD_LEAD_OFF_STATUS (1<<0)
 
+#define WCT1_WCTA_POWER_ON (1<<3)
+#define WCT1_WCTA_CHANNEL1_POS 0
+#define WCT1_WCTA_CHANNEL1_NEG 1
+#define WCT1_WCTA_CHANNEL2_POS 2
+#define WCT1_WCTA_CHANNEL2_NEG 3
+#define WCT1_WCTA_CHANNEL3_POS 4
+#define WCT1_WCTA_CHANNEL3_NEG 5
+#define WCT1_WCTA_CHANNEL4_POS 6
+#define WCT1_WCTA_CHANNEL4_NEG 7
+
+
 ADS1298::ADS1298():
 	reset('A', 6, true),
 	pwdn('A', 7, true),
