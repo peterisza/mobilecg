@@ -118,7 +118,7 @@ void Curve::moveNewDataToGPU(){
     while (remaining){
         GLfloat *buffer;
 
-        int transferSize=std::min(newPointBuffer.getContinousReadBuffer(buffer), remaining);
+        int transferSize=std::min(newPointBuffer.getContinuousReadBuffer(buffer), remaining);
         transferSize=std::min(transferSize, (int)(currNumOfPoints-currWritePos));
 
         glBufferSubData(GL_ARRAY_BUFFER, currWritePos*sizeof(GLfloat), transferSize*sizeof(GLfloat), buffer);

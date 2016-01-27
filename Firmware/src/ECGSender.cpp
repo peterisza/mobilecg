@@ -46,7 +46,7 @@ void ECGSender::send(){
 	//Compress
 	for (unsigned pos=0; pos<size; pos+=blockSize){
 		buffer.get((uint8_t*)&tempBlock, blockSize);
-
+		ADS1298::fixByteOrder(&tempBlock);
 		/*int test = testGenerator.getSample();
 		testGenerator.next();
 		tempBlock.channel1 = test;

@@ -34,24 +34,22 @@ void EcgProcessor::receivePacket(char *data, int len){
     ecg::DifferenceEcgCompressor decompressor(bitFifo, predictor);
     decompressor.setNumChannels(header->channelCount);
 
-    /*LOGD("csomag eleje: %02X %02X %02X %02X",
-         data[sizeof(ECGHeader)],
-         data[sizeof(ECGHeader)+1],
-         data[sizeof(ECGHeader)+2],
-         data[sizeof(ECGHeader)+3]);*/
+    if(header->channelCount > MAX_NUM_CHANNELS)
+        LOGE("EcgProcessor max channel number exceeded.");
 
     int timesample [ecg::DifferenceEcgCompressor::maxChannels];
     for (int a=0; a<header->sampleCount; a++){
         decompressor.getSample(timesample);
         /*if(a < 10)
             LOGD("sample[%d][1]=%d", a, timesample[1]);*/
-        if(a == 0)
+        /*if(a == 0)
             LOGD("%08X %08X %08X %08X %08X %08X %08X %08X", timesample[0], timesample[1], timesample[2], timesample[3], timesample[4], timesample[5], timesample[6], timesample[7]);
+        */
+
         for (int c=0; c<header->channelCount; c++){
-            decompressBuffer[c][a] = timesample[c]/1000000.0;
-            if (a>0){
-                decompressBuffer[c][a]-=decompressBuffer[c][a-1];
-            }
+            decompressBuffer[c][a] = timesample[c]/200.0;
+            if(c <= MAX_NUM_CHANNELS)
+                decompressBuffer[c][a] = notchFilter[c].filter(decompressBuffer[c][a]);
         }
     }
 

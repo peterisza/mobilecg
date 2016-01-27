@@ -3,8 +3,6 @@
 
 #include <android/log.h>
 
-#include <android/sensor.h>
-
 #include <cstdint>
 #include <cassert>
 #include <string>
@@ -16,65 +14,16 @@
 #include "PacketReader.hpp"
 
 const int LOOPER_ID_USER = 3;
-const int SENSOR_HISTORY_LENGTH = 100;
-const int SENSOR_REFRESH_RATE = 100;
-const float SENSOR_FILTER_ALPHA = 0.1f;
 
 
 class sensorgraph {
-    std::string vertexShaderSource;
-    std::string fragmentShaderSource;
-    ASensorManager *sensorManager;
-    const ASensor *accelerometer;
-    ASensorEventQueue *accelerometerEventQueue;
-    ALooper *looper;
-
-    GLuint shaderProgram;
-    GLuint vPositionHandle;
-    GLuint vSensorValueHandle;
-    GLuint uFragColorHandle;
-    GLfloat xPos[SENSOR_HISTORY_LENGTH];
-
-
-    struct AccelerometerData {
-        GLfloat x;
-        GLfloat y;
-        GLfloat z;
-    };
-    AccelerometerData sensorData[SENSOR_HISTORY_LENGTH*2];
-    AccelerometerData sensorDataFilter;
-    int sensorDataIndex;
-
 
  public:
-    sensorgraph() : sensorDataIndex(0) {}
+    sensorgraph() {}
 
 
     void init(AAssetManager *assetManager) {
         EcgArea::instance().init(assetManager);
-
-        vertexShaderSource=helper::loadAsset(assetManager, "shader.vert");
-        fragmentShaderSource=helper::loadAsset(assetManager, "shader.frag");
-
-
-        sensorManager = ASensorManager_getInstance();
-        assert(sensorManager != NULL);
-        accelerometer = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_ACCELEROMETER);
-        assert(accelerometer != NULL);
-        looper = ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS);
-        assert(looper != NULL);
-        accelerometerEventQueue = ASensorManager_createEventQueue(sensorManager, looper,
-                                                                  LOOPER_ID_USER, NULL, NULL);
-        assert(accelerometerEventQueue != NULL);
-        int setEventRateResult = ASensorEventQueue_setEventRate(accelerometerEventQueue,
-                                                                accelerometer,
-                                                                int32_t(1000000 /
-                                                                        SENSOR_REFRESH_RATE));
-        int enableSensorResult = ASensorEventQueue_enableSensor(accelerometerEventQueue,
-                                                                accelerometer);
-        assert(enableSensorResult >= 0);
-
-        generateXPos();
     }
 
     void surfaceCreated() {
@@ -93,12 +42,6 @@ class sensorgraph {
 
         EcgArea::instance().glInit();
         EcgArea::instance().setZOrder(1);
-
-        shaderProgram = helper::createGlProgram(vertexShaderSource, fragmentShaderSource);
-        assert(shaderProgram != 0);
-        vPositionHandle = helper::getGlAttributeWithAssert(shaderProgram, "vPosition");
-        vSensorValueHandle = helper::getGlAttributeWithAssert(shaderProgram, "vSensorValue");
-        uFragColorHandle = helper::getGlUniformWithAssert(shaderProgram, "uFragColor");
     }
 
     void surfaceChanged(int w, int h) {
@@ -110,65 +53,19 @@ class sensorgraph {
         EcgArea::instance().setPixelDensity(Vec2<float>(x,y));
     }
 
-    void generateXPos() {
-        for (auto i = 0; i < SENSOR_HISTORY_LENGTH; i++) {
-            float t = static_cast<float>(i) / static_cast<float>(SENSOR_HISTORY_LENGTH - 1);
-            xPos[i] = -1.f * (1.f - t) + 1.f * t;
-        }
-    }
-
-    void update() {
-        ALooper_pollAll(0, NULL, NULL, NULL);
-        ASensorEvent event;
-        float a = SENSOR_FILTER_ALPHA;
-        while (ASensorEventQueue_getEvents(accelerometerEventQueue, &event, 1) > 0) {
-            sensorDataFilter.x = a * event.acceleration.x + (1.0f - a) * sensorDataFilter.x;
-            sensorDataFilter.y = a * event.acceleration.y + (1.0f - a) * sensorDataFilter.y;
-            sensorDataFilter.z = a * event.acceleration.z + (1.0f - a) * sensorDataFilter.z;
-        }
-
-        GLfloat data=sensorDataFilter.x;
-
-        sensorData[sensorDataIndex] = sensorDataFilter;
-        sensorData[SENSOR_HISTORY_LENGTH+sensorDataIndex] = sensorDataFilter;
-        sensorDataIndex = (sensorDataIndex + 1) % SENSOR_HISTORY_LENGTH;
-    }
-
     void render() {
         glClearColor(0.f, 0.f, 0.f, 1.0f);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         EcgArea::instance().draw();
-
-        glUseProgram(shaderProgram);
-
-        glEnableVertexAttribArray(vPositionHandle);
-        glVertexAttribPointer(vPositionHandle, 1, GL_FLOAT, GL_FALSE, 0, xPos);
-
-        glEnableVertexAttribArray(vSensorValueHandle);
-        glVertexAttribPointer(vSensorValueHandle, 1, GL_FLOAT, GL_FALSE, sizeof(AccelerometerData),
-                              &sensorData[sensorDataIndex].x);
-
-        glUniform4f(uFragColorHandle, 1.0f, 1.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, SENSOR_HISTORY_LENGTH);
-
-        glVertexAttribPointer(vSensorValueHandle, 1, GL_FLOAT, GL_FALSE, sizeof(AccelerometerData),
-                              &sensorData[sensorDataIndex].y);
-        glUniform4f(uFragColorHandle, 1.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, SENSOR_HISTORY_LENGTH);
-
-        glVertexAttribPointer(vSensorValueHandle, 1, GL_FLOAT, GL_FALSE, sizeof(AccelerometerData),
-                              &sensorData[sensorDataIndex].z);
-        glUniform4f(uFragColorHandle, 0.0f, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, SENSOR_HISTORY_LENGTH);
     }
 
     void pause() {
-        ASensorEventQueue_disableSensor(accelerometerEventQueue, accelerometer);
+
     }
 
     void resume() {
-        ASensorEventQueue_enableSensor(accelerometerEventQueue, accelerometer);
+
     }
 };
 
@@ -211,7 +108,6 @@ JNIEXPORT void JNICALL
     Java_com_android_sensorgraph_SensorGraphJNI_drawFrame(JNIEnv *env, jclass type) {
         (void)env;
         (void)type;
-        gSensorGraph.update();
         gSensorGraph.render();
     }
 

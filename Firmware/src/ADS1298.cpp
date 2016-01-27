@@ -6,9 +6,16 @@
 
 extern "C" SPI_HandleTypeDef hspi2;
 
-#define nPD_REFBUF 0x80
-#define CONFIG3_FIXED 0x40
+
+
 #define HR 0x80
+
+#define C3_FIXED 0x40
+#define C3_INTERNAL_REFERENCE_POWER_ON 0x80
+#define C3_INTERNAL_RLD_REFERENCE (1<<3)
+#define C3_RLD_POWER_ON (1<<2)
+#define C3_RLD_SENSE_ON (1<<1)
+#define C3_RLD_LEAD_OFF_STATUS (1<<0)
 
 ADS1298::ADS1298():
 	reset('A', 6, true),
@@ -18,6 +25,16 @@ ADS1298::ADS1298():
 {
 	memset(zeroBuffer, 0, ADS1298_MAX_PACKET_LENGTH);
 	dmaRunning=false;
+}
+
+void ADS1298::fixByteOrder(ADS1298::ECGBlock *block, int numChannels)
+{
+	char *d = ((char*)block) + 3;
+	for(int i = 0; i < numChannels; ++i) {
+		char tmp = d[i*3];
+		d[i*3] = d[i*3+2];
+		d[i*3+2] = tmp;
+	}
 }
 
 ADS1298& ADS1298::instance(){
@@ -89,8 +106,16 @@ bool ADS1298::start(){
 	bufSize -= bufSize % dataTransferSize;
 	ecgBuffer.resize(bufSize);
 
+	uint8_t rldChannels = (1 << 1) | (1 << 2);
+	writeReg(REG_RLD_SENSN, rldChannels);
+	writeReg(REG_RLD_SENSP, rldChannels);
+
 	//Enable internal reference
-	writeReg(REG_CONFIG3, CONFIG3_FIXED | nPD_REFBUF );
+	writeReg(REG_CONFIG3,
+			C3_FIXED |
+			C3_INTERNAL_REFERENCE_POWER_ON |
+			C3_INTERNAL_RLD_REFERENCE |
+			C3_RLD_POWER_ON);
 
 	setSpeed(DIV_4096);
 
@@ -120,10 +145,6 @@ float ADS1298::setSpeed(SpeedDiv div, bool highRes){
 
 	return realFreq;
 }
-/*
-static char dummyBuffer[100];
-static volatile int dummyCnt = 0;
-*/
 
 void ADS1298::interrupt(){
 	uint8_t *buffer;
@@ -140,10 +161,6 @@ void ADS1298::interrupt(){
 	}
 
 	dmaRunning=true;
-	/*memcpy(buffer, (const unsigned char*)"\x00\x00\x00\x00\x00\x00\x01\xFA\x52\x02\xFA\x52\x03\xFA\x52\x04\xFA\x52\x05\xFA\x52\x06\xFA\x52\x07\xFA\x52", dataTransferSize);
-	buffer[3] = dummyCnt;
-	buffer[4] = dummyCnt >> 8;
-	dummyCnt++;*/
 	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)buffer, dataTransferSize);
 }
 
