@@ -15,7 +15,7 @@ GLuint Curve::getXCoordinates(){
     const Rect &activeArea = EcgArea::instance().getActiveArea();
     int capacity = std::min(std::max(activeArea.width(), activeArea.height()), 10000);
 
-    if (capacity>xCoordinatesLength){
+    if (capacity>xCoordinatesLength || EcgArea::instance().isRedrawNeeded()){
         if (xCoordinatesLength==0){
             glGenBuffers(1, &xCoordinatesOnGPU);
         } else {
@@ -95,7 +95,7 @@ void Curve::put(GLfloat *data, int n){
 }
 
 void Curve::resizeOnGPU(){
-    if (requiredNumOfPoints==currNumOfPoints){
+    if (requiredNumOfPoints==currNumOfPoints && (!EcgArea::instance().isRedrawNeeded())){
         return;
     }
 
@@ -166,11 +166,9 @@ void Curve::draw(){
 void Curve::contextResized(int w, int h){
     screenSize.w = w;
     screenSize.h = h;
+}
 
-    position.y=h/2;
-
-    xCoordinatesLength=-1;
-    const Rect &area = EcgArea::instance().getActiveArea();
-    position.x = area.left();
-    setLength(area.width());
+void Curve::setPosition(int x, int y) {
+    position.x=x;
+    position.y=y;
 }

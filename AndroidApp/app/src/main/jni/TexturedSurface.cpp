@@ -1,5 +1,6 @@
 #include "TexturedSurface.h"
 #include "Helper.h"
+#include "EcgArea.h"
 #include <cassert>
 
 const GLfloat TexturedSurface::vertexCoordinates[8]={
@@ -30,21 +31,31 @@ void TexturedSurface::glInit(){
     shader_size=helper::getGlUniformWithAssert(shaderProgram, "size");
 
     glGenTextures(1, &texture);
+    glGenBuffers(1, &vertexBuffer);
+
+    initGlBuffers();
+}
+
+void TexturedSurface::initGlBuffers(){
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-    glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER , vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER , sizeof(vertexCoordinates), vertexCoordinates, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
 void TexturedSurface::draw(){
+    bool redraw=false;
+    if (EcgArea::instance().isRedrawNeeded()){
+        redraw=true;
+        initGlBuffers();
+    }
     glUseProgram(shaderProgram);
 
     glBindTexture(GL_TEXTURE_2D, texture);
-    if (!imageOnGPU && image!=NULL) {
+    if ((!imageOnGPU || redraw) && image!=NULL) {
         imageOnGPU=true;
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width(), image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -61,7 +72,6 @@ void TexturedSurface::draw(){
     glUniform2f(shader_size, (GLfloat)width,(GLfloat)height);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 

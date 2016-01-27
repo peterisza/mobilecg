@@ -23,6 +23,8 @@ private:
     std::string vertexShader;
     std::string fragmentShader;
 
+    void initGlBuffers();
+
     static const GLfloat vertexCoordinates[8];
     GLuint shaderProgram;
 

@@ -18,6 +18,7 @@ class EcgArea: public DrawableGroup{
         GridDrawer grid;
         Curve ecgCurve;
 
+        bool redrawNeeded;
     public:
         static EcgArea &instance();
         virtual void contextResized(int w, int h);
@@ -26,7 +27,9 @@ class EcgArea: public DrawableGroup{
         const Vec2<float> &getPixelDensity();
 
 
-
+        void redraw();
+        bool isRedrawNeeded();
+        virtual void draw();
         void setPixelDensity(const Vec2<float> &pixelDensity);
 
         void putData(GLfloat *data, int nChannels, int nPoints, int stride);

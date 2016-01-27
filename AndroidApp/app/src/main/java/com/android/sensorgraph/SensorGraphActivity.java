@@ -40,7 +40,9 @@ public class SensorGraphActivity extends Activity {
 
 
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B5:D8:7C");
+        //BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B5:D8:7C");
+
+        BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B6:13:0E");
 
         ConnectThread receiver=new ConnectThread(device);
         receiver.start();

@@ -17,6 +17,8 @@ class Curve: public DrawableObject{
         virtual void draw();
         virtual void contextResized(int w, int h);
 
+        void setPosition(int x, int y);
+
         static const float POINT_INVALID;
 
         void setLength(int lengthInPixels);

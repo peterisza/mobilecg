@@ -28,7 +28,11 @@ void EcgArea::contextResized(int w, int h){
 
     activeArea=Rect(deleteX/2, deleteY/2, w-deleteX+1, h+1-deleteY);
 
+    redraw();
     DrawableGroup::contextResized(w,h);
+
+    ecgCurve.setLength(activeArea.width());
+    ecgCurve.setPosition(activeArea.left(), h/2);
 }
 
 
@@ -51,4 +55,17 @@ void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
 
 void EcgArea::putData(GLfloat *data, int nChannels, int nPoints, int stride){
     ecgCurve.put(data+stride*1, nPoints);
+}
+
+void EcgArea::draw(){
+    DrawableGroup::draw();
+    redrawNeeded=false;
+}
+
+void EcgArea::redraw(){
+    redrawNeeded=true;
+}
+
+bool EcgArea::isRedrawNeeded(){
+    return redrawNeeded;
 }

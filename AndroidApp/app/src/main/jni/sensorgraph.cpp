@@ -65,7 +65,7 @@ class sensorgraph {
     }
 
     void resume() {
-
+        EcgArea::instance().redraw();
     }
 };
 
