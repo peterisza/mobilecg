@@ -15,9 +15,9 @@ struct CircularBufferState{
 		full=false;
 	}
 
-	int rpos;
-	int wpos;
-	bool full;
+	volatile int rpos;
+	volatile int wpos;
+	volatile bool full;
 };
 
 /**

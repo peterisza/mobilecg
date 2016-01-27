@@ -23,7 +23,7 @@ void ECGSender::send(){
 
 	ecgHeader->channelCount = ADS1298::instance().getActiveChannels();
 
-	auto buffer = ADS1298::instance().getBuffer();
+	ADS1298::EcgBuffer& buffer = ADS1298::instance().getBuffer();
 	uint32_t size = buffer.used();
 	uint32_t blockSize = (ecgHeader->channelCount+1)*3;
 
@@ -75,9 +75,9 @@ void ECGSender::send(){
 			sampleOfChannels[7]=tempBlock.channel8;
 		}
 
-		uint8_t* dummy;
-		int dummySize = buffer.getContinuousWriteBuffer(dummy);
-		sampleOfChannels[1] = dummySize;
+		//uint8_t* dummy;
+		//int dummySize = buffer.getContinuousWriteBuffer(dummy);
+		//sampleOfChannels[1] = dummySize;
 
 		//Compress
 		compressor.putSample(sampleOfChannels);

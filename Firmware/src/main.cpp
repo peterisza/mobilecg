@@ -41,7 +41,7 @@ void mainTaskCallback (OS::Task &task) {
 		Logger::panic("Failed to initialize ADS1298.");
 
 	while(1){
-		auto buffer = ADS1298::instance().getBuffer();
+		ADS1298::EcgBuffer& buffer = ADS1298::instance().getBuffer();
 		if (!Bluetooth::instance().isConnected()){
 			buffer.clear();
 			OS::sleep(10);

@@ -120,8 +120,10 @@ float ADS1298::setSpeed(SpeedDiv div, bool highRes){
 
 	return realFreq;
 }
+/*
 static char dummyBuffer[100];
 static volatile int dummyCnt = 0;
+*/
 
 void ADS1298::interrupt(){
 	uint8_t *buffer;
@@ -138,13 +140,11 @@ void ADS1298::interrupt(){
 	}
 
 	dmaRunning=true;
-	memcpy(buffer, (const unsigned char*)"\x00\x00\x00\x00\x00\x00\x01\xFA\x52\x02\xFA\x52\x03\xFA\x52\x04\xFA\x52\x05\xFA\x52\x06\xFA\x52\x07\xFA\x52", dataTransferSize);
+	/*memcpy(buffer, (const unsigned char*)"\x00\x00\x00\x00\x00\x00\x01\xFA\x52\x02\xFA\x52\x03\xFA\x52\x04\xFA\x52\x05\xFA\x52\x06\xFA\x52\x07\xFA\x52", dataTransferSize);
 	buffer[3] = dummyCnt;
 	buffer[4] = dummyCnt >> 8;
-	dummyCnt++;
-	//HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)buffer, dataTransferSize);
-	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)dummyBuffer, dataTransferSize);
-
+	dummyCnt++;*/
+	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)buffer, dataTransferSize);
 }
 
 void ADS1298::stop(){
