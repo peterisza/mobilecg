@@ -10,15 +10,25 @@
 
 class EcgArea: public DrawableGroup{
     private:
+        static const int ECG_CURVE_COUNT = 12;
         EcgArea();
 
         Rect activeArea;
         Vec2<float> pixelDensity;
         int calculateUnalignedArea(int size, float dpcm);
         GridDrawer grid;
-        Curve ecgCurve;
+        Curve ecgCurves[ECG_CURVE_COUNT];
 
+        float lastSampleFrequency;
+
+        float padInCm;
         bool redrawNeeded;
+
+        void constructLayout();
+        void rescale();
+
+        float ecgCmPerMv;
+        float ecgCmPerSec;
     public:
         static EcgArea &instance();
         virtual void contextResized(int w, int h);

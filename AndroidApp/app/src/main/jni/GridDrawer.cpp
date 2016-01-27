@@ -33,11 +33,11 @@ void GridDrawer::refresh(){
 
     image.fill(activeArea, backgroundColor);
 
-    const float dx=pixelDensity.x;
-    const float dy=pixelDensity.y;
+    const float dx=pixelDensity.x/2.0;
+    const float dy=pixelDensity.y/2.0;
 
-    const float smallDx=dx/10.0;
-    const float smallDy=dy/10.0;
+    const float smallDx=dx/5.0;
+    const float smallDy=dy/5.0;
 
     const int endX=activeArea.right();
     const int endY=activeArea.bottom();

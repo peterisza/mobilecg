@@ -18,6 +18,7 @@ class Curve: public DrawableObject{
         virtual void contextResized(int w, int h);
 
         void setPosition(int x, int y);
+        void setScale(float x, float y);
 
         static const float POINT_INVALID;
 
@@ -58,6 +59,7 @@ class Curve: public DrawableObject{
         int currNumOfPoints;
 
         int currWritePos;
+        int lengthInPixels;
 
         void clear();
         void resizeOnGPU();

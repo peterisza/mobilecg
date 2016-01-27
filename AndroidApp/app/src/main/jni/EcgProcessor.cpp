@@ -8,10 +8,12 @@
 
 #include "log.h"
 
+
 const int DECOMPRESS_BUFFER_STRIDE = ECG_MAX_SEND_SIZE/3+1;
 static GLfloat decompressBuffer[ecg::DifferenceEcgCompressor::maxChannels][DECOMPRESS_BUFFER_STRIDE];
 
 EcgProcessor::EcgProcessor(){
+    samplingFrequency=500.0;
 }
 
 EcgProcessor &EcgProcessor::instance(){
@@ -34,6 +36,8 @@ void EcgProcessor::receivePacket(char *data, int len){
     ecg::DifferenceEcgCompressor decompressor(bitFifo, predictor);
     decompressor.setNumChannels(header->channelCount);
 
+    samplingFrequency=header->samplingFrequency;
+
     if(header->channelCount > MAX_NUM_CHANNELS)
         LOGE("EcgProcessor max channel number exceeded.");
 
@@ -47,7 +51,7 @@ void EcgProcessor::receivePacket(char *data, int len){
         */
 
         for (int c=0; c<header->channelCount; c++){
-            decompressBuffer[c][a] = timesample[c]/200.0;
+            decompressBuffer[c][a] = timesample[c] * header->lsbInMv;
             if(c <= MAX_NUM_CHANNELS)
                 decompressBuffer[c][a] = notchFilter[c].filter(decompressBuffer[c][a]);
         }
@@ -57,4 +61,8 @@ void EcgProcessor::receivePacket(char *data, int len){
 
     EcgArea::instance().putData((GLfloat*)decompressBuffer, header->channelCount, header->sampleCount, DECOMPRESS_BUFFER_STRIDE);
 
+}
+
+float EcgProcessor::getSamplingFrequency(){
+    return samplingFrequency;
 }

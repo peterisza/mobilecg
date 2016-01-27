@@ -31,6 +31,10 @@ private:
 	Packetizer *packetizer;
 	bool testSignal;
 
+	static const float ECG_LSB_IN_MV;
+	float currLsbInMv;
+	float currFrequency;
+
 
 	TestSignalGenerator testGenerator;
 };

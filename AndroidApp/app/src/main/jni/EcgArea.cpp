@@ -1,14 +1,22 @@
 #include "EcgArea.h"
 #include "log.h"
+#include "EcgProcessor.h"
 
 EcgArea::EcgArea():
         pixelDensity(100,100){
 
     grid.setZOrder(10);
     drawableList.push_back(&grid);
-    drawableList.push_back(&ecgCurve);
 
-    ecgCurve.setZOrder(0);
+    for (int a=0; a<ECG_CURVE_COUNT; a++) {
+        drawableList.push_back(&ecgCurves[a]);
+        ecgCurves[a].setZOrder(0);
+    }
+
+    padInCm=0.5;
+    ecgCmPerMv = 2.0;
+    ecgCmPerSec = 2.5;
+    lastSampleFrequency=0;
 }
 
 EcgArea &EcgArea::instance(){
@@ -18,8 +26,46 @@ EcgArea &EcgArea::instance(){
 
 void EcgArea::init(AAssetManager *assetManager){
     DrawableGroup::init(assetManager);
+}
 
-    ecgCurve.setLength(500);
+void EcgArea::rescale(){
+    lastSampleFrequency=EcgProcessor::instance().getSamplingFrequency();
+
+    float xScale = ecgCmPerSec * pixelDensity.x / lastSampleFrequency;
+    float yScale = ecgCmPerMv * pixelDensity.y;
+
+    for (int a=0; a<ECG_CURVE_COUNT; a++)
+        ecgCurves[a].setScale(xScale, yScale);
+}
+
+void EcgArea::constructLayout(){
+    int r,c;
+    if (activeArea.width()<activeArea.height()){
+        c=2;
+    } else {
+        c=3;
+    }
+
+    r=(ECG_CURVE_COUNT+c-1)/c;
+
+    int padInPixels=padInCm*pixelDensity.x;
+    int curveWidth=(activeArea.width()-(c-1)*padInPixels)/c;
+
+    const int yStep = activeArea.height()/r;
+    const int xStep = curveWidth+padInPixels;
+
+    for (int a=0; a<ECG_CURVE_COUNT; a++){
+        ecgCurves[a].setLength(curveWidth);
+
+        const int x=a / r;
+        const int y=a % r;
+
+        const int xCoord=activeArea.left() + x*xStep;
+        const int yCoord=activeArea.top() + y*yStep + yStep/2;
+
+        ecgCurves[a].setPosition(xCoord, yCoord);
+    }
+
 }
 
 void EcgArea::contextResized(int w, int h){
@@ -30,9 +76,7 @@ void EcgArea::contextResized(int w, int h){
 
     redraw();
     DrawableGroup::contextResized(w,h);
-
-    ecgCurve.setLength(activeArea.width());
-    ecgCurve.setPosition(activeArea.left(), h/2);
+    constructLayout();
 }
 
 
@@ -51,13 +95,19 @@ const Vec2<float> &EcgArea::getPixelDensity(){
 
 void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
     pixelDensity=pPixelDensity;
+    rescale();
 }
 
 void EcgArea::putData(GLfloat *data, int nChannels, int nPoints, int stride){
-    ecgCurve.put(data+stride*1, nPoints);
+    for (int a=0; a<12; a++) {
+        ecgCurves[a].put(data + stride*(1+(a&1)), nPoints);
+    }
 }
 
 void EcgArea::draw(){
+    if (lastSampleFrequency!=EcgProcessor::instance().getSamplingFrequency()){
+        rescale();
+    }
     DrawableGroup::draw();
     redrawNeeded=false;
 }

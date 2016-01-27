@@ -38,8 +38,6 @@ GLuint Curve::getXCoordinates(){
 }
 
 Curve::Curve(): DrawableObject(){
-    //scale.x=0.2;
-//    scale.y=0.01;
     scale.x=1;
     scale.y=3;
     position.y=100;
@@ -67,8 +65,9 @@ void Curve::clear(){
     glBindBuffer(GL_ARRAY_BUFFER , 0);
 }
 
-void Curve::setLength(int lengthInPixels){
-    requiredNumOfPoints = lengthInPixels / scale[0];
+void Curve::setLength(int pLengthInPixels){
+    lengthInPixels = pLengthInPixels;
+    requiredNumOfPoints = lengthInPixels / scale.x;
 }
 
 void Curve::glInit(){
@@ -171,4 +170,11 @@ void Curve::contextResized(int w, int h){
 void Curve::setPosition(int x, int y) {
     position.x=x;
     position.y=y;
+}
+
+void Curve::setScale(float x, float y){
+    scale.x=x;
+    scale.y=y;
+
+    setLength(lengthInPixels);
 }

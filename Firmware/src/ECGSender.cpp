@@ -2,6 +2,8 @@
 #include "ADS1298.h"
 #include "Bluetooth.h"
 
+const float ECGSender::ECG_LSB_IN_MV = 0.0001430511475f;
+
 ECGSender::ECGSender(Packetizer &iPacketizer):
 	compressFifo((char*)compressBuffer, ECG_COMPRESS_OUTPUT_BUFFER_SIZE),
 	compressor(compressFifo, ecgPredictor),
@@ -9,6 +11,9 @@ ECGSender::ECGSender(Packetizer &iPacketizer):
 {
 	packetizer = &iPacketizer;
 	testSignal = false;
+
+	currLsbInMv = ECG_LSB_IN_MV/6.0f;
+	currFrequency = 488.28125f;
 }
 
 ECGSender::~ECGSender() {
@@ -21,6 +26,8 @@ void ECGSender::send(){
 	uint8_t header[Packetizer::HEADER_SIZE + sizeof(ECGHeader)];
 	ECGHeader *ecgHeader = (ECGHeader *)(header + Packetizer::HEADER_SIZE);
 
+	ecgHeader->lsbInMv = currLsbInMv;
+	ecgHeader->samplingFrequency = currFrequency;
 	ecgHeader->channelCount = ADS1298::instance().getActiveChannels();
 
 	ADS1298::EcgBuffer& buffer = ADS1298::instance().getBuffer();

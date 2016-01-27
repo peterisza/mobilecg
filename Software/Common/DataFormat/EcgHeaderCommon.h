@@ -14,6 +14,8 @@ struct ECGHeader{
 	uint8_t channelCount;
 	uint32_t sampleCount;
 	uint32_t numBits;
+	float lsbInMv;
+	float samplingFrequency;
 } __attribute__((packed));
 
 static const int ECG_MAX_SEND_SIZE = 2160;
