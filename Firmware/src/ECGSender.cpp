@@ -54,16 +54,6 @@ void ECGSender::send(){
 	for (unsigned pos=0; pos<size; pos+=blockSize){
 		buffer.get((uint8_t*)&tempBlock, blockSize);
 		ADS1298::fixByteOrder(&tempBlock);
-		/*int test = testGenerator.getSample();
-		testGenerator.next();
-		tempBlock.channel1 = test;
-		tempBlock.channel2 = test;
-		tempBlock.channel3 = test;
-		tempBlock.channel4 = test;
-		tempBlock.channel5 = test;
-		tempBlock.channel6 = test;
-		tempBlock.channel7 = test;
-		tempBlock.channel8 = test; // uoeuao */
 
 		if (testSignal){
 			for (int a=0; a<ecgHeader->channelCount; a++){
@@ -81,10 +71,6 @@ void ECGSender::send(){
 			sampleOfChannels[6]=tempBlock.channel7;
 			sampleOfChannels[7]=tempBlock.channel8;
 		}
-
-		//uint8_t* dummy;
-		//int dummySize = buffer.getContinuousWriteBuffer(dummy);
-		//sampleOfChannels[1] = dummySize;
 
 		//Compress
 		compressor.putSample(sampleOfChannels);

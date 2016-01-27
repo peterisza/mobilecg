@@ -26,7 +26,7 @@ struct CircularBufferState{
  * It's elements can be accessed both by their relative and their absolute position.
  *
  */
-template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite=true> class CircularBuffer
+template <typename Type, int vectorSizeMax, bool useMemcpy=false> class CircularBuffer
 {
     private:
         Type vector[vectorSizeMax];
@@ -114,33 +114,25 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
         }
 
         void add(const Type &t){
-            if (overwrite || (!state.full))
-                vector[state.wpos]=t;
+            if (state.full)
+            	return;
 
-            if (state.full){
-                wrapInc(state.wpos);
-                wrapInc(state.rpos);
-            } else {
-                wrapInc(state.wpos);
-                if (state.wpos==state.rpos){
-                	state.full=true;
-                }
-            }
+            vector[state.wpos]=t;
+
+			wrapInc(state.wpos);
+			if (state.wpos==state.rpos){
+				state.full=true;
+			}
         }
         void add(const Type *data, int cnt){
             if (cnt==0)
                 return;
 
-
-            state.full = free() <= cnt;
-
-            if (overwrite && cnt > vectorSize){
-            	data += cnt - vectorSize;
-            	cnt = vectorSize;
-                state.rpos=0;
-                state.wpos=0;
-            } else if ((!overwrite) && state.full){
+            if (free() <= cnt){
                 cnt=free();
+                state.full=true;
+            } else {
+            	state.full=false;
             }
 
             while (cnt){

@@ -39,7 +39,7 @@ class Curve: public DrawableObject{
         static std::vector<GLfloat> invalidBuffer;
 
 
-        CircularBuffer<GLfloat, 12800, true, false> newPointBuffer;
+        CircularBuffer<GLfloat, 12800, true> newPointBuffer;
 
         GLuint shaderProgram;
         GLuint shader_a_Position;
