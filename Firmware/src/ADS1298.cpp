@@ -115,7 +115,7 @@ bool ADS1298::start(){
 	dataTransferSize = (selectedChannels + 1)*3;
 	int bufSize=ecgBuffer.maxSize();
 	bufSize -= bufSize % dataTransferSize;
-	ecgBuffer.resize(bufSize);
+	ecgBuffer.resize(bufSize-1);
 
 	uint8_t rldChannels = (1 << 1) | (1 << 2);
 	writeReg(REG_RLD_SENSN, rldChannels);

@@ -12,12 +12,10 @@ struct CircularBufferState{
 	void clear(){
 		rpos=0;
 		wpos=0;
-		full=false;
 	}
 
 	volatile int rpos;
 	volatile int wpos;
-	volatile bool full;
 };
 
 /**
@@ -29,7 +27,7 @@ struct CircularBufferState{
 template <typename Type, int vectorSizeMax, bool useMemcpy=false> class CircularBuffer
 {
     private:
-        Type vector[vectorSizeMax];
+        Type vector[vectorSizeMax+1];
         int vectorSize;
         CircularBufferState state;
 
@@ -63,7 +61,7 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         	if (newSize>vectorSizeMax)
         		newSize=vectorSizeMax;
 
-        	vectorSize=newSize;
+        	vectorSize=newSize+1;
         	clear();
         }
 
@@ -71,19 +69,19 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         }
 
         int maxSize() const {
-        	return vectorSizeMax;
+        	return vectorSizeMax-1;
         }
 
         int size() const{
-            return vectorSize;
+            return vectorSize-1;
         }
 
         bool isEmpty(){
-            return (state.full==false && state.rpos==state.wpos);
+            return state.rpos==state.wpos;
         }
 
         bool isFull(){
-            return state.full;
+            return wrap(state.wpos+1)==state.rpos;
         }
 
         void clear(){
@@ -91,9 +89,7 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         }
 
         int used() const {
-            if (state.full)
-                return vectorSize;
-            else if (state.wpos>=state.rpos){
+            if (state.wpos>=state.rpos){
                 return state.wpos-state.rpos;
             } else {
                 return vectorSize+state.wpos-state.rpos;
@@ -101,12 +97,11 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         }
 
         int free() const {
-            return vectorSize-used();
+            return vectorSize-1-used();
         }
 
         Type &operator[](const int index){
-            register int realIndex=wrap(state.rpos+index);
-            return vector[realIndex];
+            return vector[wrap(state.rpos+index)];
         }
 
         Type &getElement(const int absoluteIndex){
@@ -114,25 +109,17 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         }
 
         void add(const Type &t){
-            if (state.full)
+            if (isFull())
             	return;
 
             vector[state.wpos]=t;
-
 			wrapInc(state.wpos);
-			if (state.wpos==state.rpos){
-				state.full=true;
-			}
         }
-        void add(const Type *data, int cnt){
-            if (cnt==0)
-                return;
 
-            if (free() <= cnt){
-                cnt=free();
-                state.full=true;
-            } else {
-            	state.full=false;
+        void add(const Type *data, int cnt){
+        	const int f=free();
+            if (f <= cnt){
+                cnt=f;
             }
 
             while (cnt){
@@ -151,31 +138,23 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
             	state.wpos = wrap(state.wpos);
             	cnt -= copySize;
             }
-
-            if (state.full)
-            	state.rpos=state.wpos;
         }
 
         Type get(){
             Type result=vector[state.rpos];
 
-            if (!state.full && state.wpos==state.rpos){
+            if (isEmpty()){
                 return result;
             }
 
             wrapInc(state.rpos);
-            state.full=false;
-
             return result;
         }
 
         int get(Type *dest, int cnt){
         	int toRead = std::min(cnt, used());
 
-        	if(toRead == 0)
-        		return 0;
-
-        	cnt = toRead;
+        	cnt=toRead;
         	while (cnt){
         		int copySize = std::min(vectorSize - state.rpos, cnt);
         		if (useMemcpy){
@@ -192,8 +171,6 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         		state.rpos = wrap(state.rpos);
 				cnt -= copySize;
         	}
-
-        	state.full = false;
 
         	return toRead;
         }
@@ -213,20 +190,16 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         }
 
         void added(int n){
-        	state.full = n>=free();
+        	int wasFree=free();
         	state.wpos = wrap(state.wpos + n);
-        	if (state.full){
-        		state.rpos=state.wpos;
+        	if (wasFree<n){
+        		state.rpos=wrap(state.wpos+1);
         	}
         }
 
         void skip(int n){
-        	if (n==0)
-        		return;
-
         	n = std::min(n, used());
         	state.rpos = wrap(state.rpos + n);
-        	state.full=false;
         }
 
         const Type *constData(){
@@ -234,7 +207,7 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
         }
 
         void fill(const Type &data){
-            for (int a=0; a<size(); a++)
+            for (int a=0; a<vectorSize; a++)
                 vector[a]=data;
         }
 };
