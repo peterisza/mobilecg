@@ -29,7 +29,7 @@ class EcgArea: public DrawableGroup{
 
         void setPixelDensity(const Vec2<float> &pixelDensity);
 
-        void putData(GLfloat *data, int nChannels, int nPoints=1);
+        void putData(GLfloat *data, int nChannels, int nPoints, int stride);
         virtual void init(AAssetManager *assetManager);
 
 };

@@ -13,8 +13,8 @@ extern "C" SPI_HandleTypeDef hspi2;
 ADS1298::ADS1298():
 	reset('A', 6, true),
 	pwdn('A', 7, true),
-	pinStart('B',10),
-	diffSel('C',4)
+	pinStart('B', 10),
+	diffSel('C', 4)
 {
 	memset(zeroBuffer, 0, ADS1298_MAX_PACKET_LENGTH);
 	dmaRunning=false;
@@ -120,22 +120,31 @@ float ADS1298::setSpeed(SpeedDiv div, bool highRes){
 
 	return realFreq;
 }
+static char dummyBuffer[100];
+static volatile int dummyCnt = 0;
 
 void ADS1298::interrupt(){
 	uint8_t *buffer;
 
 	sampleId++;
 
-	if (dmaRunning)
+	if (dmaRunning) {
 		ecgBuffer.added(dataTransferSize);
+	}
 
-	if (ecgBuffer.getContinousWriteBuffer(buffer) < dataTransferSize){
+	if (ecgBuffer.getContinuousWriteBuffer(buffer) < dataTransferSize){
 		dmaRunning=false;
 		return;
 	}
 
 	dmaRunning=true;
-	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)buffer, dataTransferSize);
+	memcpy(buffer, (const unsigned char*)"\x00\x00\x00\x00\x00\x00\x01\xFA\x52\x02\xFA\x52\x03\xFA\x52\x04\xFA\x52\x05\xFA\x52\x06\xFA\x52\x07\xFA\x52", dataTransferSize);
+	buffer[3] = dummyCnt;
+	buffer[4] = dummyCnt >> 8;
+	dummyCnt++;
+	//HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)buffer, dataTransferSize);
+	HAL_SPI_TransmitReceive_DMA(&hspi2,  (uint8_t*)zeroBuffer, (uint8_t*)dummyBuffer, dataTransferSize);
+
 }
 
 void ADS1298::stop(){

@@ -41,7 +41,7 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
             	return a;
         }
 
-        inline void wrapInc(int &a) const{
+        inline void wrapInc(int &a) {
             a=wrap(a+1);
         }
 
@@ -146,8 +146,8 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
             while (cnt){
             	int copySize = std::min(vectorSize - state.wpos, cnt);
             	if (useMemcpy){
-            		//Memcpy can be much faster depending on your data size,
-            		//but not works with custom operator =
+            		// Memcpy can be much faster depending on your data size,
+            		// but doesn't work with a custom assignment operator.
             		memcpy((char*)&vector[state.wpos], (const char*)data, copySize*sizeof(Type));
             		state.wpos+=copySize;
             		data+=copySize;
@@ -180,12 +180,15 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
         int get(Type *dest, int cnt){
         	int toRead = std::min(cnt, used());
 
+        	if(toRead == 0)
+        		return 0;
+
         	cnt = toRead;
         	while (cnt){
         		int copySize = std::min(vectorSize - state.rpos, cnt);
         		if (useMemcpy){
-        			//Memcpy can be much faster depending on your data size,
-        			//but not works with custom operator =
+        			// Memcpy can be much faster depending on your data size,
+        			// but doesn't work with a custom assignment operator.
 					memcpy((char*)dest, (const char*)&vector[state.rpos], copySize*sizeof(Type));
 					state.rpos+=copySize;
 					dest+=copySize;
@@ -198,17 +201,19 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false, bool overwrite
 				cnt -= copySize;
         	}
 
+        	state.full = false;
+
         	return toRead;
         }
 
-        int getContinousReadBuffer(Type *&buffer){
+        int getContinuousReadBuffer(Type *&buffer){
         	int blockSize=std::min(used(), vectorSize - state.rpos);
         	buffer = &vector[state.rpos];
 
         	return blockSize;
         }
 
-        int getContinousWriteBuffer(Type *&buffer){
+        int getContinuousWriteBuffer(Type *&buffer){
         	int blockSize=std::min(free(), vectorSize - state.wpos);
         	buffer = &vector[state.wpos];
 

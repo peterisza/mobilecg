@@ -14,6 +14,8 @@ ECGSender::ECGSender(Packetizer &iPacketizer):
 ECGSender::~ECGSender() {
 }
 
+static volatile int dummyCnt = 0;
+
 void ECGSender::send(){
 	//Create header and calculate data size
 	uint8_t header[Packetizer::HEADER_SIZE + sizeof(ECGHeader)];
@@ -45,6 +47,17 @@ void ECGSender::send(){
 	for (unsigned pos=0; pos<size; pos+=blockSize){
 		buffer.get((uint8_t*)&tempBlock, blockSize);
 
+		/*int test = testGenerator.getSample();
+		testGenerator.next();
+		tempBlock.channel1 = test;
+		tempBlock.channel2 = test;
+		tempBlock.channel3 = test;
+		tempBlock.channel4 = test;
+		tempBlock.channel5 = test;
+		tempBlock.channel6 = test;
+		tempBlock.channel7 = test;
+		tempBlock.channel8 = test; // uoeuao */
+
 		if (testSignal){
 			for (int a=0; a<ecgHeader->channelCount; a++){
 				sampleOfChannels[a]=testGenerator.getSample(testGenerator.getPeriod()*a/ecgHeader->channelCount);
@@ -61,6 +74,10 @@ void ECGSender::send(){
 			sampleOfChannels[6]=tempBlock.channel7;
 			sampleOfChannels[7]=tempBlock.channel8;
 		}
+
+		uint8_t* dummy;
+		int dummySize = buffer.getContinuousWriteBuffer(dummy);
+		sampleOfChannels[1] = dummySize;
 
 		//Compress
 		compressor.putSample(sampleOfChannels);
