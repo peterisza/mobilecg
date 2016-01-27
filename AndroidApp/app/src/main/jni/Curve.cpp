@@ -38,8 +38,10 @@ GLuint Curve::getXCoordinates(){
 }
 
 Curve::Curve(): DrawableObject(){
-    scale.x=0.2;
-    scale.y=0.01;
+    //scale.x=0.2;
+//    scale.y=0.01;
+    scale.x=1;
+    scale.y=3;
     position.y=100;
     currNumOfPoints=0;
     requiredNumOfPoints=1;
@@ -161,7 +163,6 @@ void Curve::draw(){
     glLineWidth(1);
 }
 
-bool pina=true;
 void Curve::contextResized(int w, int h){
     screenSize.w = w;
     screenSize.h = h;

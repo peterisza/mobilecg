@@ -8,7 +8,7 @@ ECGSender::ECGSender(Packetizer &iPacketizer):
 	testGenerator(15000,500)
 {
 	packetizer = &iPacketizer;
-	testSignal=true;
+	testSignal = false;
 }
 
 ECGSender::~ECGSender() {
@@ -47,7 +47,7 @@ void ECGSender::send(){
 
 		if (testSignal){
 			for (int a=0; a<ecgHeader->channelCount; a++){
-				sampleOfChannels[a]=testGenerator.getSample(2.0*M_PI*a/ecgHeader->channelCount);
+				sampleOfChannels[a]=testGenerator.getSample(testGenerator.getPeriod()*a/ecgHeader->channelCount);
 				testGenerator.next();
 			}
 		} else {

@@ -6,6 +6,7 @@
 class PacketRouter {
     private:
         PacketRouter();
+        int prevIndex;
     public:
         static PacketRouter &instance();
         void packetReceived(Packetizer::Header *header, char *data);

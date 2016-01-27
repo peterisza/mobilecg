@@ -127,8 +127,7 @@ class sensorgraph {
             sensorDataFilter.z = a * event.acceleration.z + (1.0f - a) * sensorDataFilter.z;
         }
 
-       // GLfloat data=sensorDataFilter.x;
-       // EcgArea::instance().putData(&data,1,1);
+        GLfloat data=sensorDataFilter.x;
 
         sensorData[sensorDataIndex] = sensorDataFilter;
         sensorData[SENSOR_HISTORY_LENGTH+sensorDataIndex] = sensorDataFilter;

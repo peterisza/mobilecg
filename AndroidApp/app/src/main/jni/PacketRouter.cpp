@@ -3,7 +3,7 @@
 
 #include "log.h"
 PacketRouter::PacketRouter(){
-
+    prevIndex=-1;
 }
 
 PacketRouter &PacketRouter::instance(){
@@ -12,8 +12,14 @@ PacketRouter &PacketRouter::instance(){
 }
 
 void PacketRouter::packetReceived(Packetizer::Header *header, char *data){
+    if (prevIndex>=0){
+        int next=prevIndex+1;
+        if (header->packetId!=next){
+            LOGE("Packet missing: %d",next);
+        }
+    }
+    prevIndex=header->packetId;
 
-    LOGD("CSOMCSIIIIII");
     switch (header->type){
         case Packetizer::ECG:
             EcgProcessor::instance().receivePacket(data, (int)header->length);

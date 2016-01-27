@@ -50,9 +50,5 @@ void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
 }
 
 void EcgArea::putData(GLfloat *data, int nChannels, int nPoints){
-    for (int a=0; a<nPoints; a++) {
-
-        ecgCurve.put(data, nPoints);
-    }
-
+    ecgCurve.put(data, nPoints);
 }

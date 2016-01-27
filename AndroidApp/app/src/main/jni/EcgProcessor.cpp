@@ -11,7 +11,6 @@
 static GLfloat decompressBuffer[ecg::DifferenceEcgCompressor::maxChannels][ECG_MAX_SEND_SIZE/3+1];
 
 EcgProcessor::EcgProcessor(){
-
 }
 
 EcgProcessor &EcgProcessor::instance(){
@@ -45,7 +44,7 @@ void EcgProcessor::receivePacket(char *data, int len){
         decompressor.getSample(timesample);
         //LOGD("sample %d", timesample[0]);
         for (int c=0; c<header->channelCount; c++){
-            decompressBuffer[c][a] = timesample[c]/10.0;
+            decompressBuffer[c][a] = timesample[c]/1000000.0;
             if (a>0){
                 decompressBuffer[c][a]-=decompressBuffer[c][a-1];
             }
@@ -54,6 +53,6 @@ void EcgProcessor::receivePacket(char *data, int len){
 
     //LOGD("Pinapuci");
 
-    EcgArea::instance().putData((GLfloat*)decompressBuffer,  header->channelCount, header->sampleCount );
+    EcgArea::instance().putData((GLfloat*)decompressBuffer, header->channelCount, header->sampleCount );
 
 }

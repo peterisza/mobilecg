@@ -23,6 +23,10 @@ class TestSignalGenerator {
 			period = p;
 		}
 		
+		int getPeriod() {
+			return period;
+		}
+
 		int getSample(int phaseOffset = 0) {
 			int phase = (index + phaseOffset) % period;
 			int r = phase * 2 * amplitude / period;
