@@ -241,6 +241,7 @@ patch: clean
 	patch  src/STM32/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h < patches/cmsis_os.patch
 	#patch -p0 < patches/cdcCaseFix.patch
 	mv src/STM32/Src/main.c src/STM32/Src/inithw.c
+	rm src/STM32/Src/freertos.c
 
 bluetoothPatch: clean
 	patch -p0 < patches/btCaseFix1.patch

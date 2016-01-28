@@ -84,3 +84,7 @@ int main(){
 
 	OS::run();
 }
+
+extern "C" void vApplicationIdleHook( void ){
+	asm("wfi");
+}
