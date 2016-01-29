@@ -10,7 +10,7 @@ ECGSender::ECGSender(Packetizer &iPacketizer):
 	testGenerator(15000,500)
 {
 	packetizer = &iPacketizer;
-	testSignal = false;
+	testSignal = true;
 
 	currLsbInMv = ECG_LSB_IN_MV/6.0f;
 	currFrequency = 488.28125f;
@@ -30,14 +30,12 @@ void ECGSender::send(){
 	ecgHeader->samplingFrequency = currFrequency;
 	ecgHeader->channelCount = ADS1298::instance().getActiveChannels();
 
-	ADS1298::EcgBuffer& buffer = ADS1298::instance().getBuffer();
-	uint32_t size = buffer.used();
+	uint32_t size = ADS1298::instance().getAvailableData();
 	uint32_t blockSize = (ecgHeader->channelCount+1)*3;
 
 	if (size>ECG_MAX_SEND_SIZE)
 		size=ECG_MAX_SEND_SIZE;
 
-	size -= size % blockSize;
 	ecgHeader->sampleCount = size / blockSize;
 
 	if (size==0){
@@ -50,26 +48,16 @@ void ECGSender::send(){
 	ecgPredictor.setNumChannels(ecgHeader->channelCount);
 	compressor.setNumChannels(ecgHeader->channelCount);
 
+	ADS1298 &ecg=ADS1298::instance();
 	//Compress
 	for (unsigned pos=0; pos<size; pos+=blockSize){
-		buffer.get((uint8_t*)&tempBlock, blockSize);
-		ADS1298::fixByteOrder(&tempBlock);
+		ecg.getSample(sampleOfChannels);
 
 		if (testSignal){
 			for (int a=0; a<ecgHeader->channelCount; a++){
 				sampleOfChannels[a]=testGenerator.getSample(testGenerator.getPeriod()*a/ecgHeader->channelCount);
 				testGenerator.next();
 			}
-		} else {
-			//Convert the 24 bit output format of the ECG to something usable
-			sampleOfChannels[0]=tempBlock.channel1;
-			sampleOfChannels[1]=tempBlock.channel2;
-			sampleOfChannels[2]=tempBlock.channel3;
-			sampleOfChannels[3]=tempBlock.channel4;
-			sampleOfChannels[4]=tempBlock.channel5;
-			sampleOfChannels[5]=tempBlock.channel6;
-			sampleOfChannels[6]=tempBlock.channel7;
-			sampleOfChannels[7]=tempBlock.channel8;
 		}
 
 		//Compress

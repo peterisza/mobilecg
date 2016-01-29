@@ -11,9 +11,9 @@ DifferenceEcgCompressor::DifferenceEcgCompressor(BitFifo &pBitStream, IEcgPredic
 	numChannels=0;
 }
 
-bool DifferenceEcgCompressor::putSample(const int* channels) {
+bool DifferenceEcgCompressor::putSample(const int32_t* channels) {
 	for(unsigned int i = 0; i < numChannels; ++i) {
-		int diff = channels[i] - ecgPredictor.getPrediction(i);
+		int32_t diff = channels[i] - ecgPredictor.getPrediction(i);
 		//printf(" newdata=%d pred=%d\n", channels[i], ecgPredictor.getPrediction(i));
 		bool okay = true;
 		if(diff >= smallMin && diff <= smallMax) {
@@ -32,7 +32,7 @@ bool DifferenceEcgCompressor::putSample(const int* channels) {
 	return true;
 }
 
-bool DifferenceEcgCompressor::getSample(int *channels) {
+bool DifferenceEcgCompressor::getSample(int32_t *channels) {
 	for(unsigned int i = 0; i < numChannels; ++i) {
 		int full = bitStream.popBits(1);
 		//printf('');

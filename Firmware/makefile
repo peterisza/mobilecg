@@ -26,7 +26,7 @@
 # compile options
 
 	OPTIMIZE        = -O0
-	USE_LTO         = YES
+	USE_LTO         = NO
 	USE_CPP11       = YES
 	USE_NANO_LIB    = YES
 

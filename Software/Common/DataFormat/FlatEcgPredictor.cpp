@@ -8,12 +8,12 @@ FlatEcgPredictor::FlatEcgPredictor()
 	reset();
 }
 
-void FlatEcgPredictor::putSample(const int* channels) {
+void FlatEcgPredictor::putSample(const int32_t* channels) {
 	for(int i = 0; i < numChannels; ++i)
 		prediction[i] = channels[i];
 }
 
-int FlatEcgPredictor::getPrediction(int channel) {
+int32_t FlatEcgPredictor::getPrediction(int channel) {
 	return prediction[channel];
 }
 

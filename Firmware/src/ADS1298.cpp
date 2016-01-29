@@ -38,16 +38,6 @@ ADS1298::ADS1298():
 	dmaRunning=false;
 }
 
-void ADS1298::fixByteOrder(ADS1298::ECGBlock *block, int numChannels)
-{
-	char *d = ((char*)block) + 3;
-	for(int i = 0; i < numChannels; ++i) {
-		char tmp = d[i*3];
-		d[i*3] = d[i*3+2];
-		d[i*3+2] = tmp;
-	}
-}
-
 ADS1298& ADS1298::instance(){
 	static ADS1298 inst;
 	return inst;
@@ -184,8 +174,36 @@ void ADS1298::stop(){
 	sendCommand(CMD_STOP);
 }
 
-ADS1298::EcgBuffer &ADS1298::getBuffer(){
-	return ecgBuffer;
+int ADS1298::getAvailableData(){
+	uint32_t size = ecgBuffer.used();
+	uint32_t blockSize = (getActiveChannels()+1)*3;
+	return size - size % blockSize;
+}
+
+void ADS1298::getSample(int32_t *data){
+	uint8_t *src;
+	uint8_t *blockStart;
+	uint8_t *dest=(uint8_t*)data;
+
+	ecgBuffer.getContinuousReadBuffer(blockStart);
+
+	//Skip the status.
+	src=blockStart+3;
+
+	//Read, fix endianness, and sign extend
+	for (int c=0; c<selectedChannels; c++, src+=3){
+		*(dest++)=src[2];
+		*(dest++)=src[1];
+		*(dest++)=src[0];
+		*(dest++)=(src[0] & 0x80) ? 0xFF : 0x00;
+	}
+
+	ecgBuffer.skip(src - blockStart);
+}
+
+void ADS1298::clear(){
+	dmaRunning=false;
+	ecgBuffer.clear();
 }
 
 uint32_t ADS1298::getSampleId(){

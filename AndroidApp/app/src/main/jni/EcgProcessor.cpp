@@ -41,7 +41,7 @@ void EcgProcessor::receivePacket(char *data, int len){
     if(header->channelCount > MAX_NUM_CHANNELS)
         LOGE("EcgProcessor max channel number exceeded.");
 
-    int timesample [ecg::DifferenceEcgCompressor::maxChannels];
+    int32_t timesample [ecg::DifferenceEcgCompressor::maxChannels];
     for (int a=0; a<header->sampleCount; a++){
         decompressor.getSample(timesample);
         /*if(a < 10)

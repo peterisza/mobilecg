@@ -19,14 +19,11 @@ public:
 	void send();
 private:
 	uint8_t compressBuffer[ECG_COMPRESS_OUTPUT_BUFFER_SIZE];
-	int sampleOfChannels[ecg::DifferenceEcgCompressor::maxChannels];
+	int32_t sampleOfChannels[ecg::DifferenceEcgCompressor::maxChannels];
 
 	ecg::BitFifo compressFifo;
 	ecg::FlatEcgPredictor ecgPredictor;
 	ecg::DifferenceEcgCompressor compressor;
-
-	ADS1298::ECGBlock tempBlock;
-
 
 	Packetizer *packetizer;
 	bool testSignal;
