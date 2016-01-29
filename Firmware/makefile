@@ -22,9 +22,11 @@
     VER_MAJOR   = 0
     VER_MINOR   = 1
 
+
 # compile options
+
 	OPTIMIZE        = -O0
-	USE_LTO         = NO
+	USE_LTO         = YES
 	USE_CPP11       = YES
 	USE_NANO_LIB    = YES
 
@@ -240,6 +242,7 @@ patch: clean
 	#into the patch command.
 	patch  src/STM32/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h < patches/cmsis_os.patch
 	#patch -p0 < patches/cdcCaseFix.patch
+	patch src/STM32/Middlewares/Third_Party/FreeRTOS/Source/tasks.c < patches/freertos_tasks.patch
 	mv src/STM32/Src/main.c src/STM32/Src/inithw.c
 	rm src/STM32/Src/freertos.c
 

@@ -1,0 +1,31 @@
+--- ../../../tasks.c	2015-11-27 15:24:31.000000000 +0100
++++ src/STM32/Middlewares/Third_Party/FreeRTOS/Source/tasks.c	2016-01-29 17:02:17.000000000 +0100
+@@ -2199,7 +2199,7 @@
+ #endif /* configUSE_APPLICATION_TASK_TAG */
+ /*-----------------------------------------------------------*/
+ 
+-void vTaskSwitchContext( void )
++void __attribute__((used)) vTaskSwitchContext( void )
+ {
+ 	if( uxSchedulerSuspended != ( UBaseType_t ) pdFALSE )
+ 	{
+@@ -2644,6 +2644,10 @@
+ 
+ #endif /* configUSE_TRACE_FACILITY */
+ 
++#if ( configUSE_IDLE_HOOK == 1 )
++	extern void vApplicationIdleHook( void );
++#endif
++
+ /*
+  * -----------------------------------------------------------
+  * The Idle task.
+@@ -2699,8 +2703,6 @@
+ 
+ 		#if ( configUSE_IDLE_HOOK == 1 )
+ 		{
+-			extern void vApplicationIdleHook( void );
+-
+ 			/* Call the user defined function from within the idle task.  This
+ 			allows the application designer to add background functionality
+ 			without the overhead of a separate task.
