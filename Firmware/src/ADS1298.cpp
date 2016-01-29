@@ -18,6 +18,7 @@ extern "C" SPI_HandleTypeDef hspi2;
 #define C3_RLD_LEAD_OFF_STATUS (1<<0)
 
 #define WCT1_WCTA_POWER_ON (1<<3)
+
 #define WCT1_WCTA_CHANNEL1_POS 0
 #define WCT1_WCTA_CHANNEL1_NEG 1
 #define WCT1_WCTA_CHANNEL2_POS 2
@@ -26,6 +27,27 @@ extern "C" SPI_HandleTypeDef hspi2;
 #define WCT1_WCTA_CHANNEL3_NEG 5
 #define WCT1_WCTA_CHANNEL4_POS 6
 #define WCT1_WCTA_CHANNEL4_NEG 7
+
+#define WCT2_WCTC_POWER_ON (1<<7)
+#define WCT2_WCTB_POWER_ON (1<<6)
+
+#define WCT2_WCTB_CHANNEL1_POS (0<<3)
+#define WCT2_WCTB_CHANNEL1_NEG (1<<3)
+#define WCT2_WCTB_CHANNEL2_POS (2<<3)
+#define WCT2_WCTB_CHANNEL2_NEG (3<<3)
+#define WCT2_WCTB_CHANNEL3_POS (4<<3)
+#define WCT2_WCTB_CHANNEL3_NEG (5<<3)
+#define WCT2_WCTB_CHANNEL4_POS (6<<3)
+#define WCT2_WCTB_CHANNEL4_NEG (7<<3)
+
+#define WCT2_WCTC_CHANNEL1_POS 0
+#define WCT2_WCTC_CHANNEL1_NEG 1
+#define WCT2_WCTC_CHANNEL2_POS 2
+#define WCT2_WCTC_CHANNEL2_NEG 3
+#define WCT2_WCTC_CHANNEL3_POS 4
+#define WCT2_WCTC_CHANNEL3_NEG 5
+#define WCT2_WCTC_CHANNEL4_POS 6
+#define WCT2_WCTC_CHANNEL4_NEG 7
 
 
 ADS1298::ADS1298():
@@ -111,12 +133,24 @@ bool ADS1298::start(){
 	writeReg(REG_RLD_SENSN, rldChannels);
 	writeReg(REG_RLD_SENSP, rldChannels);
 
-	//Enable internal reference
+	// Enable internal reference
 	writeReg(REG_CONFIG3,
 			C3_FIXED |
 			C3_INTERNAL_REFERENCE_POWER_ON |
 			C3_INTERNAL_RLD_REFERENCE |
 			C3_RLD_POWER_ON);
+
+
+	// Turn on WCT amplifier
+	writeReg(REG_WCT1,
+			WCT1_WCTA_POWER_ON |
+			WCT1_WCTA_CHANNEL2_NEG);
+
+	writeReg(REG_WCT2,
+			WCT2_WCTB_POWER_ON |
+			WCT2_WCTB_CHANNEL2_POS |
+			WCT2_WCTC_POWER_ON |
+			WCT2_WCTC_CHANNEL3_POS);
 
 	setSpeed(DIV_4096);
 
