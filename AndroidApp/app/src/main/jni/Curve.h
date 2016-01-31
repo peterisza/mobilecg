@@ -65,7 +65,7 @@ class Curve: public DrawableObject{
         void resizeOnGPU();
         void moveNewDataToGPU();
 
-        static GLuint getXCoordinates();
+        static GLuint getXCoordinates(int capacity);
         static GLfloat *xCoordinates;
         static int xCoordinatesLength;
         static GLuint xCoordinatesOnGPU;

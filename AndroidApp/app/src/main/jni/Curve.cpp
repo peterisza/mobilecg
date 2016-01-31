@@ -11,10 +11,8 @@ const float Curve::POINT_INVALID=0.0/0.0;
 
 std::vector<GLfloat> Curve::invalidBuffer(1000, Curve::POINT_INVALID);
 
-GLuint Curve::getXCoordinates(){
-    const Rect &activeArea = EcgArea::instance().getActiveArea();
-    int capacity = std::min(std::max(activeArea.width(), activeArea.height()), 10000);
-
+GLuint Curve::getXCoordinates(int capacity){
+    capacity = std::max(capacity, 10000);
     if (capacity>xCoordinatesLength || EcgArea::instance().isRedrawNeeded()){
         if (xCoordinatesLength==0){
             glGenBuffers(1, &xCoordinatesOnGPU);
@@ -86,7 +84,7 @@ void Curve::glInit(){
 
     glGenBuffers(1, &valueBuffer);
 
-    getXCoordinates();
+    getXCoordinates(currNumOfPoints);
 }
 
 void Curve::put(GLfloat *data, int n){
@@ -138,7 +136,7 @@ void Curve::draw(){
 
     glUseProgram(shaderProgram);
 
-    glBindBuffer(GL_ARRAY_BUFFER, getXCoordinates());
+    glBindBuffer(GL_ARRAY_BUFFER, getXCoordinates(currNumOfPoints));
     glVertexAttribPointer(shader_a_Position, 1, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(shader_a_Position);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
