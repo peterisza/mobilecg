@@ -47,10 +47,12 @@ class sensorgraph {
     void surfaceChanged(int w, int h) {
         glViewport(0, 0, w, h);
         EcgArea::instance().contextResized(w,h);
+        EcgArea::instance().redraw();
     }
 
     void setDpcm(float x, float y){
         EcgArea::instance().setPixelDensity(Vec2<float>(x,y));
+        EcgArea::instance().redraw();
     }
 
     void render() {
@@ -129,15 +131,9 @@ JNIEXPORT void JNICALL
     Java_com_android_sensorgraph_SensorGraphJNI_processEcgData(JNIEnv *env, jclass type, jbyteArray jdata, jint size) {
         (void)type;
 
-
         jbyte* data = env->GetByteArrayElements(jdata, 0);
         char* chars = (char*) data;
 
-        uint16_t fasz=0;
-        for (int a=0;a<size;a++){
-            fasz+=chars[a];
-        }
-      //  LOGD("Pinaaaaaaaa %d %d", (int)size, (int)fasz);
         static PacketReader packetReader;
         for(int i=0; i < size; ++i) {
             packetReader.addByte(chars[i]);

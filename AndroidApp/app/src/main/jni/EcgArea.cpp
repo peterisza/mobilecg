@@ -100,7 +100,7 @@ void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
 
 void EcgArea::putData(GLfloat *data, int nChannels, int nPoints, int stride){
     for (int a=0; a<12; a++) {
-        ecgCurves[a].put(data + stride*(1+(a&1)), nPoints);
+        ecgCurves[a].put(data + stride*(a % 8), nPoints);
     }
 }
 

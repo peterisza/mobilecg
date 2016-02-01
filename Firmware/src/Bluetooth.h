@@ -94,7 +94,6 @@ class Bluetooth {
 		char pin[17];
 
 		CircularBuffer<char, 2048, true> writeBuffer;
-		OS::Mutex writeBufferMutex;
 
 		OS::Event bufferHasSpaceEvent;
 		OS::Event readyToSendEvent;
@@ -102,6 +101,7 @@ class Bluetooth {
 		OS::Task sendTask;
 
 		bool running;
+		bool clearNeeded;
 		static void sendTaskCallbackStatic(OS::Task &task);
 
 		void sendTaskCallback();

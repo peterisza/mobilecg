@@ -26,6 +26,7 @@ Bluetooth::Bluetooth(): sendTask("BTSendTask", sendTaskCallbackStatic, 256, this
 	MITMProtection=DEFAULT_MITM_PROTECTION;
 	IOCapability     = DEFAULT_IO_CAPABILITY;
 	OOBSupport       = FALSE;
+	clearNeeded=false;
 
 	this->name = "";
 
@@ -198,10 +199,7 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 		 case etPort_Close_Port_Indication:
 			/* The Remote Port was Disconnected.                        */
 			/* Invalidate the Serial Port ID.                           */
-			//if(UI_Mode == UI_MODE_IS_CLIENT)
-			writeBufferMutex.lock();
-			writeBuffer.clear();
-			writeBufferMutex.unlock();
+			clearNeeded=true;
 			//if the port is closed, signal "bufferHasSpaceEvent",
 			//otherwise it will never return.
 			bufferHasSpaceEvent.signal();
@@ -834,10 +832,13 @@ int Bluetooth::send(const char *data, int size, time_t timeout, bool startSend){
 
 		bufferHasSpaceEvent.reset();
 
-		writeBufferMutex.lock();
+		if (clearNeeded){
+			writeBuffer.clear();
+			clearNeeded=false;
+		}
+
 		toWrite = std::min(writeBuffer.free(), size);
 		writeBuffer.add(data, toWrite);
-		writeBufferMutex.unlock();
 
 		if (toWrite){
 			size -= toWrite;
@@ -878,19 +879,22 @@ void Bluetooth::sendTaskCallback(){
 			continue;
 		}
 
-		writeBufferMutex.lock();
-		cnt=writeBuffer.getContinuousReadBuffer(buffer);
-		if (cnt){
-			sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)buffer);
-			if (sent>0)
-				writeBuffer.skip(sent);
-		} else
-			sent=0;
-		writeBufferMutex.unlock();
+		if (!clearNeeded){
+			cnt=writeBuffer.getContinuousReadBuffer(buffer);
+			if (cnt){
+				sent=SPP_Data_Write(bluetoothStackID, SerialPortID, cnt, (unsigned char *)buffer);
+				if (sent>0)
+					writeBuffer.skip(sent);
+			} else
+				sent=0;
 
-		if (sent>0)
-			bufferHasSpaceEvent.signal();
-		else
+			if (sent>0)
+				bufferHasSpaceEvent.signal();
+			else
+				readyToSendEvent.wait();
+		} else {
 			readyToSendEvent.wait();
+		}
+
 	}
 }

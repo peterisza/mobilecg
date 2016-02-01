@@ -10,7 +10,7 @@ ECGSender::ECGSender(Packetizer &iPacketizer):
 	testGenerator(15000,500)
 {
 	packetizer = &iPacketizer;
-	testSignal = true;
+	testSignal = false;
 
 	currLsbInMv = ECG_LSB_IN_MV/6.0f;
 	currFrequency = 488.28125f;
