@@ -37,7 +37,7 @@ class Bluetooth {
 		GAP_IO_Capability_t 		IOCapability;
 		Boolean_t           OOBSupport;
 		Boolean_t           MITMProtection;
-		Boolean_t           Connected;
+		volatile Boolean_t           Connected;
 
 		BD_ADDR_t           NullADDR;
 		BD_ADDR_t           CurrentRemoteBD_ADDR;
@@ -100,8 +100,8 @@ class Bluetooth {
 
 		OS::Task sendTask;
 
-		bool running;
-		bool clearNeeded;
+		volatile bool running;
+		volatile bool clearNeeded;
 		static void sendTaskCallbackStatic(OS::Task &task);
 
 		void sendTaskCallback();
