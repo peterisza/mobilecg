@@ -56,6 +56,7 @@ ADS1298::ADS1298():
 	pinStart('B', 10),
 	diffSel('C', 4)
 {
+	diffSel.off();
 	memset(zeroBuffer, 0, ADS1298_MAX_PACKET_LENGTH);
 	dmaRunning=false;
 }
@@ -71,7 +72,9 @@ void ADS1298::writeReg(Register reg, uint8_t value){
 	writeBuf[1]=0;
 	writeBuf[2]=value;
 
-	HAL_SPI_Transmit(&hspi2, writeBuf, 3, HAL_MAX_DELAY);
+	uint8_t readBuf[3];
+
+	HAL_SPI_TransmitReceive(&hspi2, writeBuf, readBuf, 3, HAL_MAX_DELAY);
 }
 
 uint8_t ADS1298::readReg(Register reg){
@@ -89,7 +92,8 @@ uint8_t ADS1298::readReg(Register reg){
 
 void ADS1298::sendCommand(Command cmd){
 	uint8_t data=cmd;
-	HAL_SPI_Transmit(&hspi2, &data, 1, HAL_MAX_DELAY);
+	uint8_t dummy;
+	HAL_SPI_TransmitReceive(&hspi2, &data, &dummy, 1, HAL_MAX_DELAY);
 }
 
 bool ADS1298::start(){

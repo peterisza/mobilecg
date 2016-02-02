@@ -34,19 +34,19 @@ class Bluetooth {
 		HCI_HCILLConfiguration_t      HCILLConfig;
 		HCI_Driver_Reconfigure_Data_t DriverReconfigureData;
 
-		GAP_IO_Capability_t 		IOCapability;
-		Boolean_t           OOBSupport;
-		Boolean_t           MITMProtection;
+		volatile GAP_IO_Capability_t 		IOCapability;
+		volatile Boolean_t           OOBSupport;
+		volatile Boolean_t           MITMProtection;
 		volatile Boolean_t           Connected;
 
 		BD_ADDR_t           NullADDR;
 		BD_ADDR_t           CurrentRemoteBD_ADDR;
 
-		int                 ServerPortID;
-		int					SerialPortID;
+		volatile int                 ServerPortID;
+		volatile int					SerialPortID;
 
-		DWord_t             SPPServerSDPHandle;
-		Word_t              Connection_Handle;
+		volatile DWord_t             SPPServerSDPHandle;
+		volatile Word_t              Connection_Handle;
 
 		char tmpBuffer[16];
 
@@ -63,7 +63,7 @@ class Bluetooth {
 
 		LinkKeyInfo_t linkKeyInfo[MAX_SUPPORTED_LINK_KEYS];
 
-		unsigned int bluetoothStackID;
+		volatile unsigned int bluetoothStackID;
 
 		static const int VENDOR_BAUD_RATE = 1500000L;
 		static int displayCallback(int length, char *message);

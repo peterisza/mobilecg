@@ -10,8 +10,8 @@ namespace ecg {
 class DifferenceEcgCompressor {
 	public:
 		static const int maxChannels = 8;
-		static const int fullBitNum = 24;
-		static const int smallBitNum = 10;	
+		static const int fullBitNum = 19;
+		static const int smallBitNum = 8;
 	
 		DifferenceEcgCompressor(ecg::BitFifo &bitStream, IEcgPredictor& ecgPredictor);
 		bool putSample(const int32_t* channels);

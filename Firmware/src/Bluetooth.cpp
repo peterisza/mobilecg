@@ -182,7 +182,7 @@ void Bluetooth::sppEventCallback(unsigned int BluetoothStackID, SPP_Event_Data_t
 			writeBuffer.clear();
 
 			/* Query the connection handle.                             */
-			ret_val = GAP_Query_Connection_Handle(BluetoothStackID, SPP_Event_Data->Event_Data.SPP_Open_Port_Indication_Data->BD_ADDR, &Connection_Handle);
+			ret_val = GAP_Query_Connection_Handle(BluetoothStackID, SPP_Event_Data->Event_Data.SPP_Open_Port_Indication_Data->BD_ADDR, const_cast<Word_t*>(&Connection_Handle));
 			if(ret_val)
 			{
 			   /* Failed to Query the Connection Handle.                */
@@ -631,7 +631,7 @@ int Bluetooth::openServer(unsigned int port){
 
 			   /* Now that a Service Name has been created try to    */
 			   /* Register the SDP Record.                           */
-			   ret_val = SPP_Register_Generic_SDP_Record(bluetoothStackID, ServerPortID, ServiceName, &SPPServerSDPHandle);
+			   ret_val = SPP_Register_Generic_SDP_Record(bluetoothStackID, ServerPortID, ServiceName, const_cast<DWord_t*>(&SPPServerSDPHandle));
 
 			   /* If there was an error creating the Serial Port     */
 			   /* Server's SDP Service Record then go ahead an close */

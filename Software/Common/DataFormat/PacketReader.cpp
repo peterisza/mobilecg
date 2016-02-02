@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#define LOGD
+
+#include "log.h"
+//#define DEBUG
 
 PacketReader::PacketReader():
 	index(0)
@@ -40,15 +42,21 @@ void PacketReader::addByte(char byte) {
 	}
 	
 	if(packetReceived()) {
-		LOGD("potential packet, length=%d", index);
+		#ifdef DEBUG
+			LOGD("potential packet, length=%d", index);
+		#endif
 
 		if(!isPacketOkay()) {
-			LOGD("packet NOT okay");
+			#ifdef DEBUG
+				LOGD("packet NOT okay");
+			#endif
 			int oldIndex = index;
 			reset();
 			lookForMissedPackets(oldIndex);
 		} else {
-			LOGD("okay");
+			#ifdef DEBUG
+				LOGD("okay");
+			#endif
 			packetReady = true;
 		}	
 	}
@@ -70,7 +78,11 @@ char* PacketReader::getPacketData() {
 bool PacketReader::isHeaderOkay() {
 	Packetizer::Header* header = getPacketHeader();
 	uint8_t sum = calcCheckSum(0, sizeof(Packetizer::Header));
-	LOGD("packetId %d sum %d\n", header->packetId, (int)sum);
+
+	#ifdef DEBUG
+		LOGD("packetId %d sum %d\n", header->packetId, (int)sum);
+	#endif
+
 	if(sum != 0)
 		return false;
 	return true;
@@ -86,12 +98,18 @@ bool PacketReader::packetReceived() {
 static uint8_t pina;
 bool PacketReader::isPacketOkay() {
 	Packetizer::Header* header = getPacketHeader();
-	LOGD("Kurvaanyad: %d", header->packetId);
+	#ifdef DEBUG
+		LOGD("Packet ID: %d", header->packetId);
+	#endif
 	int *pinalyuk=(int*)(&buffer[sizeof(Packetizer::Header)+5]);
-	LOGD("Bits: %d",*pinalyuk);
+	#ifdef DEBUG
+		LOGD("Bits: %d",*pinalyuk);
+	#endif
 	uint16_t sum = -calcCheckSum(sizeof(Packetizer::Header), sizeof(Packetizer::Header) + header->length);
 	uint16_t *checksum = (uint16_t*) &buffer[sizeof(Packetizer::Header) + header->length];
-	LOGD("checksum calculated: %d, in packet: %d\n", sum, *checksum);
+	#ifdef DEBUG
+		LOGD("checksum calculated: %d, in packet: %d \n", sum, *checksum);
+	#endif
 	if(sum != *checksum)
 		return false;
 	return true;

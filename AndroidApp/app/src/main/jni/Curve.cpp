@@ -113,6 +113,7 @@ void Curve::moveNewDataToGPU(){
 
     glBindBuffer(GL_ARRAY_BUFFER , valueBuffer);
     while (remaining){
+        //LOGD("Writing %d to buffer", remaining);
         GLfloat *buffer;
 
         int transferSize=std::min(newPointBuffer.getContinuousReadBuffer(buffer), remaining);
@@ -134,6 +135,7 @@ void Curve::draw(){
     resizeOnGPU();
     moveNewDataToGPU();
 
+    //LOGD("Num of points: %d, screensize: %f %f wpos: %d, scale %f %f", currNumOfPoints, screenSize[0], screenSize[1], currWritePos, scale[0], scale[1]);
     glUseProgram(shaderProgram);
 
     glBindBuffer(GL_ARRAY_BUFFER, getXCoordinates(currNumOfPoints));

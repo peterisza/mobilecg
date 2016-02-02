@@ -8,6 +8,7 @@
 
 #include "log.h"
 
+//#define DEBUG
 
 const int DECOMPRESS_BUFFER_STRIDE = ECG_MAX_SEND_SIZE/3+1;
 static GLfloat decompressBuffer[ecg::DifferenceEcgCompressor::maxChannels][DECOMPRESS_BUFFER_STRIDE];
@@ -31,24 +32,28 @@ void EcgProcessor::receivePacket(char *data, int len){
     predictor.setNumChannels(header->channelCount);
     predictor.reset();
 
-    //LOGD("numbits = %d, sampleCount = %d", header->numBits, header->sampleCount);
+    #ifdef DEBUG
+        LOGD("numbits = %d, sampleCount = %d", header->numBits, header->sampleCount);
+    #endif
 
     ecg::DifferenceEcgCompressor decompressor(bitFifo, predictor);
     decompressor.setNumChannels(header->channelCount);
 
     samplingFrequency=header->samplingFrequency;
 
-    if(header->channelCount > MAX_NUM_CHANNELS)
+    if(header->channelCount > MAX_NUM_CHANNELS) {
         LOGE("EcgProcessor max channel number exceeded.");
+        return;
+    }
 
     int32_t timesample [ecg::DifferenceEcgCompressor::maxChannels];
     for (int a=0; a<header->sampleCount; a++){
         decompressor.getSample(timesample);
-        /*if(a < 10)
-            LOGD("sample[%d][1]=%d", a, timesample[1]);*/
-        /*if(a == 0)
+
+        #ifdef DEBUG
+        if(a == 0)
             LOGD("%08X %08X %08X %08X %08X %08X %08X %08X", timesample[0], timesample[1], timesample[2], timesample[3], timesample[4], timesample[5], timesample[6], timesample[7]);
-        */
+        #endif
 
         for (int c=0; c<header->channelCount; c++){
             decompressBuffer[c][a] = timesample[c] * header->lsbInMv;
@@ -56,8 +61,6 @@ void EcgProcessor::receivePacket(char *data, int len){
                 decompressBuffer[c][a] = notchFilter[c].filter(decompressBuffer[c][a]);
         }
     }
-
-    //LOGD("Pinapuci");
 
     EcgArea::instance().putData((GLfloat*)decompressBuffer, header->channelCount, header->sampleCount, DECOMPRESS_BUFFER_STRIDE);
 

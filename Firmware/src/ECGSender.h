@@ -29,6 +29,7 @@ private:
 	bool testSignal;
 
 	static const float ECG_LSB_IN_MV;
+	static const int ECG_CHOP_BITS;
 	float currLsbInMv;
 	float currFrequency;
 

@@ -47,7 +47,7 @@ void mainTaskCallback (OS::Task &task) {
 			continue;
 		}
 
-		if (ADS1298::instance().getAvailableData()<0xFF){
+		if (ADS1298::instance().getAvailableData()<512){
 			OS::sleep(10);
 			continue;
 		}
