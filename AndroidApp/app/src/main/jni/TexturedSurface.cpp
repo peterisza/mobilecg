@@ -1,6 +1,7 @@
 #include "TexturedSurface.h"
 #include "Helper.h"
 #include "EcgArea.h"
+#include "ShaderBuilder.h"
 #include <cassert>
 
 const GLfloat TexturedSurface::vertexCoordinates[8]={
@@ -23,7 +24,8 @@ void TexturedSurface::init(AAssetManager *assetManager){
 }
 
 void TexturedSurface::glInit(){
-    shaderProgram = helper::createGlProgram(vertexShader, fragmentShader);
+    shaderId = ShaderBuilder::instance().buildShader("TexturedSurface", vertexShader, fragmentShader);
+    GLuint shaderProgram = ShaderBuilder::instance().getShader(shaderId);
 
     shader_a_Position=helper::getGlAttributeWithAssert(shaderProgram, "a_Position");
     shader_screenSize=helper::getGlUniformWithAssert(shaderProgram, "screenSize");
@@ -52,7 +54,8 @@ void TexturedSurface::draw(){
         redraw=true;
         initGlBuffers();
     }
-    glUseProgram(shaderProgram);
+
+    ShaderBuilder::instance().useProgram(shaderId);
 
     glBindTexture(GL_TEXTURE_2D, texture);
     if ((!imageOnGPU || redraw) && image!=NULL) {

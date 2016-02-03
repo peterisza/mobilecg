@@ -1,6 +1,7 @@
 #include "Curve.h"
 #include "EcgArea.h"
 #include "Helper.h"
+#include "ShaderBuilder.h"
 #include <algorithm>
 #include "log.h"
 
@@ -69,7 +70,8 @@ void Curve::setLength(int pLengthInPixels){
 }
 
 void Curve::glInit(){
-    shaderProgram = helper::createGlProgram(vertexShader, fragmentShader);
+    shaderId = ShaderBuilder::instance().buildShader("Curve", vertexShader, fragmentShader);
+    GLuint shaderProgram = ShaderBuilder::instance().getShader(shaderId);
 
     shader_a_Position=helper::getGlAttributeWithAssert(shaderProgram, "a_Position");
     shader_screenSize=helper::getGlUniformWithAssert(shaderProgram, "screenSize");
@@ -135,8 +137,7 @@ void Curve::draw(){
     resizeOnGPU();
     moveNewDataToGPU();
 
-    //LOGD("Num of points: %d, screensize: %f %f wpos: %d, scale %f %f", currNumOfPoints, screenSize[0], screenSize[1], currWritePos, scale[0], scale[1]);
-    glUseProgram(shaderProgram);
+    GLuint shaderProgram = ShaderBuilder::instance().useProgram(shaderId);
 
     glBindBuffer(GL_ARRAY_BUFFER, getXCoordinates(currNumOfPoints));
     glVertexAttribPointer(shader_a_Position, 1, GL_FLOAT, GL_FALSE, 0, 0);

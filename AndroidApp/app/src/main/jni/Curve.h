@@ -41,7 +41,7 @@ class Curve: public DrawableObject{
 
         CircularBuffer<GLfloat, 12800, true> newPointBuffer;
 
-        GLuint shaderProgram;
+        int shaderId;
         GLuint shader_a_Position;
         GLuint shader_screenSize;
         GLuint shader_position;

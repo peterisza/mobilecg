@@ -26,7 +26,7 @@ private:
     void initGlBuffers();
 
     static const GLfloat vertexCoordinates[8];
-    GLuint shaderProgram;
+    int shaderId;
 
     GLuint shader_a_Position;
     GLuint shader_screenSize;
