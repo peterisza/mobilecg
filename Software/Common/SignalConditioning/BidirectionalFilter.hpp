@@ -11,7 +11,6 @@ public:
 		forward(forward),
 		backward(backward)
 	{
-		forward->reset();
 	}
 	
 	void putSample(FilterNumberType sample) {
