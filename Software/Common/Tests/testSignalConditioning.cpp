@@ -16,7 +16,7 @@ bool okay = true;
 
 double fs = 500.0*2000.0/2048.0;
 
-float testFrequency(IFilter &nf, double freq)
+float testFrequencyOld(IFilter &nf, double freq)
 {
 	printf("testing frequency %f... ", freq);
 	double min = 0;
@@ -38,9 +38,34 @@ float testFrequency(IFilter &nf, double freq)
 	return r;
 }
 
+float testFrequency(EcgFilter &nf, double freq)
+{
+	printf("testing frequency %f... ", freq);
+	double min = 0;
+	double max = 0;
+	double amp = 1;
+	for(int i = 0; i < 488*1000; ++i) {
+		double r = amp*cos(i*freq*2.0*M_PI/fs);
+		nf.putSample(r);
+		if(!nf.isOutputAvailable())
+			continue;
+		double f = nf.getSample();
+		if(i < 488*500)
+			continue;
+		if(max == 0 || f > max)
+			max = f;
+		if(min == 0 || f < min)
+			min = f;
+		//printf("%d %d\n", r, f);
+	}
+	double r = (max-min) / amp / 2.0;
+	printf("%f\n", r);	
+	return r;
+}
+
 void testNotchFilter()
 {
-	HalfEcgFilter nf;
+	EcgFilter nf;
 	testFrequency(nf, 0);
 	testFrequency(nf, 0.2);
 	testFrequency(nf, 0.5);

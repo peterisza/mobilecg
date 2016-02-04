@@ -12,27 +12,32 @@ public:
 		backward(backward)
 	{
 		forward->reset();
-		inputBuffer.resize(responseDecayTime + blockSize);
-		inputBuffer.assign(inputBuffer.size(), 0);
-		outputBuffer.resize(blockSize);
-		inputIndex = 0;
-		outputIndex = 0;
 	}
 	
 	void putSample(FilterNumberType sample) {
 		sample = forward->filter(sample);
-		inputBuffer[inputIndex] = sample;
-		inputIndex++;
-		if(inputIndex == inputBuffer.size())
-			inputIndex = 0;
+		inputBuffer.add(sample);
+		if(inputBuffer.isFull()) {
+			backward->reset();
+			for(int i = inputBuffer.used()-1; i >= 0; --i) {
+				FilterNumberType tmp = backward->filter(inputBuffer[i]);
+				if(i < blockSize)
+					inputBuffer[i] = tmp;
+			}
+			for(int i = 0; i < blockSize; ++i) {
+				outputBuffer.add(inputBuffer.get());
+			}
+		}
 	}
 	
 	bool isOutputAvailable() {
-		
+		return !outputBuffer.isEmpty();
 	}
 	
 	FilterNumberType getSample() {
-		
+		if(!isOutputAvailable())
+			return 0;
+		return outputBuffer.get();
 	}
 	
 private:

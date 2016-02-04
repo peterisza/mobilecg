@@ -32,9 +32,11 @@ private:
 	NotchFilter notchFilter;
 };
 
-class EcgFilter: public BidirectionalFilter {
+class EcgFilter: public BidirectionalFilter<1200, 240> {
 public:
-	
+	EcgFilter():
+		BidirectionalFilter(&forward, &backward)
+	{}
 private:
 	HalfEcgFilter forward;
 	HalfEcgFilter backward;

@@ -39,7 +39,7 @@ template <typename Type, int vectorSizeMax, bool useMemcpy=false> class Circular
             	return a;
         }
 
-        inline void wrapInc(int &a) {
+        inline void wrapInc(volatile int &a) {
             a=wrap(a+1);
         }
 
