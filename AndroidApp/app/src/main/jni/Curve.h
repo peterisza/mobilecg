@@ -24,6 +24,8 @@ class Curve: public DrawableObject{
 
         void setLength(int lengthInPixels);
         void put(float *data, int n);
+
+        const Vec2 <int> endpointCoordinates();
     private:
         std::string fragmentShader;
         std::string vertexShader;
@@ -60,6 +62,8 @@ class Curve: public DrawableObject{
 
         int currWritePos;
         int lengthInPixels;
+
+        Vec2<float> endCoordinates;
 
         void clear();
         void resizeOnGPU();

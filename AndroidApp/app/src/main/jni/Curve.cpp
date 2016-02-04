@@ -43,6 +43,8 @@ Curve::Curve(): DrawableObject(){
     currNumOfPoints=0;
     requiredNumOfPoints=1;
     clearWidthInPoints=100;
+    endCoordinates.x=0;
+    endCoordinates.y=0;
 
     color[0]=1;
     color[1]=0;
@@ -66,7 +68,7 @@ void Curve::clear(){
 
 void Curve::setLength(int pLengthInPixels){
     lengthInPixels = pLengthInPixels;
-    requiredNumOfPoints = lengthInPixels / scale.x;
+    requiredNumOfPoints = std::max((int)(lengthInPixels / scale.x),1);
 }
 
 void Curve::glInit(){
@@ -90,7 +92,12 @@ void Curve::glInit(){
 }
 
 void Curve::put(GLfloat *data, int n){
+    if (n<=0)
+        return;
+
     newPointBuffer.add(data, n);
+    endCoordinates.x=(currWritePos+newPointBuffer.used()) % requiredNumOfPoints;
+    endCoordinates.y=data[n-1];
 }
 
 void Curve::resizeOnGPU(){
@@ -125,11 +132,12 @@ void Curve::moveNewDataToGPU(){
 
         remaining -= transferSize;
         currWritePos += transferSize;
-        newPointBuffer.skip(transferSize);
 
         if (currWritePos >= currNumOfPoints){
             currWritePos = 0;
         }
+
+        newPointBuffer.skip(transferSize);
     }
 }
 
@@ -178,4 +186,8 @@ void Curve::setScale(float x, float y){
     scale.y=y;
 
     setLength(lengthInPixels);
+}
+
+const Vec2 <int> Curve::endpointCoordinates(){
+    return Vec2<int>(position.x + scale[0]*endCoordinates.x, position.y - scale[1]*endCoordinates.y );
 }

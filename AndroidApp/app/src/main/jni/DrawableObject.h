@@ -9,7 +9,7 @@ class DrawableObject{
         virtual void glInit()=0;
         virtual void draw()=0;
         virtual void contextResized(int w, int h){};
-        void setZOrder(int z);
+        void setZOrder(float z);
 
     protected:
         float zCoordinate;

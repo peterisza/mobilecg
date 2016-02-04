@@ -3,17 +3,15 @@ precision mediump float;
 #endif
 
 attribute vec2 a_Position;
+uniform vec2 screenSize;
+uniform float size;
+uniform vec3 position;
 
-uniform mat4 mvpMatrix;
-uniform float x;
-uniform float y;
-uniform float r;
-
-
-varying vec3 v_Color;
 varying vec2 pos;
 
 void main(){
-   pos=a_Position;
-   gl_Position=mvpMatrix*vec4(a_Position.x*r+x, a_Position.y*r+y, -1, 1);
+   float aspect=screenSize.x/screenSize.y;
+   pos=a_Position*2.0;
+
+   gl_Position =vec4( (a_Position*size + position.xy) / screenSize * 2.0 - vec2(1.0,1.0), position.z, 1) * vec4(1,-1,1,1);
 }

@@ -12,6 +12,8 @@ class ShaderBuilder {
 
         std::vector<GLint> shaders;
         NameMap nameMap;
+
+        GLint currShader;
     public:
         static ShaderBuilder& instance();
         int buildShader(const std::string &name, const std::string &vert, const std::string &frag);

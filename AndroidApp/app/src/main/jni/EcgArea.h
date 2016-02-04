@@ -8,6 +8,7 @@
 #include "Rect.h"
 #include "Vec2.h"
 #include "Curve.h"
+#include "Circle.h"
 
 class EcgArea: public DrawableGroup{
     private:
@@ -19,6 +20,9 @@ class EcgArea: public DrawableGroup{
         int calculateUnalignedArea(int size, float dpcm);
         GridDrawer grid;
         Curve ecgCurves[ECG_CURVE_COUNT];
+        //It is somewhat ugly to use endpoint circles separated from their
+        //curves, but it avoids unneccessary shader switches.
+        Circle endpointCircles[ECG_CURVE_COUNT];
 
 
 

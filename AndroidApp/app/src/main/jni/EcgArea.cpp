@@ -10,7 +10,14 @@ EcgArea::EcgArea():
 
     for (int a=0; a<ECG_CURVE_COUNT; a++) {
         drawableList.push_back(&ecgCurves[a]);
-        ecgCurves[a].setZOrder(0);
+        ecgCurves[a].setZOrder(1);
+    }
+
+    //Use two separater for cycles to avoid mixing the order of
+    //curves and circles to eliminate unnecessary shader switches.
+    for (int a=0; a<ECG_CURVE_COUNT; a++) {
+        drawableList.push_back(&endpointCircles[a]);
+        endpointCircles[a].setZOrder(0);
     }
 
     drawableList.push_back(&testText);
@@ -104,6 +111,7 @@ void EcgArea::setPixelDensity(const Vec2<float> &pPixelDensity){
 void EcgArea::putData(GLfloat *data, int nChannels, int nPoints, int stride){
     for (int a=0; a<12; a++) {
         ecgCurves[a].put(data + stride*(a % 8), nPoints);
+        endpointCircles[a].setPosition(ecgCurves[a].endpointCoordinates());
     }
 }
 

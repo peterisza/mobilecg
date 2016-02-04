@@ -2,7 +2,7 @@
 #include "Helper.h"
 
 ShaderBuilder::ShaderBuilder(){
-    
+    reset();
 }
 
 ShaderBuilder& ShaderBuilder::instance(){
@@ -24,7 +24,10 @@ int ShaderBuilder::buildShader(const std::string &name, const std::string &vert,
 
 GLint ShaderBuilder::useProgram(int shaderId){
     GLint shader=shaders[shaderId];
-    glUseProgram(shader);
+    if (currShader!=shader) {
+        glUseProgram(shader);
+        currShader=shader;
+    }
     return shader;
 }
 
@@ -35,4 +38,5 @@ GLint ShaderBuilder::getShader(int shaderId){
 void ShaderBuilder::reset(){
     nameMap.clear();
     shaders.clear();
+    currShader=-1;
 }
