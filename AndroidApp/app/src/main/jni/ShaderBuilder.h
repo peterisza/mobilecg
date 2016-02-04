@@ -17,6 +17,8 @@ class ShaderBuilder {
         int buildShader(const std::string &name, const std::string &vert, const std::string &frag);
         GLint getShader(int shaderId);
         GLint useProgram(int shaderId);
+
+        void reset();
 };
 
 

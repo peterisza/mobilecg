@@ -31,3 +31,8 @@ GLint ShaderBuilder::useProgram(int shaderId){
 GLint ShaderBuilder::getShader(int shaderId){
     return shaders[shaderId];
 }
+
+void ShaderBuilder::reset(){
+    nameMap.clear();
+    shaders.clear();
+}

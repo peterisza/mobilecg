@@ -12,6 +12,7 @@
 #include "log.h"
 #include "PacketRouter.h"
 #include "DataFormat/PacketReader.hpp"
+#include "ShaderBuilder.h"
 
 const int LOOPER_ID_USER = 3;
 
@@ -39,6 +40,8 @@ class sensorgraph {
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        ShaderBuilder::instance().reset();
 
         EcgArea::instance().glInit();
         EcgArea::instance().setZOrder(1);
