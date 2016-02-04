@@ -11,7 +11,7 @@
 #include "Helper.h"
 #include "log.h"
 #include "PacketRouter.h"
-#include "PacketReader.hpp"
+#include "DataFormat/PacketReader.hpp"
 
 const int LOOPER_ID_USER = 3;
 
@@ -73,12 +73,15 @@ class sensorgraph {
 
 sensorgraph gSensorGraph;
 
+static JavaVM* cachedJVM;
+
 extern "C" {
-JNIEXPORT void JNICALL
+    JNIEXPORT void JNICALL
     Java_com_android_sensorgraph_SensorGraphJNI_init(JNIEnv *env, jclass type, jobject assetManager) {
         (void)type;
         AAssetManager *nativeAssetManager = AAssetManager_fromJava(env, assetManager);
         gSensorGraph.init(nativeAssetManager);
+
     }
 
     JNIEXPORT void JNICALL
@@ -142,5 +145,15 @@ JNIEXPORT void JNICALL
             }
         }
         env->ReleaseByteArrayElements(jdata, data, 0);
+    }
+
+    JNIEXPORT void JNICALL
+    Java_com_android_sensorgraph_SensorGraphJNI_setTestBitmap(JNIEnv *env, jclass type, jbyteArray jdata, jint width, jint height) {
+        (void)type;
+
+        jbyte* data = env->GetByteArrayElements(jdata, 0);
+        char* chars = (char*) data;
+
+        EcgArea::instance().testText.setBitmap(chars, width, height);
     }
 }

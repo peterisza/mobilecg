@@ -4,7 +4,7 @@
 #include "DrawableObject.h"
 #include <string>
 #include <GLES2/gl2.h>
-#include "CircularBuffer.h"
+#include "DataFormat/CircularBuffer.h"
 #include <vector>
 #include "Vec2.h"
 

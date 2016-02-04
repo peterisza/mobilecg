@@ -13,6 +13,8 @@ EcgArea::EcgArea():
         ecgCurves[a].setZOrder(0);
     }
 
+    drawableList.push_back(&testText);
+
     padInCm=0.5;
     ecgCmPerMv = 2.0;
     ecgCmPerSec = 2.5;
@@ -66,6 +68,7 @@ void EcgArea::constructLayout(){
         ecgCurves[a].setPosition(xCoord, yCoord);
     }
 
+    testText.setPosition(0, 0);
 }
 
 void EcgArea::contextResized(int w, int h){

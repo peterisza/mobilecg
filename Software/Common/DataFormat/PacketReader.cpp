@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "log.h"
 //#define DEBUG
+#ifdef DEBUG
+	#include "log.h"
+#endif
 
 PacketReader::PacketReader():
 	index(0)

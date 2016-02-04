@@ -1,13 +1,13 @@
 #ifndef ANDROIDAPP_ECGPROCESSOR_H
 #define ANDROIDAPP_ECGPROCESSOR_H
 
-#include "488Hz50HzNotchFilter.hpp"
+#include "SignalConditioning/EcgFilters.hpp"
 
 class EcgProcessor {
     private:
         EcgProcessor();
         static const int MAX_NUM_CHANNELS = 8;
-        NotchFilter notchFilter[MAX_NUM_CHANNELS];
+        HalfEcgFilter ecgFilter[MAX_NUM_CHANNELS];
 
         int pga;
         float currScale;

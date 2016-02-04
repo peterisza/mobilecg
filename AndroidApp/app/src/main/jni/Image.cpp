@@ -1,4 +1,5 @@
 #include "Image.h"
+#include <string.h>
 
 const Image::Pixel Image::BLACK(0,0,0);
 const Image::Pixel Image::WHITE(255,255,255);
@@ -82,4 +83,8 @@ int Image::width(){
 
 int Image::height(){
     return h;
+}
+
+void Image::setBitmap(const char *bitmap) {
+    memcpy(&data[0], bitmap, w*h*sizeof(Pixel));
 }

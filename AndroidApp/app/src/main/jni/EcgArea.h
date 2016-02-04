@@ -4,6 +4,7 @@
 
 #include "DrawableGroup.h"
 #include "GridDrawer.h"
+#include "TextDrawer.h"
 #include "Rect.h"
 #include "Vec2.h"
 #include "Curve.h"
@@ -18,6 +19,8 @@ class EcgArea: public DrawableGroup{
         int calculateUnalignedArea(int size, float dpcm);
         GridDrawer grid;
         Curve ecgCurves[ECG_CURVE_COUNT];
+
+
 
         float lastSampleFrequency;
 
@@ -44,6 +47,8 @@ class EcgArea: public DrawableGroup{
 
         void putData(GLfloat *data, int nChannels, int nPoints, int stride);
         virtual void init(AAssetManager *assetManager);
+
+        TextDrawer testText;
 
 };
 

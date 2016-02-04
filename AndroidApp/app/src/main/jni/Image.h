@@ -7,6 +7,8 @@
 
 class Image {
     public:
+        Image() {}
+
         struct Pixel{
             uint8_t r;
             uint8_t g;
@@ -35,6 +37,8 @@ class Image {
 
         int width();
         int height();
+
+        void setBitmap(const char* bitmap);
     private:
         int w;
         int h;

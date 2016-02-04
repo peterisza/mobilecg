@@ -1,8 +1,8 @@
 #include "EcgProcessor.h"
-#include "EcgHeaderCommon.h"
-#include "BitFifo.hpp"
-#include "FlatEcgPredictor.hpp"
-#include "DifferenceEcgCompressor.hpp"
+#include "DataFormat/EcgHeaderCommon.h"
+#include "DataFormat/BitFifo.hpp"
+#include "DataFormat/FlatEcgPredictor.hpp"
+#include "DataFormat/DifferenceEcgCompressor.hpp"
 #include <GLES2/gl2.h>
 #include "EcgArea.h"
 
@@ -58,7 +58,7 @@ void EcgProcessor::receivePacket(char *data, int len){
         for (int c=0; c<header->channelCount; c++){
             decompressBuffer[c][a] = timesample[c] * header->lsbInMv;
             if(c <= MAX_NUM_CHANNELS)
-                decompressBuffer[c][a] = notchFilter[c].filter(decompressBuffer[c][a]);
+                decompressBuffer[c][a] = ecgFilter[c].filter(decompressBuffer[c][a]);
         }
     }
 

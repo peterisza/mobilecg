@@ -17,6 +17,8 @@
 package com.android.sensorgraph;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -29,6 +31,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
+import java.nio.ByteBuffer;
+
 public class SensorGraphActivity extends Activity {
 
     GLSurfaceView mView;
@@ -40,9 +44,9 @@ public class SensorGraphActivity extends Activity {
 
 
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        //BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B5:D8:7C");
+        BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B5:D8:7C");
 
-        BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B6:13:0E");
+        //BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B6:13:0E");
 
         ConnectThread receiver=new ConnectThread(device);
         receiver.start();
@@ -63,7 +67,7 @@ public class SensorGraphActivity extends Activity {
 
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
-                gl.glEnable( gl.GL_LINE_SMOOTH );
+                gl.glEnable(gl.GL_LINE_SMOOTH);
                 gl.glHint(gl.GL_LINE_SMOOTH_HINT, gl.GL_NICEST);
                 SensorGraphJNI.setDotPerCM(displayMetrics.xdpi / 2.54f, displayMetrics.ydpi / 2.54f);
                 SensorGraphJNI.surfaceChanged(width, height);
@@ -81,6 +85,11 @@ public class SensorGraphActivity extends Activity {
             }
         });
         setContentView(mView);
+
+        /*Bitmap bitmap = TextRenderer.textAsBitmap("pina", 10, Color.BLACK);
+        ByteBuffer buffer1 = ByteBuffer.allocate(bitmap.getHeight() * bitmap.getRowBytes());
+        SensorGraphJNI.setTestBitmap(buffer1.array(), bitmap.getWidth(), bitmap.getHeight());
+        */
     }
 
     @Override

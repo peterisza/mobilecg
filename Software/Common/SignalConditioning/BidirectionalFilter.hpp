@@ -2,7 +2,7 @@
 #define _TWO_WAY_FILTER_H
 
 #include "IFilter.hpp"
-#include "CircularBuffer.h"
+#include "../DataFormat/CircularBuffer.h"
 
 template <int responseDecayTime, int blockSize>
 class BidirectionalFilter {

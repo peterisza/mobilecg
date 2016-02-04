@@ -99,9 +99,9 @@ void testEcgCompression() {
 			bool small = rand()%10 < 4;
 			//printf(small ? "small\n" : "big\n");
 			if(small || i == 0)
-				ecgdata[i][ch] = rand()%(1 << 24) - (1 << 23);
+				ecgdata[i][ch] = rand()%(1 << 19) - (1 << 18);
 			else
-				ecgdata[i][ch] = ecgdata[i-1][ch] + (rand()%1000) - 500;
+				ecgdata[i][ch] = ecgdata[i-1][ch] + (rand()%400) - 200;
 		}
 		ecgdata[i][0] = tsg.getSample(2.4);
 		tsg.next();

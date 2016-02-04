@@ -34,4 +34,5 @@ public class SensorGraphJNI {
      public static native void pause();
      public static native void resume();
      public static native void processEcgData(byte[] data, int size);
+     public static native void setTestBitmap(byte[] data, int width, int height);
 }
