@@ -11,7 +11,7 @@
 //#define DEBUG
 
 const int DECOMPRESS_BUFFER_STRIDE = ECG_MAX_SEND_SIZE/3+1;
-static GLfloat decompressBuffer[ecg::DifferenceEcgCompressor::maxChannels][DECOMPRESS_BUFFER_STRIDE];
+static GLfloat decompressBuffer[12][DECOMPRESS_BUFFER_STRIDE];
 
 EcgProcessor::EcgProcessor(){
     samplingFrequency=500.0;
@@ -75,10 +75,42 @@ void EcgProcessor::receivePacket(char *data, int len){
         }
     }
 
+    for(int a = 0; a < filteredSampleNum[0]; a++) {
+        EcgProcessor::calculate12Channels(&decompressBuffer[0][a], &decompressBuffer[0][a], DECOMPRESS_BUFFER_STRIDE);
+    }
+
     EcgArea::instance().putData((GLfloat*)decompressBuffer, header->channelCount, filteredSampleNum[0], DECOMPRESS_BUFFER_STRIDE);
 
 }
 
+
 float EcgProcessor::getSamplingFrequency(){
     return samplingFrequency;
+}
+
+void EcgProcessor::calculate12Channels(float *input, float *output, int stride) {
+    float I = input[1*stride];
+    float II = input[2*stride];
+    float III = II - I;
+    float V1 = input[7*stride];
+    float V2 = input[3*stride];
+    float V3 = input[4*stride];
+    float V4 = input[5*stride];
+    float V5 = input[6*stride];
+    float V6 = input[0*stride];
+    float aVR = (-II-I)/3;
+    float aVL = (I-III)/3;
+    float aVF = (II+III)/3;
+    output[0*stride] = I;
+    output[1*stride] = II;
+    output[2*stride] = III;
+    output[3*stride] = aVR;
+    output[4*stride] = aVL;
+    output[5*stride] = aVF;
+    output[6*stride] = V1;
+    output[7*stride] = V2;
+    output[8*stride] = V3;
+    output[9*stride] = V4;
+    output[10*stride] = V5;
+    output[11*stride] = V6;
 }
