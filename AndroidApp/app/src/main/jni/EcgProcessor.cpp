@@ -47,6 +47,12 @@ void EcgProcessor::receivePacket(char *data, int len){
     }
 
     int32_t timesample [ecg::DifferenceEcgCompressor::maxChannels];
+
+    int filteredSampleNum[MAX_NUM_CHANNELS];
+    for (int c=0; c<header->channelCount; c++) {
+        filteredSampleNum[c] = 0;
+    }
+
     for (int a=0; a<header->sampleCount; a++){
         decompressor.getSample(timesample);
 
@@ -57,12 +63,19 @@ void EcgProcessor::receivePacket(char *data, int len){
 
         for (int c=0; c<header->channelCount; c++){
             decompressBuffer[c][a] = timesample[c] * header->lsbInMv;
-            if(c <= MAX_NUM_CHANNELS)
-                decompressBuffer[c][a] = ecgFilter[c].filter(decompressBuffer[c][a]);
+            if(c <= MAX_NUM_CHANNELS) {
+                ecgFilter[c].putSample(decompressBuffer[c][a]);
+                if(ecgFilter[c].isOutputAvailable()) {
+                    int index = filteredSampleNum[c];
+                    filteredSampleNum[c]++;
+                    decompressBuffer[c][a] = ecgFilter[c].getSample();
+                }
+                //filteredSampleNum[c]++;
+            }
         }
     }
 
-    EcgArea::instance().putData((GLfloat*)decompressBuffer, header->channelCount, header->sampleCount, DECOMPRESS_BUFFER_STRIDE);
+    EcgArea::instance().putData((GLfloat*)decompressBuffer, header->channelCount, filteredSampleNum[0], DECOMPRESS_BUFFER_STRIDE);
 
 }
 

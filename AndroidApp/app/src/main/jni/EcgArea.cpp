@@ -45,6 +45,8 @@ void EcgArea::rescale(){
 
     for (int a=0; a<ECG_CURVE_COUNT; a++)
         ecgCurves[a].setScale(xScale, yScale);
+
+    testText.drawText("cucc");
 }
 
 void EcgArea::constructLayout(){

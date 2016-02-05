@@ -7,7 +7,7 @@ class EcgProcessor {
     private:
         EcgProcessor();
         static const int MAX_NUM_CHANNELS = 8;
-        HalfEcgFilter ecgFilter[MAX_NUM_CHANNELS];
+        EcgFilter ecgFilter[MAX_NUM_CHANNELS];
 
         int pga;
         float currScale;

@@ -15,7 +15,7 @@
 #include "ShaderBuilder.h"
 
 const int LOOPER_ID_USER = 3;
-
+JavaVM* cachedJVM = 0;
 
 class sensorgraph {
 
@@ -76,15 +76,12 @@ class sensorgraph {
 
 sensorgraph gSensorGraph;
 
-static JavaVM* cachedJVM;
-
 extern "C" {
     JNIEXPORT void JNICALL
     Java_com_android_sensorgraph_SensorGraphJNI_init(JNIEnv *env, jclass type, jobject assetManager) {
         (void)type;
         AAssetManager *nativeAssetManager = AAssetManager_fromJava(env, assetManager);
         gSensorGraph.init(nativeAssetManager);
-
     }
 
     JNIEXPORT void JNICALL
@@ -92,6 +89,7 @@ extern "C" {
         (void)env;
         (void)type;
         gSensorGraph.surfaceCreated();
+        env->GetJavaVM(&cachedJVM);
     }
 
     JNIEXPORT void JNICALL
@@ -148,15 +146,5 @@ extern "C" {
             }
         }
         env->ReleaseByteArrayElements(jdata, data, 0);
-    }
-
-    JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_setTestBitmap(JNIEnv *env, jclass type, jbyteArray jdata, jint width, jint height) {
-        (void)type;
-
-        jbyte* data = env->GetByteArrayElements(jdata, 0);
-        char* chars = (char*) data;
-
-        EcgArea::instance().testText.setBitmap(chars, width, height);
     }
 }

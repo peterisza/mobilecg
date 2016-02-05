@@ -85,11 +85,6 @@ public class SensorGraphActivity extends Activity {
             }
         });
         setContentView(mView);
-
-        /*Bitmap bitmap = TextRenderer.textAsBitmap("pina", 10, Color.BLACK);
-        ByteBuffer buffer1 = ByteBuffer.allocate(bitmap.getHeight() * bitmap.getRowBytes());
-        SensorGraphJNI.setTestBitmap(buffer1.array(), bitmap.getWidth(), bitmap.getHeight());
-        */
     }
 
     @Override

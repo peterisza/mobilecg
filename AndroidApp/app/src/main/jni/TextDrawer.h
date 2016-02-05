@@ -12,8 +12,8 @@
 class TextDrawer: public TexturedSurface {
 public:
     void drawText(const char* text);
-    //void setColor(const Image::Pixel& color);
-    //void refresh();
+    void setColor(int color);
+    void setSizeMM(float size);
     void setBitmap(const char* data, int width, int height);
 private:
     int textSize;
