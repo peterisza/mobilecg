@@ -97,3 +97,7 @@ void TexturedSurface::redraw(Image *pimage){
     image=pimage;
     imageOnGPU=false;
 }
+
+int TexturedSurface::getHeight() { return height; }
+
+int TexturedSurface::getWidth() { return width; }

@@ -19,6 +19,8 @@ public:
     void setSize(float w, float h);
 
     void redraw(Image *image);
+    int getWidth();
+    int getHeight();
 private:
     std::string vertexShader;
     std::string fragmentShader;

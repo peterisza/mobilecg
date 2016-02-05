@@ -22,6 +22,7 @@ class Image {
         static const Pixel BLACK;
         static const Pixel WHITE;
         static const Pixel RED;
+        static const Pixel GREY;
 
         void resize(int w, int h);
         void *getData();

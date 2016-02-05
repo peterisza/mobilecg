@@ -27,6 +27,11 @@ EcgArea::EcgArea():
                 .setTextSizeMM(2.5);
     }
 
+    drawableList.push_back(&devLabel);
+    devLabel
+        .setColor(Image::GREY)
+        .setTextSizeMM(3.5);
+
     padInCm=0.5;
     ecgCmPerMv = 2.0;
     ecgCmPerSec = 2.5;
@@ -52,6 +57,8 @@ void EcgArea::rescale(){
         ecgCurves[a].setScale(xScale, yScale);
         labels[a].drawText(labelText[a]);
     }
+
+    devLabel.drawText("DEVELOPMENT VERSION");
 }
 
 void EcgArea::constructLayout(){
@@ -80,8 +87,13 @@ void EcgArea::constructLayout(){
         const int yCoord=activeArea.top() + y*yStep + yStep/2;
 
         ecgCurves[a].setPosition(xCoord, yCoord);
-        labels[a].setPosition(xCoord, yCoord);
+        labels[a].setPosition(xCoord, yCoord - 0.8*pixelDensity.y);
     }
+
+    devLabel.setPosition(
+            pixelDensity.x*0.0,
+            activeArea.height() - devLabel.getHeight()
+    );
 }
 
 void EcgArea::contextResized(int w, int h){

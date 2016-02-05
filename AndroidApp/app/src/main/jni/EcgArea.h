@@ -22,6 +22,7 @@ class EcgArea: public DrawableGroup{
         int calculateUnalignedArea(int size, float dpcm);
         GridDrawer grid;
         TextDrawer labels[ECG_CURVE_COUNT];
+        TextDrawer devLabel;
 
         Curve ecgCurves[ECG_CURVE_COUNT];
         //It is somewhat ugly to use endpoint circles separated from their

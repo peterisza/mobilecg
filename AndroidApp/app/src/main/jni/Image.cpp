@@ -4,6 +4,7 @@
 const Image::Pixel Image::BLACK(0,0,0);
 const Image::Pixel Image::WHITE(255,255,255);
 const Image::Pixel Image::RED(255,0,0);
+const Image::Pixel Image::GREY(100,100,100);
 
 Image::Pixel::Pixel(uint8_t pr, uint8_t pg, uint8_t pb, uint8_t pa){
     r=pr;
