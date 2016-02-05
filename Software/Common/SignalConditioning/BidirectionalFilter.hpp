@@ -12,7 +12,7 @@ public:
 		backward(backward)
 	{
 	}
-	
+
 	void putSample(FilterNumberType sample) {
 		sample = forward->filter(sample);
 		inputBuffer.add(sample);
@@ -28,7 +28,7 @@ public:
 			}
 		}
 	}
-	
+
 	bool isOutputAvailable() {
 		return !outputBuffer.isEmpty();
 	}
@@ -42,7 +42,7 @@ public:
 private:
 	IFilter *forward, *backward;
 	CircularBuffer<FilterNumberType, responseDecayTime + blockSize> inputBuffer;
-	CircularBuffer<FilterNumberType, blockSize> outputBuffer;
+	CircularBuffer<FilterNumberType, blockSize+1> outputBuffer;
 };
 
 #endif
