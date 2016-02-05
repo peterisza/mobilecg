@@ -40,6 +40,7 @@ class EcgArea: public DrawableGroup{
         float ecgCmPerMv;
         float ecgCmPerSec;
 
+        Vec2<int> screenSize;
 public:
         static EcgArea &instance();
         virtual void contextResized(int w, int h);

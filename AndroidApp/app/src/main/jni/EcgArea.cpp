@@ -92,13 +92,16 @@ void EcgArea::constructLayout(){
 
     devLabel.setPosition(
             pixelDensity.x*0.0,
-            activeArea.height() - devLabel.getHeight()
+            screenSize.h - devLabel.getHeight()
     );
 }
 
 void EcgArea::contextResized(int w, int h){
     int deleteX=calculateUnalignedArea(w, pixelDensity.x);
     int deleteY=calculateUnalignedArea(h, pixelDensity.y);
+
+    screenSize.w=w;
+    screenSize.h=h;
 
     activeArea=Rect(deleteX/2, deleteY/2, w-deleteX+1, h+1-deleteY);
 
