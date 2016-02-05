@@ -11,12 +11,14 @@
 
 class TextDrawer: public TexturedSurface {
 public:
-    void drawText(const char* text);
-    void setColor(int color);
-    void setSizeMM(float size);
-    void setBitmap(const char* data, int width, int height);
+    TextDrawer();
+    TextDrawer& drawText(const char* text);
+    TextDrawer& setColor(const Image::Pixel& color);
+    TextDrawer& setTextSizeMM(float size);
 private:
-    int textSize;
+    void setBitmap(const char* data, int width, int height);
+    float textSizeMM;
+    int color;
     Image textImage;
 };
 

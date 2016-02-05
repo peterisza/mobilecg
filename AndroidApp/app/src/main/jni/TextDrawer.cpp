@@ -11,7 +11,16 @@
 
 extern JavaVM* cachedJVM;
 
-void TextDrawer::drawText(const char* text){
+TextDrawer::TextDrawer():
+    textSizeMM(2),
+    color(0xFF0000FF)
+{
+}
+
+TextDrawer& TextDrawer::drawText(const char* text){
+    const Vec2<float> &pixelDensity = EcgArea::instance().getPixelDensity();
+    int pixelSize = pixelDensity[1]/10.0*textSizeMM;
+
     JNIEnv *env;
     (cachedJVM)->AttachCurrentThread(&env, NULL);
 
@@ -24,7 +33,8 @@ void TextDrawer::drawText(const char* text){
 
     jobject obj = env->NewObject(jTextRenderer, constructor);
     jstring jText = env->NewStringUTF(text);
-    env->CallVoidMethod(obj, setText, jText, 60, 0xFF0000FF);
+
+    env->CallVoidMethod(obj, setText, jText, pixelSize, color);
     int height = (int)env->CallIntMethod(obj, getHeight);
     int width = (int)env->CallIntMethod(obj, getWidth);
 
@@ -35,13 +45,22 @@ void TextDrawer::drawText(const char* text){
     setBitmap(data, width, height);
 
     env->DeleteLocalRef(bitmap);
+    return *this;
 }
 
 void TextDrawer::setBitmap(const char* data, int width, int height) {
     setSize(width, height);
     textImage.resize(width, height);
     textImage.setBitmap(data);
-    //textImage.fill(Image::BLACK);
-
     redraw(&textImage);
+}
+
+TextDrawer& TextDrawer::setColor(const Image::Pixel& p) {
+    color = (p.a << 24) + (p.r << 16) + (p.g << 8) + p.b;
+    return *this;
+}
+
+TextDrawer& TextDrawer::setTextSizeMM(float isize) {
+    textSizeMM = isize;
+    return *this;
 }

@@ -13,14 +13,19 @@ EcgArea::EcgArea():
         ecgCurves[a].setZOrder(1);
     }
 
-    //Use two separater for cycles to avoid mixing the order of
+    //Use two separater for loops to avoid mixing the order of
     //curves and circles to eliminate unnecessary shader switches.
     for (int a=0; a<ECG_CURVE_COUNT; a++) {
         drawableList.push_back(&endpointCircles[a]);
         endpointCircles[a].setZOrder(0);
     }
 
-    drawableList.push_back(&testText);
+    for (int a=0; a<ECG_CURVE_COUNT; a++) {
+        drawableList.push_back(&labels[a]);
+        labels[a]
+                .setColor(Image::BLACK)
+                .setTextSizeMM(2.5);
+    }
 
     padInCm=0.5;
     ecgCmPerMv = 2.0;
@@ -43,10 +48,10 @@ void EcgArea::rescale(){
     float xScale = ecgCmPerSec * pixelDensity.x / lastSampleFrequency;
     float yScale = ecgCmPerMv * pixelDensity.y;
 
-    for (int a=0; a<ECG_CURVE_COUNT; a++)
+    for (int a=0; a<ECG_CURVE_COUNT; a++) {
         ecgCurves[a].setScale(xScale, yScale);
-
-    testText.drawText("cucc");
+        labels[a].drawText(labelText[a]);
+    }
 }
 
 void EcgArea::constructLayout(){
@@ -75,9 +80,8 @@ void EcgArea::constructLayout(){
         const int yCoord=activeArea.top() + y*yStep + yStep/2;
 
         ecgCurves[a].setPosition(xCoord, yCoord);
+        labels[a].setPosition(xCoord, yCoord);
     }
-
-    testText.setPosition(0, 0);
 }
 
 void EcgArea::contextResized(int w, int h){

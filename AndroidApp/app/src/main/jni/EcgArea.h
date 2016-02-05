@@ -13,18 +13,20 @@
 class EcgArea: public DrawableGroup{
     private:
         static const int ECG_CURVE_COUNT = 12;
+        const char *labelText[ECG_CURVE_COUNT] = {"I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"};
+
         EcgArea();
 
         Rect activeArea;
         Vec2<float> pixelDensity;
         int calculateUnalignedArea(int size, float dpcm);
         GridDrawer grid;
+        TextDrawer labels[ECG_CURVE_COUNT];
+
         Curve ecgCurves[ECG_CURVE_COUNT];
         //It is somewhat ugly to use endpoint circles separated from their
         //curves, but it avoids unneccessary shader switches.
         Circle endpointCircles[ECG_CURVE_COUNT];
-
-
 
         float lastSampleFrequency;
 
@@ -36,7 +38,8 @@ class EcgArea: public DrawableGroup{
 
         float ecgCmPerMv;
         float ecgCmPerSec;
-    public:
+
+public:
         static EcgArea &instance();
         virtual void contextResized(int w, int h);
 
@@ -51,9 +54,6 @@ class EcgArea: public DrawableGroup{
 
         void putData(GLfloat *data, int nChannels, int nPoints, int stride);
         virtual void init(AAssetManager *assetManager);
-
-        TextDrawer testText;
-
 };
 
 
