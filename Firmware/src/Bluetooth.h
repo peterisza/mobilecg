@@ -50,7 +50,8 @@ class Bluetooth {
 
 		char tmpBuffer[16];
 
-		static const int MAX_SUPPORTED_LINK_KEYS = 1;
+		static const int MAX_SUPPORTED_LINK_KEYS = 5;
+		int lastLinkKeyIndex;
 
 	   /* The following type definition represents the container type which */
 	   /* holds the mapping between Bluetooth devices (based on the BD_ADDR)*/

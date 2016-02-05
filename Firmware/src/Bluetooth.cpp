@@ -27,6 +27,7 @@ Bluetooth::Bluetooth(): sendTask("BTSendTask", sendTaskCallbackStatic, 256, this
 	IOCapability     = DEFAULT_IO_CAPABILITY;
 	OOBSupport       = FALSE;
 	clearNeeded=false;
+	lastLinkKeyIndex=0;
 
 	this->name = "";
 
@@ -267,7 +268,6 @@ void Bluetooth::gapEventCallback(unsigned int BluetoothStackID, GAP_Event_Data_t
 
 	int                               Result;
 	int                               Index;
-	BD_ADDR_t                         NULL_BD_ADDR;
 	GAP_Authentication_Information_t  GAP_Authentication_Information;
 
 	/* First, check to see if the required parameters appear to be       */
@@ -327,32 +327,22 @@ void Bluetooth::gapEventCallback(unsigned int BluetoothStackID, GAP_Event_Data_t
 				  ASSIGN_BD_ADDR(CurrentRemoteBD_ADDR, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 				  break;
 			   case atLinkKeyCreation:
-				  /* Now store the link Key in either a free location OR*/
-				  /* over the old key location.                         */
-				  ASSIGN_BD_ADDR(NULL_BD_ADDR, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-
 				  for(Index=0,Result=-1;Index<(int)(sizeof(linkKeyInfo)/sizeof(LinkKeyInfo_t));Index++)
 				  {
-					 if(COMPARE_BD_ADDR(linkKeyInfo[Index].BD_ADDR, GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Remote_Device))
-						break;
-					 else
-					 {
-						if((Result == (-1)) && (COMPARE_BD_ADDR(linkKeyInfo[Index].BD_ADDR, NULL_BD_ADDR)))
-						   Result = Index;
+					 if(COMPARE_BD_ADDR(linkKeyInfo[Index].BD_ADDR, GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Remote_Device)){
+						 Result=Index;
+						 break;
 					 }
 				  }
 
-				  /* If we didn't find a match, see if we found an empty*/
-				  /* location.                                          */
-				  if(Index == (sizeof(linkKeyInfo)/sizeof(LinkKeyInfo_t)))
-					 Index = Result;
+				  if (Result==-1){
+					  lastLinkKeyIndex++;
+					  if (lastLinkKeyIndex >= MAX_SUPPORTED_LINK_KEYS){
+						  lastLinkKeyIndex-=MAX_SUPPORTED_LINK_KEYS;
+					  }
 
-				  /* Check to see if we found a location to store the   */
-				  /* Link Key information into.                         */
-				  if(Index != (-1))
-				  {
-					 linkKeyInfo[Index].BD_ADDR = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Remote_Device;
-					 linkKeyInfo[Index].LinkKey = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Authentication_Event_Data.Link_Key_Info.Link_Key;
+					  linkKeyInfo[lastLinkKeyIndex].BD_ADDR = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Remote_Device;
+					  linkKeyInfo[lastLinkKeyIndex].LinkKey = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Authentication_Event_Data.Link_Key_Info.Link_Key;
 				  }
 				  break;
 			   case atIOCapabilityRequest:
