@@ -1,5 +1,13 @@
 apply plugin: 'com.android.model.application'
 
+def getCheckedOutGitCommitHash() {
+    def gitFolder = "$projectDir/.git/"
+    def takeFromHash = 12
+    def cmd = "git rev-parse --short HEAD"
+    def proc = cmd.execute()
+    proc.text.trim().take takeFromHash
+}
+
 model {
     android {
         compileSdkVersion = 23
@@ -20,6 +28,7 @@ model {
     android.ndk {
         moduleName = "sensorgraph"
         cppFlags.add("-Werror")
+        cppFlags.add("-DGIT_HASH=\""+getCheckedOutGitCommitHash()+"\"")
         ldLibs.addAll(["log", "GLESv2", "android"])
         stl        = "c++_static"
     }

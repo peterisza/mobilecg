@@ -57,8 +57,7 @@ void EcgArea::rescale(){
         ecgCurves[a].setScale(xScale, yScale);
         labels[a].drawText(labelText[a]);
     }
-
-    devLabel.drawText("DEVELOPMENT VERSION");
+    devLabel.drawText("DEVELOPMENT VERSION " GIT_HASH " - " __DATE__ );
 }
 
 void EcgArea::constructLayout(){
