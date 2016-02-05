@@ -8,8 +8,8 @@
 class NotchFilter: public SecondOrderIIR {
 public:
 	NotchFilter(): SecondOrderIIR(
-		0.983997556111600, -1.574517624821521,  0.983997556111600,
-		1.000000000000000, -1.574517624821521,  0.967995112223201
+		0.996786427732597,  -1.594981398988209,  0.996786427732597,
+		1.000000000000000,  -1.594981398988209,  0.993572855465195
 	) {}
 };
 
@@ -32,7 +32,7 @@ private:
 	NotchFilter notchFilter;
 };
 
-class EcgFilter: public BidirectionalFilter<1200, 240> {
+class EcgFilter: public BidirectionalFilter<1200, 250> {
 public:
 	EcgFilter():
 		BidirectionalFilter(&forward, &backward)
