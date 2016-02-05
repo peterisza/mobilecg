@@ -1,4 +1,4 @@
-package com.android.sensorgraph;
+package com.mobilecg.androidapp;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;

@@ -14,7 +14,7 @@ model {
         buildToolsVersion = "23.0.2"
 
         defaultConfig.with {
-            applicationId    = "com.android.sensorgraph"
+            applicationId    = "com.mobilecg.androidapp"
             minSdkVersion.apiLevel    = 8
             targetSdkVersion.apiLevel = 23
         }
@@ -26,7 +26,7 @@ model {
     }
 
     android.ndk {
-        moduleName = "sensorgraph"
+        moduleName = "ecg"
         cppFlags.add("-Werror")
         cppFlags.add("-DGIT_HASH=\""+getCheckedOutGitCommitHash()+"\"")
         ldLibs.addAll(["log", "GLESv2", "android"])

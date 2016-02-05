@@ -17,10 +17,10 @@
 const int LOOPER_ID_USER = 3;
 JavaVM* cachedJVM = 0;
 
-class sensorgraph {
+class ecg {
 
  public:
-    sensorgraph() {}
+    ecg() {}
 
 
     void init(AAssetManager *assetManager) {
@@ -74,65 +74,65 @@ class sensorgraph {
     }
 };
 
-sensorgraph gSensorGraph;
+ecg gEcg;
 
 extern "C" {
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_init(JNIEnv *env, jclass type, jobject assetManager) {
+    Java_com_mobilecg_androidapp_EcgJNI_init(JNIEnv *env, jclass type, jobject assetManager) {
         (void)type;
         AAssetManager *nativeAssetManager = AAssetManager_fromJava(env, assetManager);
-        gSensorGraph.init(nativeAssetManager);
+        gEcg.init(nativeAssetManager);
     }
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_surfaceCreated(JNIEnv *env, jclass type) {
+    Java_com_mobilecg_androidapp_EcgJNI_surfaceCreated(JNIEnv *env, jclass type) {
         (void)env;
         (void)type;
-        gSensorGraph.surfaceCreated();
+        gEcg.surfaceCreated();
         env->GetJavaVM(&cachedJVM);
     }
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_surfaceChanged(JNIEnv *env, jclass type, jint width,
+    Java_com_mobilecg_androidapp_EcgJNI_surfaceChanged(JNIEnv *env, jclass type, jint width,
                                                      jint height) {
         (void)env;
         (void)type;
-        gSensorGraph.surfaceChanged(width, height);
+        gEcg.surfaceChanged(width, height);
     }
 
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_setDotPerCM(JNIEnv *env, jclass type, jfloat xdpcm,
+    Java_com_mobilecg_androidapp_EcgJNI_setDotPerCM(JNIEnv *env, jclass type, jfloat xdpcm,
                                                            jfloat ydpcm) {
         (void)env;
         (void)type;
-        gSensorGraph.setDpcm(xdpcm, ydpcm);
+        gEcg.setDpcm(xdpcm, ydpcm);
     }
 
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_drawFrame(JNIEnv *env, jclass type) {
+    Java_com_mobilecg_androidapp_EcgJNI_drawFrame(JNIEnv *env, jclass type) {
         (void)env;
         (void)type;
-        gSensorGraph.render();
+        gEcg.render();
     }
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_pause(JNIEnv *env, jclass type) {
+    Java_com_mobilecg_androidapp_EcgJNI_pause(JNIEnv *env, jclass type) {
         (void)env;
         (void)type;
-        gSensorGraph.pause();
+        gEcg.pause();
     }
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_resume(JNIEnv *env, jclass type) {
+    Java_com_mobilecg_androidapp_EcgJNI_resume(JNIEnv *env, jclass type) {
         (void)env;
         (void)type;
-        gSensorGraph.resume();
+        gEcg.resume();
     }
 
     JNIEXPORT void JNICALL
-    Java_com_android_sensorgraph_SensorGraphJNI_processEcgData(JNIEnv *env, jclass type, jbyteArray jdata, jint size) {
+    Java_com_mobilecg_androidapp_EcgJNI_processEcgData(JNIEnv *env, jclass type, jbyteArray jdata, jint size) {
         (void)type;
 
         jbyte* data = env->GetByteArrayElements(jdata, 0);

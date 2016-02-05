@@ -1,7 +1,3 @@
-//
-// Created by isza on 2016.02.04..
-//
-
 #ifndef ANDROIDAPP_TEXTDRAWER_H
 #define ANDROIDAPP_TEXTDRAWER_H
 

@@ -1,7 +1,3 @@
-//
-// Created by isza on 2016.02.04..
-//
-
 #include "TextDrawer.h"
 #include "Helper.h"
 #include "EcgArea.h"
@@ -24,7 +20,7 @@ TextDrawer& TextDrawer::drawText(const char* text){
     JNIEnv *env;
     (cachedJVM)->AttachCurrentThread(&env, NULL);
 
-    jclass jTextRenderer = env->FindClass("com/android/sensorgraph/TextRenderer");
+    jclass jTextRenderer = env->FindClass("com/mobilecg/androidapp/TextRenderer");
     jmethodID constructor = env->GetMethodID(jTextRenderer, "<init>", "()V");
     jmethodID setText = env->GetMethodID(jTextRenderer, "setText", "(Ljava/lang/String;II)V");
     jmethodID getHeight = env->GetMethodID(jTextRenderer, "getHeight", "()I");

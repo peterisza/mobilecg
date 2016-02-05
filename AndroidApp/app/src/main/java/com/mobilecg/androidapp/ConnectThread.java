@@ -1,4 +1,4 @@
-package com.android.sensorgraph;
+package com.mobilecg.androidapp;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -67,7 +67,7 @@ class ConnectThread extends Thread {
                 // Read from the InputStream
                 bytes = mmInStream.read(buffer);
                 // Send the obtained bytes to the UI activity
-                SensorGraphJNI.processEcgData(buffer, bytes);
+                EcgJNI.processEcgData(buffer, bytes);
             } catch (IOException e) {
                 break;
             }
