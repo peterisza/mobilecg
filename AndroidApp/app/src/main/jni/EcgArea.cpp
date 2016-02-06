@@ -33,7 +33,7 @@ EcgArea::EcgArea():
         .setTextSizeMM(3.5);
 
     padInCm=0.5;
-    ecgCmPerMv = 1.0;
+    ecgCmPerMv = 2.0;
     ecgCmPerSec = 2.5;
     lastSampleFrequency=0;
 }
@@ -77,11 +77,19 @@ void EcgArea::constructLayout(){
     const int yStep = activeArea.height()/r;
     const int xStep = curveWidth+padInPixels;
 
+
+    const int bottomCurves = r % 3;
+    const int topCurves = r - bottomCurves;
+
+    const int topCurveCount = topCurves * c;
+
     for (int a=0; a<ECG_CURVE_COUNT; a++){
         ecgCurves[a].setLength(curveWidth);
 
-        const int x=a / r;
-        const int y=a % r;
+        const bool bottom = a >= topCurveCount;
+
+        const int x=bottom ? (c -1  - ((a - topCurveCount) / bottomCurves)) : (a / topCurves);
+        const int y=bottom ? ((a - topCurveCount) % bottomCurves + topCurves) : (a % topCurves);
 
         const int xCoord=activeArea.left() + x*xStep;
         const int yCoord=activeArea.top() + y*yStep + yStep/2;
