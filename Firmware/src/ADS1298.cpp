@@ -3,12 +3,17 @@
 #include <Logger.h>
 #include "stm32f4xx_hal.h"
 #include <string.h>
+#include "Logger.h"
 
 extern "C" SPI_HandleTypeDef hspi2;
+
+// #define TEST_SIGNAL
 
 
 
 #define HR 0x80
+
+#define C2_INTERNAL_TEST_SINGAL_ON (1<<4)
 
 #define C3_FIXED 0x40
 #define C3_INTERNAL_REFERENCE_POWER_ON 0x80
@@ -49,6 +54,10 @@ extern "C" SPI_HandleTypeDef hspi2;
 #define WCT2_WCTC_CHANNEL4_POS 6
 #define WCT2_WCTC_CHANNEL4_NEG 7
 
+const float ADS1298::ECG_LSB_IN_MV = 0.0001430511475f;
+
+#define CH_GAIN_OFFSET 4
+
 
 ADS1298::ADS1298():
 	reset('A', 6, true),
@@ -59,6 +68,8 @@ ADS1298::ADS1298():
 	diffSel.off();
 	memset(zeroBuffer, 0, ADS1298_MAX_PACKET_LENGTH);
 	dmaRunning=false;
+	//Default PGA is 6
+	currLsbInMv = ECG_LSB_IN_MV / 6.0;
 }
 
 ADS1298& ADS1298::instance(){
@@ -156,10 +167,18 @@ bool ADS1298::start(){
 			WCT2_WCTC_POWER_ON |
 			WCT2_WCTC_CHANNEL3_POS);
 
+
+	//Set gain
+	setGain(2);
+
 	setSpeed(DIV_4096);
 
 	//Magic
-	writeReg(REG_CONFIG2, 0);
+	uint8_t conf2 = 0;
+#ifdef TEST_SIGNAL
+	conf2 += C2_INTERNAL_TEST_SINGAL_ON;
+#endif
+	writeReg(REG_CONFIG2, conf2);
 
 	sendCommand(CMD_START);
 	sendCommand(CMD_RDATAC);
@@ -266,4 +285,52 @@ extern "C" void EXTI4_IRQHandler(void){
 	ADS1298::instance().interrupt();
 	NVIC_ClearPendingIRQ(EXTI4_IRQn);
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
+}
+
+float ADS1298::getLsbInMv(){
+	return currLsbInMv;
+}
+
+void ADS1298::setGain(int gain){
+	currLsbInMv = ECG_LSB_IN_MV / gain;
+
+	int g=0;
+	switch (gain){
+		case(1):
+			g=1;
+			break;
+		case(2):
+			g=2;
+			break;
+		case(3):
+			g=3;
+			break;
+		case(4):
+			g=4;
+			break;
+		case(6):
+			g=0;
+			break;
+		case(8):
+			g=5;
+			break;
+		case(12):
+			g=6;
+			break;
+		default:
+			Logger::panic("Invalid gain.");
+			break;
+	}
+
+	for (int a=0; a<8; a++){
+		uint8_t value = (g<<CH_GAIN_OFFSET);
+#ifdef TEST_SIGNAL
+		value += 5;
+#endif
+		writeReg(chSetReg(a), value);
+	}
+}
+
+ADS1298::Register ADS1298::chSetReg(int channel){
+	return (Register)(0x05+channel);
 }

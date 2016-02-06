@@ -23,8 +23,6 @@ GLuint Curve::getXCoordinates(int capacity){
             delete [] xCoordinates;
         }
 
-        LOGD("Resizing X buffer to capacity %d", xCoordinatesLength);
-
         xCoordinates = new GLfloat[capacity];
         xCoordinatesLength = capacity;
 

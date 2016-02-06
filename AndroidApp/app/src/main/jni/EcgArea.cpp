@@ -33,7 +33,7 @@ EcgArea::EcgArea():
         .setTextSizeMM(3.5);
 
     padInCm=0.5;
-    ecgCmPerMv = 2.0;
+    ecgCmPerMv = 1.0;
     ecgCmPerSec = 2.5;
     lastSampleFrequency=0;
 }

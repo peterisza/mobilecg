@@ -3,7 +3,7 @@
 #include "Bluetooth.h"
 
 const int ECGSender::ECG_CHOP_BITS = 5;
-const float ECGSender::ECG_LSB_IN_MV = 0.0001430511475f;
+
 
 
 ECGSender::ECGSender(Packetizer &iPacketizer):
@@ -14,7 +14,6 @@ ECGSender::ECGSender(Packetizer &iPacketizer):
 	packetizer = &iPacketizer;
 	testSignal = false;
 
-	currLsbInMv = ECG_LSB_IN_MV/6.0f*(1 << ECG_CHOP_BITS);
 	currFrequency = 488.28125f;
 }
 
@@ -26,7 +25,7 @@ void ECGSender::send(){
 	uint8_t header[Packetizer::HEADER_SIZE + sizeof(ECGHeader)];
 	ECGHeader *ecgHeader = (ECGHeader *)(header + Packetizer::HEADER_SIZE);
 
-	ecgHeader->lsbInMv = currLsbInMv;
+	ecgHeader->lsbInMv = ADS1298::instance().getLsbInMv() * (1 << ECG_CHOP_BITS);
 	ecgHeader->samplingFrequency = currFrequency;
 	ecgHeader->channelCount = ADS1298::instance().getActiveChannels();
 

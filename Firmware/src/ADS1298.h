@@ -45,13 +45,22 @@ class ADS1298 {
 		int getAvailableData();
 		void getSample(int32_t *data);
 		void clear();
+
+		float getLsbInMv();
 	private:
+		static const float ECG_LSB_IN_MV;
+
+		float currLsbInMv;
+
 		void sendCommand(Command cmd);
 		void writeReg(Register reg, uint8_t value);
 		uint8_t readReg(Register reg);
 		float setSpeed(SpeedDiv div, bool highRes=true);
 		void enableIrq();
 		void disableIrq();
+
+		void setGain(int gain);
+		static Register chSetReg(int channel);
 
 		bool dmaRunning;
 
