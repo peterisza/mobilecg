@@ -44,6 +44,7 @@ EcgArea &EcgArea::instance(){
 }
 
 void EcgArea::init(AAssetManager *assetManager){
+    redraw();
     DrawableGroup::init(assetManager);
 }
 

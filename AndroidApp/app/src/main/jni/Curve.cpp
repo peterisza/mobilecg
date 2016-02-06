@@ -15,11 +15,15 @@ std::vector<GLfloat> Curve::invalidBuffer(1000, Curve::POINT_INVALID);
 GLuint Curve::getXCoordinates(int capacity){
     capacity = std::max(capacity, 10000);
     if (capacity>xCoordinatesLength || EcgArea::instance().isRedrawNeeded()){
-        if (xCoordinatesLength==0){
+        if (xCoordinatesLength==0 || EcgArea::instance().isRedrawNeeded()){
             glGenBuffers(1, &xCoordinatesOnGPU);
-        } else {
+        }
+
+        if (xCoordinatesLength!=0){
             delete [] xCoordinates;
         }
+
+        LOGD("Resizing X buffer to capacity %d", xCoordinatesLength);
 
         xCoordinates = new GLfloat[capacity];
         xCoordinatesLength = capacity;
