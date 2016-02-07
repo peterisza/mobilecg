@@ -336,7 +336,13 @@ void Bluetooth::gapEventCallback(unsigned int BluetoothStackID, GAP_Event_Data_t
 					 }
 				  }
 
-				  if (Result==-1){
+				  if (Result>=0){
+					  if ( memcmp((char*)&linkKeyInfo[Result].LinkKey, (char*)&GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Authentication_Event_Data.Link_Key_Info.Link_Key, sizeof(Link_Key_t))){
+						  //Update link key if changed.
+						  linkKeyInfo[lastLinkKeyIndex].LinkKey = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Authentication_Event_Data.Link_Key_Info.Link_Key;
+						  storeLinkKey(lastLinkKeyIndex);
+					  }
+				  } else {
 					  lastLinkKeyIndex++;
 					  if (lastLinkKeyIndex >= MAX_SUPPORTED_LINK_KEYS){
 						  lastLinkKeyIndex-=MAX_SUPPORTED_LINK_KEYS;
@@ -771,9 +777,9 @@ void Bluetooth::init(const char *iname){
 
 	/* Initialize the application.                                       */
 	if((result = initializeApplication()) > 0){
-		//if (!setClassOfDevice(0x80510)){
+	//	if (!setClassOfDevice(0x80510)){
 			openServer(SPP_PORT_NUMBER_MINIMUM);
-		//}
+	//	}
 	}
 }
 

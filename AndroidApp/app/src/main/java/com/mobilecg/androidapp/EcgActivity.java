@@ -1,6 +1,8 @@
 package com.mobilecg.androidapp;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -15,6 +17,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,19 +30,40 @@ public class EcgActivity extends Activity {
     private GLSurfaceView mView;
     private DisplayMetrics displayMetrics;
     private ConnectThread receiver;
+    private final int BLUETOOTH_SELECTED=1;
 
 
-    private void connect(){
+    private void disconnect(){
         if (receiver!=null){
             if (receiver.isConnected())
                 return;
 
             if (receiver.isAlive())
                 receiver.interrupt();
-        }
 
-        receiver=new ConnectThread();
-        receiver.connect("00:17:E9:B5:D8:7C");
+            receiver=null;
+        }
+    }
+    private void connect(){
+        disconnect();
+        String mac=getPairedMac();
+        Log.d("----- MobilECG","connecting to \""+mac+"\"");
+        if (mac!="") {
+            receiver = new ConnectThread();
+            receiver.connect(mac);
+        }
+    }
+
+    private void setPairedMac(String mac){
+        SharedPreferences sharedPref = getPreferences(getBaseContext().MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("MAC", mac);
+        editor.commit();
+    }
+
+    private String getPairedMac(){
+        SharedPreferences sharedPref = getPreferences(getBaseContext().MODE_PRIVATE);
+        return sharedPref.getString("MAC","");
     }
 
     @Override
@@ -65,7 +89,6 @@ public class EcgActivity extends Activity {
 
 
         connect();
-        //receiver.connect("00:17:E9:B6:13:0E");
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -139,8 +162,31 @@ public class EcgActivity extends Activity {
             case R.id.reconnect:
                 connect();
                 return true;
+            case R.id.scan:
+                disconnect();
+                Intent scannerIntent = new Intent(getBaseContext(), BluetoothDeviceList.class);
+                startActivityForResult(scannerIntent,BLUETOOTH_SELECTED);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case BLUETOOTH_SELECTED:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    String mac = (String) data.getExtras()
+                            .get(BluetoothDeviceList.EXTRA_DEVICE);
+
+                    setPairedMac(mac);
+                    connect();
+
+                    Log.d("------ MobilECG", "MAC selected: " + mac);
+                }
+                break;
         }
     }
 }

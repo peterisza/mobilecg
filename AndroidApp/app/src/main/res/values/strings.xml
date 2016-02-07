@@ -23,7 +23,8 @@
 
 <resources>
     <!-- Simple strings. -->
-    <string name="mobilecg_activity">MobilECG</string>
-
+    <string name="app_name">MobilECG</string>
+    <string name="rescan_button_text">Rescan</string>
+    <string name="title_activity_bluetooth_device_list">Scanning...</string>
 </resources>
 
