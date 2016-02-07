@@ -3,9 +3,6 @@ package com.mobilecg.androidapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,16 +11,12 @@ import android.util.DisplayMetrics;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 
-import java.nio.ByteBuffer;
 
 public class EcgActivity extends Activity {
 
@@ -44,14 +37,24 @@ public class EcgActivity extends Activity {
             receiver=null;
         }
     }
-    private void connect(){
+    private boolean connect(){
         disconnect();
         String mac=getPairedMac();
-        Log.d("----- MobilECG","connecting to \""+mac+"\"");
+        Log.d("----- MobilECG", "connecting to \"" + mac + "\"");
         if (mac!="") {
             receiver = new ConnectThread();
             receiver.connect(mac);
+
+            return true;
         }
+
+        return false;
+    }
+
+    private void openScanWindow(){
+        disconnect();
+        Intent scannerIntent = new Intent(getBaseContext(), BluetoothDeviceList.class);
+        startActivityForResult(scannerIntent,BLUETOOTH_SELECTED);
     }
 
     private void setPairedMac(String mac){
@@ -88,7 +91,9 @@ public class EcgActivity extends Activity {
         }
 
 
-        connect();
+        if (!connect()){
+            openScanWindow();
+        }
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -96,6 +101,15 @@ public class EcgActivity extends Activity {
         mView = new GLSurfaceView(getApplication());
         mView.setEGLContextClientVersion(2);
         mView.setEGLConfigChooser(new MultisampleConfig());
+
+        mView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                openOptionsMenu();
+                return true;
+            }
+        });
+
         mView.setRenderer(new GLSurfaceView.Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -123,6 +137,7 @@ public class EcgActivity extends Activity {
                 EcgJNI.init(getAssets());
             }
         });
+
         setContentView(mView);
     }
 
@@ -150,6 +165,7 @@ public class EcgActivity extends Activity {
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -163,9 +179,7 @@ public class EcgActivity extends Activity {
                 connect();
                 return true;
             case R.id.scan:
-                disconnect();
-                Intent scannerIntent = new Intent(getBaseContext(), BluetoothDeviceList.class);
-                startActivityForResult(scannerIntent,BLUETOOTH_SELECTED);
+                openScanWindow();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
