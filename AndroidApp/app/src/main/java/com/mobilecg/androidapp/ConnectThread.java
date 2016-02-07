@@ -8,33 +8,50 @@ import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 
 class ConnectThread extends Thread {
-    private final BluetoothSocket mmSocket;
-    private final BluetoothDevice mmDevice;
-    private final BluetoothAdapter mBluetoothAdapter;
+    private BluetoothSocket mmSocket;
+    private BluetoothDevice mmDevice;
+    private BluetoothAdapter mBluetoothAdapter;
     private InputStream mmInStream;
     private OutputStream mmOutStream;
+    private boolean mIsConnected;
 
     private static final UUID MY_UUID =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    public ConnectThread(BluetoothDevice device) {
-        // Use a temporary object that is later assigned to mmSocket,
-        // because mmSocket is final
-        BluetoothSocket tmp = null;
-        mmDevice = device;
+    public ConnectThread() {
+        mIsConnected=false;
+    }
 
-        // Get a BluetoothSocket to connect with the given BluetoothDevice
-        try {
-            // MY_UUID is the app's UUID string, also used by the server code
-            tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-        } catch (IOException e) {
-            
+    public void connect(String macaddr){
+        if (mIsConnected)
+            return;
+
+        if(isAlive()){
+            interrupt();
         }
-        mmSocket = tmp;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mmDevice = mBluetoothAdapter.getRemoteDevice(macaddr);
+
+        try {
+            // MY_UUID is the app's UUID string, also used by the server code
+            mmSocket = mmDevice.createRfcommSocketToServiceRecord(MY_UUID);
+        } catch (IOException e) {
+            return;
+        }
+
+
+        start();
+    }
+
+    public void disconnect(){
+        if (!mIsConnected)
+            return;
+
+        cancel();
     }
 
     public void run() {
@@ -45,21 +62,22 @@ class ConnectThread extends Thread {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
             mmSocket.connect();
+            mmInStream = mmSocket.getInputStream();
+            mmOutStream = mmSocket.getOutputStream();
         } catch (IOException connectException) {
             // Unable to connect; close the socket and get out
             try {
                 mmSocket.close();
             } catch (IOException closeException) { }
+
             return;
         }
 
-        try {
-            mmInStream = mmSocket.getInputStream();
-            mmOutStream = mmSocket.getOutputStream();
-        } catch (IOException e) { }
-
         byte[] buffer = new byte[1024];  // buffer store for the stream
         int bytes; // bytes returned from read()
+
+        mIsConnected=true;
+        EcgJNI.onDeviceConnected();
 
         // Keep listening to the InputStream until an exception occurs
         while (true) {
@@ -72,6 +90,14 @@ class ConnectThread extends Thread {
                 break;
             }
         }
+
+        mIsConnected=false;
+        EcgJNI.onDeviceDisconnected();
+
+    }
+
+    public boolean isConnected(){
+        return mIsConnected;
     }
 
     /** Will cancel an in-progress connection, and close the socket */

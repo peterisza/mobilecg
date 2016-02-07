@@ -18,4 +18,6 @@ public class EcgJNI {
      public static native void pause();
      public static native void resume();
      public static native void processEcgData(byte[] data, int size);
+     public static native void onDeviceConnected();
+     public static native void onDeviceDisconnected();
 }

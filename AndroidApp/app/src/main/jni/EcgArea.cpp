@@ -36,6 +36,12 @@ EcgArea::EcgArea():
     ecgCmPerMv = 2.0;
     ecgCmPerSec = 2.5;
     lastSampleFrequency=0;
+
+    drawableList.push_back(&disconnectedLabel);
+    disconnectedLabel.setColor(Image::GREY);
+    disconnectedLabel.setTextSizeMM(3.5);
+
+    deviceDisconnected();
 }
 
 EcgArea &EcgArea::instance(){
@@ -58,7 +64,10 @@ void EcgArea::rescale(){
         ecgCurves[a].setScale(xScale, yScale);
         labels[a].drawText(labelText[a]);
     }
+
+    disconnectedLabel.drawText("DISCONNECTED");
     devLabel.drawText("DEVELOPMENT VERSION " GIT_HASH " - " __DATE__ );
+
 }
 
 void EcgArea::constructLayout(){
@@ -70,6 +79,8 @@ void EcgArea::constructLayout(){
     }
 
     r=(ECG_CURVE_COUNT+c-1)/c;
+
+    disconnectedLabel.setPosition((screenSize.w - disconnectedLabel.getWidth())/2, screenSize.h/2 - disconnectedLabel.getHeight());
 
     int padInPixels=padInCm*pixelDensity.x;
     int curveWidth=(activeArea.width()-(c-1)*padInPixels)/c;
@@ -158,4 +169,22 @@ void EcgArea::redraw(){
 
 bool EcgArea::isRedrawNeeded(){
     return redrawNeeded;
+}
+
+void EcgArea::setContentVisible(bool visible){
+    for (int a=0; a<ECG_CURVE_COUNT; a++) {
+        endpointCircles[a].setVisible(visible);
+        ecgCurves[a].setVisible(visible);
+        labels[a].setVisible(visible);
+    }
+}
+
+void EcgArea::deviceConnected(){
+    setContentVisible(true);
+    disconnectedLabel.setVisible(false);
+}
+
+void EcgArea::deviceDisconnected(){
+    setContentVisible(false);
+    disconnectedLabel.setVisible(true);
 }

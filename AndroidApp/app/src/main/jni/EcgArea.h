@@ -23,6 +23,7 @@ class EcgArea: public DrawableGroup{
         GridDrawer grid;
         TextDrawer labels[ECG_CURVE_COUNT];
         TextDrawer devLabel;
+        TextDrawer disconnectedLabel;
 
         Curve ecgCurves[ECG_CURVE_COUNT];
         //It is somewhat ugly to use endpoint circles separated from their
@@ -41,6 +42,8 @@ class EcgArea: public DrawableGroup{
         float ecgCmPerSec;
 
         Vec2<int> screenSize;
+
+        void setContentVisible(bool visible);
 public:
         static EcgArea &instance();
         virtual void contextResized(int w, int h);
@@ -56,6 +59,9 @@ public:
 
         void putData(GLfloat *data, int nChannels, int nPoints, int stride);
         virtual void init(AAssetManager *assetManager);
+
+        void deviceConnected();
+        void deviceDisconnected();
 };
 
 

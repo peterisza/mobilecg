@@ -72,6 +72,14 @@ class ecg {
     void resume() {
         EcgArea::instance().redraw();
     }
+
+    void onEcgConnected(){
+        EcgArea::instance().deviceConnected();
+    }
+
+    void onEcgDisconnected(){
+        EcgArea::instance().deviceDisconnected();
+    }
 };
 
 ecg gEcg;
@@ -146,5 +154,19 @@ extern "C" {
             }
         }
         env->ReleaseByteArrayElements(jdata, data, 0);
+    }
+
+    JNIEXPORT void JNICALL
+    Java_com_mobilecg_androidapp_EcgJNI_onDeviceConnected(JNIEnv *env, jclass type) {
+        (void)env;
+        (void)type;
+        gEcg.onEcgConnected();
+    }
+
+    JNIEXPORT void JNICALL
+    Java_com_mobilecg_androidapp_EcgJNI_onDeviceDisconnected(JNIEnv *env, jclass type) {
+        (void)env;
+        (void)type;
+        gEcg.onEcgDisconnected();
     }
 }

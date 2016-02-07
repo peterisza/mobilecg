@@ -14,7 +14,7 @@ void DrawableGroup::glInit(){
 
 void DrawableGroup::draw(){
     for (int i=0; i<drawableList.size(); i++){
-        drawableList[i]->draw();
+        drawableList[i]->drawIfVisible();
     }
 }
 

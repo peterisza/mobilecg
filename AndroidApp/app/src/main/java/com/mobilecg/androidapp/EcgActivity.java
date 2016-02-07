@@ -15,6 +15,8 @@ import javax.microedition.khronos.opengles.GL10;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -22,11 +24,27 @@ import java.nio.ByteBuffer;
 
 public class EcgActivity extends Activity {
 
-    GLSurfaceView mView;
-    DisplayMetrics displayMetrics;
+    private GLSurfaceView mView;
+    private DisplayMetrics displayMetrics;
+    private ConnectThread receiver;
+
+
+    private void connect(){
+        if (receiver!=null){
+            if (receiver.isConnected())
+                return;
+
+            if (receiver.isAlive())
+                receiver.interrupt();
+        }
+
+        receiver=new ConnectThread();
+        receiver.connect("00:17:E9:B5:D8:7C");
+    }
 
     @Override
     protected void onCreate(Bundle icicle) {
+        receiver=null;
         super.onCreate(icicle);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -46,13 +64,8 @@ public class EcgActivity extends Activity {
         }
 
 
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B5:D8:7C");
-
-        //BluetoothDevice device = btAdapter.getRemoteDevice("00:17:E9:B6:13:0E");
-
-        ConnectThread receiver=new ConnectThread(device);
-        receiver.start();
+        connect();
+        //receiver.connect("00:17:E9:B6:13:0E");
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -112,5 +125,22 @@ public class EcgActivity extends Activity {
                 EcgJNI.resume();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);//Menu Resource, Menu
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.reconnect:
+                connect();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
