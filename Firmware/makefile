@@ -106,6 +106,7 @@ endif
 	DIRS    += $(CUBEDIR)/Third_Party/FreeRTOS/Source/CMSIS_RTOS $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/include/
 	DIRS    += $(CUBEDIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/
 	DIRS    += $(CUBEDIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/
+	DIRS    += $(SRCDIR)/libeeprom
 	DIRS	+= $(SRCDIR)/startup
 	DIRS    += $(SRCDIR)/wrappers
 	DIRS    += $(BLUETOOTH_DIR)/btpskrnl $(BLUETOOTH_DIR)/btpsvend $(BLUETOOTH_DIR)/btvs $(BLUETOOTH_DIR)/hcitrans.dma  $(BLUETOOTH_DIR)/include

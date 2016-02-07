@@ -10,6 +10,7 @@
 #include <helpers.h>
 #include <Logger.h>
 #include <algorithm>
+#include <EEPROM.h>
 
 #define DEFAULT_IO_CAPABILITY          (icNoInputNoOutput)
 #define DEFAULT_MITM_PROTECTION                  (FALSE)
@@ -343,6 +344,8 @@ void Bluetooth::gapEventCallback(unsigned int BluetoothStackID, GAP_Event_Data_t
 
 					  linkKeyInfo[lastLinkKeyIndex].BD_ADDR = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Remote_Device;
 					  linkKeyInfo[lastLinkKeyIndex].LinkKey = GAP_Event_Data->Event_Data.GAP_Authentication_Event_Data->Authentication_Event_Data.Link_Key_Info.Link_Key;
+					  storeLinkKey(lastLinkKeyIndex);
+					  storeLinkKeyIndex();
 				  }
 				  break;
 			   case atIOCapabilityRequest:
@@ -455,45 +458,6 @@ int Bluetooth::setPairable()
 	return(ret_val);
 }
 
-
-/* The following function is a utility function that exists to delete*/
-/* the specified Link Key from the Local Bluetooth Device.  If a NULL*/
-/* Bluetooth Device Address is specified, then all Link Keys will be */
-/* deleted.                                                          */
-int Bluetooth::deleteLinkKey(BD_ADDR_t BD_ADDR){
-	int       result;
-	Byte_t    Status_Result;
-	Word_t    Num_Keys_Deleted = 0;
-	BD_ADDR_t NULL_BD_ADDR;
-
-	result = HCI_Delete_Stored_Link_Key(bluetoothStackID, BD_ADDR, TRUE, &Status_Result, &Num_Keys_Deleted);
-
-	/* Any stored link keys for the specified address (or all) have been */
-	/* deleted from the chip.  Now, let's make sure that our stored Link */
-	/* Key Array is in sync with these changes.                          */
-
-	/* First check to see all Link Keys were deleted.                    */
-	ASSIGN_BD_ADDR(NULL_BD_ADDR, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-
-	if(COMPARE_BD_ADDR(BD_ADDR, NULL_BD_ADDR))
-	   BTPS_MemInitialize(linkKeyInfo, 0, sizeof(linkKeyInfo));
-	else
-	{
-	   /* Individual Link Key.  Go ahead and see if know about the entry */
-	   /* in the list.                                                   */
-	   for(result=0;(result<(int)(sizeof(linkKeyInfo)/sizeof(LinkKeyInfo_t)));result++)
-	   {
-		  if(COMPARE_BD_ADDR(BD_ADDR, linkKeyInfo[result].BD_ADDR))
-		  {
-			 linkKeyInfo[result].BD_ADDR = NULL_BD_ADDR;
-			 break;
-		  }
-	   }
-	}
-
-	return(result);
-}
-
 /* The following function is responsible for opening the SS1         */
 /* Bluetooth Protocol Stack.  This function accepts a pre-populated  */
 /* HCI Driver Information structure that contains the HCI Driver     */
@@ -502,7 +466,6 @@ int Bluetooth::deleteLinkKey(BD_ADDR_t BD_ADDR){
 int Bluetooth::openStack(){
 	int                        result;
 	Byte_t                     status;
-	BD_ADDR_t                  bd_addr;
 	L2CA_Link_Connect_Params_t L2CA_Link_Connect_Params;
 
 	/* First check to see if the Stack has already been opened.          */
@@ -541,10 +504,6 @@ int Bluetooth::openStack(){
 		 if(HCI_Command_Supported(bluetoothStackID, HCI_SUPPORTED_COMMAND_WRITE_DEFAULT_LINK_POLICY_BIT_NUMBER) > 0)
 			HCI_Write_Default_Link_Policy_Settings(bluetoothStackID, (HCI_LINK_POLICY_SETTINGS_ENABLE_MASTER_SLAVE_SWITCH|HCI_LINK_POLICY_SETTINGS_ENABLE_SNIFF_MODE), &status);
 
-		 /* Delete all Stored Link Keys.                             */
-		 ASSIGN_BD_ADDR(bd_addr, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-
-		 deleteLinkKey(bd_addr);
 	  } else
 		  return -1;
 	}
@@ -775,9 +734,34 @@ int Bluetooth::pinCodeResponse(const char *pinCode)
    return(ret_val);
 }
 
+void Bluetooth::storeLinkKey(int index){
+	if (!EEPROM::instance().write(EEPROM::VAR_LINKKEY, index*sizeof(LinkKeyInfo_t), &linkKeyInfo[index], sizeof(LinkKeyInfo_t))){
+		Logger::panic("EEPROM write failed");
+	}
+}
+
+void Bluetooth::storeLinkKeyIndex(){
+	if (!EEPROM::instance().write(EEPROM::VAR_LAST_LINK_KEY, 0, &lastLinkKeyIndex, sizeof(lastLinkKeyIndex))){
+		Logger::panic("EEPROM write failed");
+	}
+}
+
 void Bluetooth::init(const char *iname){
 	int result;
 	this->name = iname;
+
+	if (!EEPROM::instance().read(EEPROM::VAR_LAST_LINK_KEY, 0, &lastLinkKeyIndex, sizeof(lastLinkKeyIndex))){
+		lastLinkKeyIndex=0;
+	}
+
+	for (int a=0; a<MAX_SUPPORTED_LINK_KEYS; a++){
+		//Can't read in one pass because not all link keys are stored. If a non-existing key is tried to read,
+		//read will fail and the key will be initialized to 0.
+		if (!EEPROM::instance().read(EEPROM::VAR_LINKKEY, a*sizeof(LinkKeyInfo_t), &linkKeyInfo[a], sizeof(LinkKeyInfo_t))){
+			memset(&linkKeyInfo[a], 0, sizeof(LinkKeyInfo_t));
+		}
+	}
+
 
 	HCI_DRIVER_SET_COMM_INFORMATION(&HCI_DriverInformation, 1, VENDOR_BAUD_RATE, cpHCILL_RTS_CTS);
 	HCI_DriverInformation.DriverInformation.COMMDriverInformation.InitializationDelay = 100;

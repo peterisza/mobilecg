@@ -51,7 +51,7 @@ class Bluetooth {
 		char tmpBuffer[16];
 
 		static const int MAX_SUPPORTED_LINK_KEYS = 5;
-		int lastLinkKeyIndex;
+		uint8_t lastLinkKeyIndex;
 
 	   /* The following type definition represents the container type which */
 	   /* holds the mapping between Bluetooth devices (based on the BD_ADDR)*/
@@ -60,7 +60,7 @@ class Bluetooth {
 		{
 		   BD_ADDR_t  BD_ADDR;
 		   Link_Key_t LinkKey;
-		} LinkKeyInfo_t;
+		} __attribute__((packed)) LinkKeyInfo_t;
 
 		LinkKeyInfo_t linkKeyInfo[MAX_SUPPORTED_LINK_KEYS];
 
@@ -106,6 +106,8 @@ class Bluetooth {
 		static void sendTaskCallbackStatic(OS::Task &task);
 
 		void sendTaskCallback();
+		void storeLinkKey(int index);
+		void storeLinkKeyIndex();
 
 		Bluetooth();
 	public:

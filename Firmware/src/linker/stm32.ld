@@ -44,6 +44,10 @@ SECTIONS
 
 		__dtors_start__ = .;
 		__dtors_end__ = .;
+		
+		. = ALIGN(16384);
+		__eeprom_start = .;
+		. = . + 32768;
         
 		. = ALIGN(4);
 		*(.text)                   /* remaining code */
