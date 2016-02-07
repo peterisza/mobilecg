@@ -16,7 +16,7 @@ filtered = filtfilt(b, a, testSignal);
 b
 a
 
-[b,a] = cheby2(2, 40, 0.1/sf2, "high");
+[b,a] = cheby2(2, 40, 0.45/sf2, "high");
 filtered = filtfilt(b, a, filtered);
 b
 a
