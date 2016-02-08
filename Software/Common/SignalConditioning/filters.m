@@ -11,12 +11,12 @@ testSignal =[zeros(1,N), 1, zeros(1,N)];
 
 sf = 500*2000/2048;
 sf2 = sf/2;
-[b,a] = pei_tseng_notch(50/sf2, 0.2/sf2);
+[b,a] = pei_tseng_notch(50/sf2, 0.5/sf2);
 filtered = filtfilt(b, a, testSignal);
 b
 a
 
-[b,a] = cheby2(2, 40, 0.45/sf2, "high");
+[b,a] = cheby2(2, 40, 0.2/sf2, "high");
 filtered = filtfilt(b, a, filtered);
 b
 a
