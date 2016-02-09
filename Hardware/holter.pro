@@ -1,4 +1,4 @@
-update=2015 October 30, Friday 18:45:02
+update=2016. Február 09., Kedd 23:04:50
 version=1
 last_client=kicad
 [cvpcb]
@@ -84,3 +84,4 @@ LibName50=rgbled
 LibName51=lis2dh12
 LibName52=usb_power_module
 LibName53=screw
+LibName54=crystal_shielded
