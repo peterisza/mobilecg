@@ -46,7 +46,6 @@ void Framebuffer::drawImage(uint32_t x, uint32_t y, const Image &image){
 }
 
 void Framebuffer::clear(){
-	//memset(framebuffer, 0, sizeof(framebuffer));
 	uint64_t *fb=(uint64_t*)framebuffer;
 	for (int a=0; a<128; a++)
 		fb[a]=0;

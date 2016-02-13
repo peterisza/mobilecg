@@ -70,7 +70,6 @@ void EcgProcessor::receivePacket(char *data, int len){
                     filteredSampleNum[c]++;
                     decompressBuffer[c][a] = ecgFilter[c].getSample();
                 }
-                //filteredSampleNum[c]++;
             }
         }
     }

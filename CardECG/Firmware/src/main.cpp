@@ -1,50 +1,3 @@
-//******************************************************************************
-//*
-//*     FULLNAME:  Single-Chip Microcontroller Real-Time Operating System
-//*
-//*     NICKNAME:  scmRTOS
-//*
-//*     PROCESSOR: ADuC70xx (Analog Devices)
-//*
-//*     TOOLKIT:   ARM GCC
-//*
-//*     PURPOSE:   Port Test File
-//*
-//*     Version: 4.00
-//*
-//*     $Revision: 529 $
-//*     $Date:: 2012-04-04 #$
-//*
-//*     Copyright (c) 2003-2012, Harry E. Zhurov
-//*
-//*     Permission is hereby granted, free of charge, to any person
-//*     obtaining  a copy of this software and associated documentation
-//*     files (the "Software"), to deal in the Software without restriction,
-//*     including without limitation the rights to use, copy, modify, merge,
-//*     publish, distribute, sublicense, and/or sell copies of the Software,
-//*     and to permit persons to whom the Software is furnished to do so,
-//*     subject to the following conditions:
-//*
-//*     The above copyright notice and this permission notice shall be included
-//*     in all copies or substantial portions of the Software.
-//*
-//*     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//*     EXPRESS  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-//*     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//*     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-//*     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-//*     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-//*     THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//*
-//*     =================================================================
-//*     See http://scmrtos.sourceforge.net for documentation, latest
-//*     information, license and contact details.
-//*     =================================================================
-//*
-//******************************************************************************
-//*     ARM port by Sergey A. Borshch, Copyright (c) 2006-2012
-//*     ADuC70xx port maintenance: Anton B. Gusev aka AHTOXA, Copyright (c) 2011-2012
-
 #include <scmRTOS.h>
 #include "pin.h"
 #include "display.hpp"
@@ -91,9 +44,6 @@ TextRenderer tr(fb);
 ADC ad;
 DAC da;
 
-//float num[]={0.965080986344734,-1.930161972689468,0.965080986344734};
-
-//float den[]={-1.9289422632520337,0.9313816821269029};
 
 //1st order, 1Hz
 float num[]={0.9408092961815946,-0.9408092961815946};
@@ -210,26 +160,13 @@ namespace OS
 				resetTimer=startTimer();
 			}
 			
-			/*if (resetTimer && msPassed(resetTimer, 100)){
-				resetTimer=0;
-				filter.reset(newval,true);
-				detector.reset();
-				#ifdef BACK_FILTER
-				filterBack.reset(newval, true);
-				#endif
-
-				reset++;
-			}*/
 			
 			oldval = newval;
 			
 			ecgData[buffPos] = saturate8(filter.filter(newval));
 
 			signalQuality.processSample(newval, ecgData[buffPos]);
-
-			//saturate8(detector.getLastThreshold()/300);
-			//saturate8(filter.filter(newval));
-			
+	
 			buffPos++;
 			if (buffPos==ECGBUF_LEN){
 				buffPos=0;
@@ -250,9 +187,6 @@ namespace OS
 			
 			
 			if(signalQuality.isSignalGood()) {
-				//tr.printf(0,0,"%d %d", fps, detector.getPulseRate());
-				//tr.printf(127 | TextRenderer::ALIGN_RIGHT,0,"%d", signalQuality.getNoiseQuantity() );
-
 				fb.clear();	
 				
 				int pr = detector.getPulseRate();
@@ -338,10 +272,6 @@ extern "C" void IRQ_Switch()
 		   OS::system_timer_isr();
 		   currTime++;
     }
-	
-	//	printf("ISR\r\n");
-	
-	//Globals::instance().uart.send("P");
 	
 	HANDLE_ADCINT(irq);
 }

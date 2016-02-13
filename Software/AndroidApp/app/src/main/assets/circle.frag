@@ -3,7 +3,6 @@ precision mediump float;
 #endif
 
 varying vec2 pos;
-//varying vec3 v_Color;
 uniform vec3 color;
 
 void main(){

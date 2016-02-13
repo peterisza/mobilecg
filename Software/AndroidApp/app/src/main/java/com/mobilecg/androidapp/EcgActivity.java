@@ -40,7 +40,6 @@ public class EcgActivity extends Activity {
     private boolean connect(){
         disconnect();
         String mac=getPairedMac();
-        Log.d("----- MobilECG", "connecting to \"" + mac + "\"");
         if (mac!="") {
             receiver = new ConnectThread();
             receiver.connect(mac);
@@ -190,15 +189,13 @@ public class EcgActivity extends Activity {
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case BLUETOOTH_SELECTED:
-                // When DeviceListActivity returns with a device to connect
+                // When BluetoothDeviceList returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     String mac = (String) data.getExtras()
                             .get(BluetoothDeviceList.EXTRA_DEVICE);
 
                     setPairedMac(mac);
                     connect();
-
-                    Log.d("------ MobilECG", "MAC selected: " + mac);
                 }
                 break;
         }

@@ -8,13 +8,13 @@ EcgArea::EcgArea():
     grid.setZOrder(10);
     drawableList.push_back(&grid);
 
+    //Use separater for loops to avoid mixing the order of
+    //curves, circles and texts to eliminate unnecessary shader switches.
     for (int a=0; a<ECG_CURVE_COUNT; a++) {
         drawableList.push_back(&ecgCurves[a]);
         ecgCurves[a].setZOrder(1);
     }
 
-    //Use two separater for loops to avoid mixing the order of
-    //curves and circles to eliminate unnecessary shader switches.
     for (int a=0; a<ECG_CURVE_COUNT; a++) {
         drawableList.push_back(&endpointCircles[a]);
         endpointCircles[a].setZOrder(0);

@@ -24,7 +24,6 @@ extern "C" caddr_t _sbrk(int incr)
     errno = ENOMEM;
     Logger::panic("_sbrk(): Out of heap.");
     return (caddr_t) -1;
-    //abort ();
   }
 
   heap_end += incr;

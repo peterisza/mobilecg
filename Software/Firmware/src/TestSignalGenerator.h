@@ -42,8 +42,6 @@ class TestSignalGenerator {
 		int amplitude;
 		int period;
 		int index;
-		/*float phase;
-		float delta;*/
 };
 
 #endif
