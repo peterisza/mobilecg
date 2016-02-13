@@ -1,3 +1,23 @@
+/*
+ * This file is part of MobilECG, an open source clinical grade Holter
+ * ECG. For more information visit http://mobilecg.hu
+ *
+ * Copyright (C) 2016  Peter Isza, Robert Csordas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
 #include "BitFifo.hpp"
 
 #include <stdio.h>
@@ -55,13 +75,7 @@ bool BitFifo::pushBits(uint32_t data, char numBits) {
 			end -= sizeBits;
 		data >>= bitsToPush;
 		numBits -= bitsToPush;
-		//printf("Pushed %d bits, start: %d, end: %d.\n", bitsToPush, start, end);	
 	}
-
-	/*for(int i = 0; i < sizeBits; ++i)
-		printf("%d", buffer[i >> 3] & (1 << (i&7)) ? 1 : 0);
-		
-	printf("\n");*/
 	
 	return true;
 }
@@ -82,7 +96,6 @@ uint32_t BitFifo::popBits(char numBits) {
 		if(start >= sizeBits)
 			start -= sizeBits;
 		readBits += bitsToRead;
-		//printf("Read %d bits, start: %d, end: %d.\n", bitsToRead, start, end);		
 	}
 	
 	return result;
@@ -90,10 +103,8 @@ uint32_t BitFifo::popBits(char numBits) {
 
 int32_t BitFifo::popBitsSigned(char numBits) {
 	int32_t data = popBits(numBits);
-	//printf(" unsigned %d\n", data);
 	if(data & (1 << (numBits-1)))
 		data |= ~((1 << numBits)-1);
-	//printf(" signed %d\n", data);
 	return data;
 }
 
