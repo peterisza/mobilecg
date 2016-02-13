@@ -1,1 +1,1 @@
-../../../Software/Common/DataFormat/DifferenceEcgCompressor.hpp
+../../../Common/DataFormat/DifferenceEcgCompressor.hpp

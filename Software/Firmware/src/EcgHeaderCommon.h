@@ -1,1 +1,1 @@
-../../Software/Common/DataFormat/EcgHeaderCommon.h
+../../Common/DataFormat/EcgHeaderCommon.h
