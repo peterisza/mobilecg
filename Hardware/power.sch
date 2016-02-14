@@ -994,7 +994,7 @@ F 3 "" H 800 7250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 9250 5900 0    39   ~ 0
-The CPU can be powered either from battery or\nfrom USB 3.3V:\n\n - When on battery, it is running from 1.8V, and\n    the SD card can be either powered down or\n    can run from a 2.8V supply.\n - When on USB, step up converters are turned\n    off (so that the battery can be charged). The\n    CPU and the SD are switched to a +3.3V\n    stepdown and everything else is turned off.\n\nThe level shifter between the card reader and\nthe uSD is needed, even through when USB is\nplugged in, they run on the same voltage. The\nlevel shifter is used as a switch: when one of its\npower supplies are missing, it disables all of\nits outputs. So when running from battery, no\ncurrent can flow through IOs into the powered\ndown card reader IC.
+The CPU can be powered either from battery or\nfrom USB 3.3V:\n\n - When on battery, it is running from 1.8V, and\n    the SD card can be either powered down or\n    can run from the 2.8V supply.\n - When on USB, step up converters are turned\n    off (so that the battery can be charged). The\n    CPU and the SD are switched to a +3.3V\n    stepdown and everything else is turned off.\n\nThe level shifter between the card reader and\nthe uSD is needed, even through when USB is\nplugged in, they run on the same voltage. The\nlevel shifter is used as a switch: when one of its\npower supplies are missing, it disables all of\nits outputs. So when running from battery, no\ncurrent can flow through IOs into the powered\ndown card reader IC.
 $Comp
 L VMEM #PWR0207
 U 1 1 54126E99
