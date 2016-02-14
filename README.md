@@ -1,9 +1,9 @@
-vMobilECG II
+MobilECG II
 ===========
 
 MobilECG II is an open source clinical grade Holter ECG. For more information, please visit http://mobilecg.hu.
 
-NOTE: this is only a preliminary release. It contains known bugs, but its main structure will remain the same. There is no stable branch yet. Development occours on master. When a stable software will be released, it will be split to separate stable and development branches.
+NOTE: this is only a preliminary release. It contains known bugs, but its main structure will remain the same. There is no stable branch yet. Development occours on master. When a stable software is released, it will be split to separate stable and development branches.
 
 Directory structure
 -------------------
