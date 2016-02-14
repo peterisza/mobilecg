@@ -26,12 +26,19 @@ How to get one?
 
 MobilECG is not publicly available yet. In order to sell a medical device, certification is needed. We are working hard to bring MobilECG to the users as soon as possible.
 
-However you can still build one yourself. If you want to build it feel free to do so and to contact us in case of any problems. There will be soon a technical blog where you will be able to find instructions on bulding one yourself.
+However you can still build one yourself. If you want to build it, feel free to do so. Contact us in case of any problems. There will be soon a technical blog where you will be able to find instructions on bulding one yourself.
 
-Comaptibility
+Compatibility
 -------------
 
 The whole project is built using free or open source tools. The hardware is designed in KiCAD (http://kicad-pcb.org), firmware compiles with ARM GCC (you can find binaries here: https://launchpad.net/gcc-arm-embedded), CAD files designed with OpenSCAD (http://www.openscad.org) and 3D printed using MatterControl on a Prusa i3. The development occours on Mac OS X and Linux, building was never tested on Microsoft Windows (and we are not interested in making this software to build on Windows except the Windows client app that will be written).
+
+How to support us?
+------------------
+
+If you know a doctor or someone with hearth disease, please let them know about our project. Their subscription will help us in search for investment.
+
+If you are a business angel or an investor, please contact us.
 
 License
 -------
