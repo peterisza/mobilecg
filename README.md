@@ -9,7 +9,7 @@ Directory structure
 -------------------
 ```
 MobilECG II
-├─  CAD - OpenSCAD drawings for case and other parts
+├─  CAD - OpenSCAD drawings for the case and other parts
 ├─  Hardware - the hardware design of MobilECG II
 │
 ├───Software
@@ -31,16 +31,16 @@ However you can still build one yourself. If you want to build it, feel free to 
 Compatibility
 -------------
 
-The whole project is built using free or open source tools. The hardware is designed in KiCAD (http://kicad-pcb.org), firmware compiles with ARM GCC (you can find binaries here: https://launchpad.net/gcc-arm-embedded), CAD files designed with OpenSCAD (http://www.openscad.org) and 3D printed using MatterControl on a Prusa i3. The development occours on Mac OS X and Linux, building was never tested on Microsoft Windows (and we are not interested in making this software to build on Windows except the Windows client app that will be written).
+The whole project is built using free or open source tools. The hardware is designed in KiCAD (http://kicad-pcb.org), the firmware compiles with ARM GCC (you can find binaries here: https://launchpad.net/gcc-arm-embedded), CAD files are designed with OpenSCAD (http://www.openscad.org) and 3D printed using MatterControl on a Prusa i3. The development occours on Mac OS X and Linux, building was never tested on Microsoft Windows (and we are not interested in making this software build on Windows except the Windows client app that will be written).
 
 How to support us?
 ------------------
 
-If you know a doctor or someone with hearth disease, please let them know about our project. Their subscription will help us in search for investment.
+If you know a doctor or someone with a heart condition, please let them know about our project. Their subscription will help us find investment.
 
 If you are a business angel or an investor, please contact us.
 
 License
 -------
 
-The hardware is released under ??? license. All software componens (that are not libraries we used) are licensed under GNU Public License v3. If you have any special license requirements, please feel free to contact us.
+The hardware is released under the ??? license. All software componens (that are not libraries we used) are licensed under the GNU Public License v3. If you have any special license requirements, please feel free to contact us.
