@@ -52,6 +52,7 @@ LIBS:lis2dh12
 LIBS:usb_power_module
 LIBS:screw
 LIBS:crystal_shielded
+LIBS:holter-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -60,8 +61,8 @@ Sheet 3 3
 Title "MobilECG II USB power module"
 Date "2015. oct 5."
 Rev "1.0"
-Comp ""
-Comment1 ""
+Comp "Peter Isza, Robert Csordas"
+Comment1 "Licensed under a Creative Commons Attribution-ShareAlike 4.0 International License"
 Comment2 ""
 Comment3 ""
 Comment4 ""
@@ -949,4 +950,6 @@ Wire Wire Line
 Connection ~ 2400 1350
 Connection ~ 2400 1800
 Connection ~ 2400 3150
+Text Notes 550  700  0    60   ~ 0
+The mobilECG hardware by Peter Isza & Robert Csordas is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.\nPermissions beyond the scope of this license may be available at http://mobilecg.hu.
 $EndSCHEMATC

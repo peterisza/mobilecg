@@ -52,6 +52,7 @@ LIBS:lis2dh12
 LIBS:usb_power_module
 LIBS:screw
 LIBS:crystal_shielded
+LIBS:holter-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -61,7 +62,7 @@ Title "MobilECG II power supply"
 Date "2014. sept 10."
 Rev "1.0"
 Comp "Peter Isza, Robert Csordas"
-Comment1 ""
+Comment1 "Licensed under a Creative Commons Attribution-ShareAlike 4.0 International License"
 Comment2 ""
 Comment3 ""
 Comment4 ""
@@ -2412,4 +2413,6 @@ Wire Wire Line
 	6750 4950 6600 4950
 Wire Wire Line
 	6600 4950 6600 4850
+Text Notes 600  700  0    60   ~ 0
+The mobilECG hardware by Peter Isza & Robert Csordas is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.\nPermissions beyond the scope of this license may be available at http://mobilecg.hu.
 $EndSCHEMATC

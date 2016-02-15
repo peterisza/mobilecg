@@ -1,11 +1,11 @@
-(kicad_pcb (version 4) (host pcbnew no-vcs-found-product)
+(kicad_pcb (version 4) (host pcbnew "(2016-02-09 BZR 6546)-product")
 
   (general
     (links 616)
     (no_connects 0)
-    (area 48.070769 20.3 108.930972 85.8924)
+    (area 36.607142 20.3 137.192859 189.7)
     (thickness 1.6)
-    (drawings 77)
+    (drawings 78)
     (tracks 3308)
     (zones 0)
     (modules 231)
@@ -13,6 +13,14 @@
   )
 
   (page A4)
+  (title_block
+    (title "MobilECG main PCB")
+    (date 2015.10.01)
+    (rev 1.0)
+    (company "Peter Isza")
+    (comment 1 "Licensed under Creative Commons Attribution-ShareAlike 4.0 International License")
+  )
+
   (layers
     (0 Front signal)
     (1 Power power)
@@ -7700,6 +7708,9 @@
       (net 138 SWDIO))
   )
 
+  (gr_text "The mobilECG hardware by Peter Isza & Robert Csordas is licensed under a \nCreative Commons Attribution-ShareAlike 4.0 International License.\nPermissions beyond the scope of this license may be available at http://mobilecg.hu." (at 86.9 186.1) (layer Dwgs.User)
+    (effects (font (size 1.5 1.5) (thickness 0.3)))
+  )
   (dimension 47 (width 0.1) (layer Dwgs.User)
     (gr_text "47.000 mm" (at 85 21.65) (layer Dwgs.User)
       (effects (font (size 1.5 1.5) (thickness 0.1)))
