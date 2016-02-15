@@ -1,5 +1,5 @@
-The mobilECG hardware (that is everything in the Hardware folder) by
-Peter Isza & Robert Csordas is licensed under a
+The mobilECG hardware (that is everything in the Hardware/ and CAD/
+folders) by Peter Isza & Robert Csordas is licensed under a
 Creative Commons Attribution-ShareAlike 4.0 International License.
 
 Permissions beyond the scope of this license may be available at
