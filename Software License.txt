@@ -1,6 +1,6 @@
 The software and firmware of MobilECG (except Bluetopia, STM32
-peripherial libraries and FreeRTOS, which are freely available) is
-licensed under GPL v3.
+peripherial libraries, FreeRTOS and scmRTOS, which are freely
+available) is licensed under GPL v3.
 
 Copyright (C) 2016  Robert Csordas, Peter Isza
 

@@ -43,5 +43,5 @@ If you are a business angel or an investor, please contact us.
 License
 -------
 
-The hardware is released under the Creative Commons Attribution-ShareAlike 4.0 International License. All software componens (except Bluetopia, STM32 peripherial libraries and
-FreeRTOS, which are freely available) are licensed under the GNU Public License v3. If you have any special license requirements, please feel free to contact us.
+The hardware is released under the Creative Commons Attribution-ShareAlike 4.0 International License. All software componens (except Bluetopia, STM32 peripherial libraries,
+FreeRTOS, and scmRTOS, which are freely available) are licensed under the GNU Public License v3. If you have any special license requirements, please feel free to contact us.
