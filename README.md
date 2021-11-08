@@ -31,7 +31,7 @@ However you can still build one yourself. If you want to build it, feel free to 
 Compatibility
 -------------
 
-The whole project is built using free or open source tools. The hardware is designed in KiCAD (http://kicad-pcb.org), the firmware compiles with ARM GCC (you can find binaries here: https://launchpad.net/gcc-arm-embedded), CAD files are designed with OpenSCAD (http://www.openscad.org) and 3D printed using MatterControl on a Prusa i3. The development occours on Mac OS X and Linux, building was never tested on Microsoft Windows (and we are not interested in making this software build on Windows except the Windows client app that will be written).
+The whole project is built using free or open source tools. The hardware is designed in KiCAD (http://kicad.org), the firmware compiles with ARM GCC (you can find binaries here: https://launchpad.net/gcc-arm-embedded), CAD files are designed with OpenSCAD (http://www.openscad.org) and 3D printed using MatterControl on a Prusa i3. The development occours on Mac OS X and Linux, building was never tested on Microsoft Windows (and we are not interested in making this software build on Windows except the Windows client app that will be written).
 
 How to support us?
 ------------------
